@@ -4,8 +4,9 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\File;
 use RuntimeException;
+use App\Contracts\ConstantInterface;
 
-class FileWriter
+final class FileWriter implements ConstantInterface
 {
     /**
      * @param $modelDirectory
@@ -27,7 +28,7 @@ class FileWriter
     {
         return sprintf(
             "%s/%s/%s%s",
-            getcwd(), $defaultModelDirectory, $modelName, self::FILE_EXTENSION
+            getcwd(), $defaultModelDirectory, $modelName, static::FILE_EXTENSION
         );
     }
 
@@ -39,7 +40,7 @@ class FileWriter
     public static function getDefaultModelDirectory($modelDirectory, $applicationNamespace): string
     {
         return empty($modelDirectory)
-            ? $applicationNamespace .DIRECTORY_SEPARATOR.self::DEFAULT_MODEL_FOLDER
+            ? $applicationNamespace .DIRECTORY_SEPARATOR.static::DEFAULT_MODEL_FOLDER
             : $applicationNamespace .DIRECTORY_SEPARATOR .$modelDirectory;
     }
 }

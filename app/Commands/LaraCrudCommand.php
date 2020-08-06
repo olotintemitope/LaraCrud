@@ -8,9 +8,6 @@ use LaravelZero\Framework\Commands\Command;
 
 class LaraCrudCommand extends Command
 {
-    private const DEFAULT_MODEL_FOLDER = "Models";
-    private const FILE_EXTENSION = ".php";
-
     /**
      * The signature of the command.
      *
