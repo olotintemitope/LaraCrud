@@ -47,6 +47,8 @@ class LaraCrudCommand extends Command
             $content = "<?php \n\r namespace {$capitalizedModelNamespace}; \n\r use Illuminate\Database\Eloquent\Model; \n\r class {$modelName} extends Model \n{\n\r}";
         }
 
+        $this->question('Add Available Column Types');
+
         try {
             $modelPath = $writer::getModelWorkingDirectory($defaultModelDirectory, $modelName);
             $writer::write($defaultModelDirectory, $modelPath, $content);
@@ -59,7 +61,7 @@ class LaraCrudCommand extends Command
     /**
      * Define the command's schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     * @param Schedule $schedule
      * @return void
      */
     public function schedule(Schedule $schedule): void
