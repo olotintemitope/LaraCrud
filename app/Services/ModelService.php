@@ -39,7 +39,7 @@ class ModelService extends Command
          \t* @var array
          \t*/
         TEXT;
-        $content .= "\r\tprotected $casts = [\n\r\t];\n\r";
+        $content .= "\r\tprotected $casts = [\n\r\t];\r";
         $content .= "\r}";
 
         return $content;
