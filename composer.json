@@ -11,15 +11,14 @@
     },
     "authors": [
         {
-            "name": "Nuno Maduro",
-            "email": "enunomaduro@gmail.com"
+            "name": "Temitope Olotin",
+            "email": "olotintemitope@gmail.com"
         }
     ],
     "require": {
         "php": "^7.2.5",
         "laminas/laminas-text": "^2.7",
-        "laravel-zero/framework": "^7.0",
-        "nunomaduro/laravel-console-menu": "^3.0"
+        "laravel-zero/framework": "^7.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master"
