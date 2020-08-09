@@ -31,46 +31,34 @@ class LaraCrudCommand extends Command implements ConstantInterface
      */
     public function handle(FileWriter $writer)
     {
-        $content = "";
-        $modelName = $this->argument('name');
-        $modelDirectory = $this->option('folder');
-        $applicationNamespace = ucwords(explode("\\", get_called_class())[0]);
+        $migrations = [];
+        $modelName = strip_tags($this->argument('name'));
 
         if (empty($modelName)) {
             $this->error("Name argument is missing");
         }
 
         while (true) {
-            $dbColumnName = $this->ask('Enter column field name');
-            if (empty($dbColumnName)) {
-                $this->error("column field name is missing");
-            }
-
-            if (!empty($dbColumnName)) {
-                $dbColumnFieldType = $this->choice(
-                    'Select column field type',
-                    array_keys(static::AVAILABLE_COLUMN_TYPES),
-                    $defaultIndex = 38,
-                    $maxAttempts = null,
-                    $allowMultipleSelections = false
-                );
-
-                $exit = $this->ask('Are you done?');
-
-
-                // Cater for enum types. $table->enum('level', ['easy', 'hard']);
-                // Cater for float or decimal $table->decimal('amount', 8, 2);
-                /**
-                 * [
-                 *   first_name => [string],
-                 *   state => [enum => [ado ekiti, owo, ibadan]
-                 * ]
-                 */
-
+            $dbFieldName = $this->userWillEnterFieldName();
+            if (empty($dbFieldName)) {
+                $this->error("field name is missing");
+                $dbFieldName = $this->userWillEnterFieldName();
+            }  if (!empty($dbFieldName)) {
+                if ('exit' === strtolower($dbFieldName) &&
+                    $this->confirm('Are you sure you want to exit?', self::EXIT_CONSOLE)
+                ) {
+                    break;
+                }
+                $dbColumnFieldType = $this->userWillSelectColumnFieldType();
+                $migrations = $this->setMigrations($migrations, $dbFieldName, $dbColumnFieldType);
             }
         }
 
+        print_r($migrations);
+
         try {
+            $modelDirectory = $this->option('folder');
+            $applicationNamespace = ucwords(explode("\\", static::class)[0]);
             $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
 
             if (!empty($modelName)) {
@@ -96,5 +84,55 @@ class LaraCrudCommand extends Command implements ConstantInterface
     public function schedule(Schedule $schedule): void
     {
         // $schedule->command(static::class)->everyMinute();
+    }
+
+    private function userWillSelectColumnFieldType(): string
+    {
+        return $this->choice(
+            'Select field type',
+            array_keys(static::AVAILABLE_COLUMN_TYPES),
+            $defaultIndex = 38,
+            $maxAttempts = null,
+            $allowMultipleSelections = false
+        );
+    }
+
+    private function userWillEnterFieldName()
+    {
+        return str_replace(' ', '_', $this->ask('Enter field name'));
+    }
+
+    /**
+     * @param $migrations
+     * @param $dbFieldName
+     * @param $dbColumnFieldType
+     * @return mixed
+     */
+    private function setMigrations(array $migrations, string $dbFieldName, string $dbColumnFieldType): array
+    {
+        // Cater for enum types. $table->enum('level', ['easy', 'hard']);
+        if ('enum' === $dbColumnFieldType) {
+            $enumValues = trim($this->ask('Enter enum values separated by a comma'));
+            if (empty($enumValues)) {
+                $this->error("field name is missing");
+            }
+            if (!empty($enumValues)) {
+                $migrations[(string)($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'values' => explode(',', $enumValues)];
+            }
+        }
+
+        if ('enum' !== $dbColumnFieldType) {
+            $migrations[(string)($dbFieldName)] = ['field_type' => $dbColumnFieldType];
+        }
+
+        if (str_contains($dbColumnFieldType, 'string') || str_contains($dbColumnFieldType, 'integer')) {
+            $fieldLength = (int)trim($this->ask('Enter the length'));
+            $migrations[(string)($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'length' => $fieldLength];
+            if (empty($fieldLength)) {
+                $this->info("Default length will be used instead");
+            }
+        }
+
+        return $migrations;
     }
 }
