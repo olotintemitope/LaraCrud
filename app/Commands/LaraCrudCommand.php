@@ -6,6 +6,7 @@ use App\Contracts\ConstantInterface;
 use App\Services\FileWriter;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
+use ICanBoogie\Inflector;
 
 class LaraCrudCommand extends Command implements ConstantInterface
 {
@@ -57,14 +58,14 @@ class LaraCrudCommand extends Command implements ConstantInterface
         print_r($migrations);
 
         try {
+            $content = "";
             $modelDirectory = $this->option('folder');
             $applicationNamespace = ucwords(explode("\\", static::class)[0]);
             $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
 
             if (!empty($modelName)) {
                 $capitalizedModelNamespace = str_replace('/', '\\', $defaultModelDirectory);
-
-                $content = "<?php \n\r namespace {$capitalizedModelNamespace}; \n\r use Illuminate\Database\Eloquent\Model; \n\r class {$modelName} extends Model \n{\n\r}";
+                $content = $this->writeModel($capitalizedModelNamespace, $modelName, $migrations);
             }
 
             $modelPath = $writer::getModelWorkingDirectory($defaultModelDirectory, $modelName);
@@ -134,5 +135,53 @@ class LaraCrudCommand extends Command implements ConstantInterface
         }
 
         return $migrations;
+    }
+
+    private function writeModel($capitalizedModelNamespace, $modelName, $migrations): string
+    {
+        $table = '$table';
+        $fillable = '$fillable';
+        $casts = '$casts';
+        $migrationFields = array_keys($migrations);
+
+        $inflector = Inflector::get('en');
+        $tableName = strtolower($inflector->pluralize($modelName));
+
+        $fields = implode(
+            ",\r",
+            array_map(function ($field) {return "\t\t'{$field}'";}, $migrationFields)
+        );
+
+        $content = "<?php \n\rnamespace {$capitalizedModelNamespace}; \n\r";
+        // Import dependencies here
+        $content .= "use Illuminate\Database\Eloquent\Model;\n\r";
+        $content .= "class {$modelName} extends Model \n{\r";
+
+        $content .= <<<TEXT
+        \t/**
+         \t* @var string
+         \t*/
+        TEXT;
+        $content .= "\r\tprotected $table = '{$tableName}';\n\r";
+
+        $content .= <<<TEXT
+        \t/**
+         \t* The attributes that are mass assignable.
+         \t*
+         \t* @var array
+         \t*/
+        TEXT;
+        $content .= "\r\tprotected $fillable = [\r{$fields},\r\t];\n\r";
+
+        $content .= <<<TEXT
+        \t/**
+         \t* @var array
+         \t*/
+        TEXT;
+        $content .= "\r\tprotected $casts = [\n\r\t];\n\r";
+
+        $content .= "\r}";
+
+        return $content;
     }
 }
