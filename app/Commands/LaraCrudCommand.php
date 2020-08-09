@@ -43,7 +43,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
         $modelDirectory = $this->option('folder');
         $applicationNamespace = ucwords(explode("\\", static::class)[0]);
         $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
-        $modelPath = $writer::getModelWorkingDirectory($defaultModelDirectory, $modelName);
+        $modelPath = $writer::geWorkingDirectory($defaultModelDirectory, $modelName);
 
         if ($writer::modelExists($modelPath)) {
             $this->error("{$modelPath} already exist");

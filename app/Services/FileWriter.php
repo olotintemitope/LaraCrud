@@ -28,7 +28,7 @@ final class FileWriter implements ConstantInterface
      * @param string $modelName
      * @return string
      */
-    public static function getModelWorkingDirectory(string $defaultModelDirectory, string $modelName): string
+    public static function geWorkingDirectory(string $defaultModelDirectory, string $modelName): string
     {
         return sprintf(
             "%s/%s/%s%s",
