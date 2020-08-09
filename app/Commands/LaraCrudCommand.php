@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Contracts\ConstantInterface;
 use App\Services\FileWriter;
+use App\Services\ModelService;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 use ICanBoogie\Inflector;
@@ -28,36 +29,37 @@ class LaraCrudCommand extends Command implements ConstantInterface
      * Execute the console command.
      *
      * @param FileWriter $writer
+     * @param ModelService $model
      * @return mixed
      */
-    public function handle(FileWriter $writer)
+    public function handle(FileWriter $writer, ModelService $model)
     {
         $migrations = [];
-        $modelName = strip_tags($this->argument('name'));
 
+        $modelName = strip_tags($this->argument('name'));
         if (empty($modelName)) {
             $this->error("Name argument is missing");
         }
 
-        while (true) {
-            $dbFieldName = $this->userWillEnterFieldName();
-            if (empty($dbFieldName)) {
-                $this->error("field name is missing");
-                $dbFieldName = $this->userWillEnterFieldName();
-            }  if (!empty($dbFieldName)) {
-                if ('exit' === strtolower($dbFieldName) &&
-                    $this->confirm('Are you sure you want to exit?', self::EXIT_CONSOLE)
-                ) {
-                    break;
-                }
-                $dbColumnFieldType = $this->userWillSelectColumnFieldType();
-                $migrations = $this->setMigrations($migrations, $dbFieldName, $dbColumnFieldType);
-            }
-        }
-
-        print_r($migrations);
-
         try {
+            do {
+                $dbFieldName = $this->askForFieldName();
+                if (!empty($dbFieldName) && 'exit' !== $dbFieldName && 'no' !== $dbFieldName) {
+                    $dbColumnFieldType = $this->userWillSelectColumnFieldType();
+                    $migrations = $this->setMigrations($migrations, $dbFieldName, $dbColumnFieldType);
+                }
+                if ('exit' === $dbFieldName) {
+                    if ($this->confirm('Are you sure you want to exit?', self::EXIT_CONSOLE)) {
+                        break;
+                    }
+                }
+            } while (true);
+
+            if (count($migrations) <= 0) {
+                $this->warn("Migration cannot be generated. pls try again!");
+                exit();
+            }
+
             $content = "";
             $modelDirectory = $this->option('folder');
             $applicationNamespace = ucwords(explode("\\", static::class)[0]);
@@ -65,7 +67,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
 
             if (!empty($modelName)) {
                 $capitalizedModelNamespace = str_replace('/', '\\', $defaultModelDirectory);
-                $content = $this->writeModel($capitalizedModelNamespace, $modelName, $migrations);
+                $content = $model->write($capitalizedModelNamespace, $modelName, $migrations);
             }
 
             $modelPath = $writer::getModelWorkingDirectory($defaultModelDirectory, $modelName);
@@ -87,6 +89,9 @@ class LaraCrudCommand extends Command implements ConstantInterface
         // $schedule->command(static::class)->everyMinute();
     }
 
+    /**
+     * @return string
+     */
     private function userWillSelectColumnFieldType(): string
     {
         return $this->choice(
@@ -98,9 +103,20 @@ class LaraCrudCommand extends Command implements ConstantInterface
         );
     }
 
-    private function userWillEnterFieldName()
+    /**
+     * @return mixed|string|string[]
+     */
+    private function userWillEnterFieldName(): string
     {
         return str_replace(' ', '_', $this->ask('Enter field name'));
+    }
+
+    /**
+     * @return mixed|string|string[]
+     */
+    private function askForFieldName(): string
+    {
+        return $this->userWillEnterFieldName();
     }
 
     /**
@@ -109,7 +125,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
      * @param $dbColumnFieldType
      * @return mixed
      */
-    private function setMigrations(array $migrations, string $dbFieldName, string $dbColumnFieldType): array
+    public function setMigrations(array $migrations, string $dbFieldName, string $dbColumnFieldType): array
     {
         // Cater for enum types. $table->enum('level', ['easy', 'hard']);
         if ('enum' === $dbColumnFieldType) {
@@ -118,70 +134,22 @@ class LaraCrudCommand extends Command implements ConstantInterface
                 $this->error("field name is missing");
             }
             if (!empty($enumValues)) {
-                $migrations[(string)($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'values' => explode(',', $enumValues)];
+                $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'values' => explode(',', $enumValues)];
             }
         }
 
         if ('enum' !== $dbColumnFieldType) {
-            $migrations[(string)($dbFieldName)] = ['field_type' => $dbColumnFieldType];
+            $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType];
         }
 
         if (str_contains($dbColumnFieldType, 'string') || str_contains($dbColumnFieldType, 'integer')) {
             $fieldLength = (int)trim($this->ask('Enter the length'));
-            $migrations[(string)($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'length' => $fieldLength];
+            $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'length' => $fieldLength];
             if (empty($fieldLength)) {
                 $this->info("Default length will be used instead");
             }
         }
 
         return $migrations;
-    }
-
-    private function writeModel($capitalizedModelNamespace, $modelName, $migrations): string
-    {
-        $table = '$table';
-        $fillable = '$fillable';
-        $casts = '$casts';
-        $migrationFields = array_keys($migrations);
-
-        $inflector = Inflector::get('en');
-        $tableName = strtolower($inflector->pluralize($modelName));
-
-        $fields = implode(
-            ",\r",
-            array_map(function ($field) {return "\t\t'{$field}'";}, $migrationFields)
-        );
-
-        $content = "<?php \n\rnamespace {$capitalizedModelNamespace}; \n\r";
-        // Import dependencies here
-        $content .= "use Illuminate\Database\Eloquent\Model;\n\r";
-        $content .= "class {$modelName} extends Model \n{\r";
-
-        $content .= <<<TEXT
-        \t/**
-         \t* @var string
-         \t*/
-        TEXT;
-        $content .= "\r\tprotected $table = '{$tableName}';\n\r";
-
-        $content .= <<<TEXT
-        \t/**
-         \t* The attributes that are mass assignable.
-         \t*
-         \t* @var array
-         \t*/
-        TEXT;
-        $content .= "\r\tprotected $fillable = [\r{$fields},\r\t];\n\r";
-
-        $content .= <<<TEXT
-        \t/**
-         \t* @var array
-         \t*/
-        TEXT;
-        $content .= "\r\tprotected $casts = [\n\r\t];\n\r";
-
-        $content .= "\r}";
-
-        return $content;
     }
 }
