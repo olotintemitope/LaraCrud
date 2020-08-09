@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Contracts\ConstantInterface;
 use Illuminate\Support\Facades\File;
 use RuntimeException;
-use App\Contracts\ConstantInterface;
 
 final class FileWriter implements ConstantInterface
 {
@@ -15,15 +15,19 @@ final class FileWriter implements ConstantInterface
      */
     public static function write($modelDirectory, $modelPath, $content): void
     {
-        File::ensureDirectoryExists($modelDirectory);
-
         if (!File::exists($modelPath)) {
-            File::put( $modelPath , trim($content), false);
+            File::ensureDirectoryExists($modelDirectory);
+            File::put($modelPath, trim($content), false);
         } else {
-           throw new RuntimeException("{$modelPath} already exists");
+            throw new RuntimeException("{$modelPath} already exists");
         }
     }
 
+    /**
+     * @param string $defaultModelDirectory
+     * @param string $modelName
+     * @return string
+     */
     public static function getModelWorkingDirectory(string $defaultModelDirectory, string $modelName): string
     {
         return sprintf(
@@ -40,7 +44,16 @@ final class FileWriter implements ConstantInterface
     public static function getDefaultModelDirectory($modelDirectory, $applicationNamespace): string
     {
         return empty($modelDirectory)
-            ? $applicationNamespace .DIRECTORY_SEPARATOR.static::DEFAULT_MODEL_FOLDER
-            : $applicationNamespace .DIRECTORY_SEPARATOR .$modelDirectory;
+            ? $applicationNamespace . DIRECTORY_SEPARATOR . static::DEFAULT_MODEL_FOLDER
+            : $applicationNamespace . DIRECTORY_SEPARATOR . $modelDirectory;
+    }
+
+    /**
+     * @param $modelPath
+     * @return bool
+     */
+    public static function modelExists($modelPath): bool
+    {
+        return File::exists($modelPath);
     }
 }

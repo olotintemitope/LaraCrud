@@ -51,13 +51,10 @@ class ModelService extends Command
      */
     protected function getFields(array $migrationFields): string
     {
-        $fields = implode(
-            ",\r",
-            array_map(function ($field) {
-                return "\t\t'{$field}'";
+        return implode(",\r", array_map(function ($field) {
+            return "\t\t'{$field}'";
             }, $migrationFields)
         );
-        return $fields;
     }
 
     /**
@@ -67,7 +64,6 @@ class ModelService extends Command
     protected function getTableName($modelName): string
     {
         $inflector = Inflector::get('en');
-        $tableName = strtolower($inflector->pluralize($modelName));
-        return $tableName;
+        return strtolower($inflector->pluralize($modelName));
     }
 }

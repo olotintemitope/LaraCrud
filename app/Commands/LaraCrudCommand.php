@@ -5,9 +5,7 @@ namespace App\Commands;
 use App\Contracts\ConstantInterface;
 use App\Services\FileWriter;
 use App\Services\ModelService;
-use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
-use ICanBoogie\Inflector;
 
 class LaraCrudCommand extends Command implements ConstantInterface
 {
@@ -34,11 +32,22 @@ class LaraCrudCommand extends Command implements ConstantInterface
      */
     public function handle(FileWriter $writer, ModelService $model)
     {
+        $content = "";
         $migrations = [];
 
         $modelName = strip_tags($this->argument('name'));
         if (empty($modelName)) {
             $this->error("Name argument is missing");
+        }
+
+        $modelDirectory = $this->option('folder');
+        $applicationNamespace = ucwords(explode("\\", static::class)[0]);
+        $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
+        $modelPath = $writer::getModelWorkingDirectory($defaultModelDirectory, $modelName);
+
+        if ($writer::modelExists($modelPath)) {
+            $this->error("{$modelPath} already exist");
+            exit();
         }
 
         try {
@@ -60,33 +69,16 @@ class LaraCrudCommand extends Command implements ConstantInterface
                 exit();
             }
 
-            $content = "";
-            $modelDirectory = $this->option('folder');
-            $applicationNamespace = ucwords(explode("\\", static::class)[0]);
-            $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
-
             if (!empty($modelName)) {
                 $capitalizedModelNamespace = str_replace('/', '\\', $defaultModelDirectory);
                 $content = $model->write($capitalizedModelNamespace, $modelName, $migrations);
             }
 
-            $modelPath = $writer::getModelWorkingDirectory($defaultModelDirectory, $modelName);
             $writer::write($defaultModelDirectory, $modelPath, $content);
             $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
         }
-    }
-
-    /**
-     * Define the command's schedule.
-     *
-     * @param Schedule $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule): void
-    {
-        // $schedule->command(static::class)->everyMinute();
     }
 
     /**
