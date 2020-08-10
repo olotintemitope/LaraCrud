@@ -69,4 +69,20 @@ interface ConstantInterface
         'uuid' => 'UUID equivalent column',
         'year' => 'YEAR equivalent column',
     ];
+
+    public const CASTING_TYPES = [
+        'integer',
+        'real',
+        'float',
+        'double',
+        'decimal:8',
+        'string',
+        'boolean',
+        'object',
+        'array',
+        'collection',
+        'date',
+        'datetime',
+        'timestamp',
+    ];
 }

@@ -35,22 +35,22 @@ class LaraCrudCommand extends Command implements ConstantInterface
         $content = "";
         $migrations = [];
 
-        $modelName = strip_tags($this->argument('name'));
-        if (empty($modelName)) {
-            $this->error("Name argument is missing");
-        }
-
-        $modelDirectory = $this->option('folder');
-        $applicationNamespace = ucwords(explode("\\", static::class)[0]);
-        $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
-        $modelPath = $writer::geWorkingDirectory($defaultModelDirectory, $modelName);
-
-        if ($writer::modelExists($modelPath)) {
-            $this->error("{$modelPath} already exist");
-            exit();
-        }
-
         try {
+            $modelName = strip_tags($this->argument('name'));
+            if (empty($modelName)) {
+                $this->error("Name argument is missing");
+            }
+
+            $modelDirectory = $this->option('folder');
+            $applicationNamespace = ucwords(explode("\\", static::class)[0]);
+            $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
+            $modelPath = $writer::geWorkingDirectory($defaultModelDirectory, $modelName);
+
+            if ($writer::modelExists($modelPath)) {
+                $this->error("{$modelPath} already exist");
+                exit();
+            }
+
             do {
                 $dbFieldName = $this->askForFieldName();
                 if (!empty($dbFieldName) && 'exit' !== $dbFieldName && 'no' !== $dbFieldName) {
