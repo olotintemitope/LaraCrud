@@ -10,6 +10,13 @@ use LaravelZero\Framework\Commands\Command;
 
 class ModelService extends Command implements ConstantInterface
 {
+    /** Write the model to a file with all the fillables and
+     * casts fields
+     * @param $capitalizedModelNamespace
+     * @param $modelName
+     * @param $migrations
+     * @return string
+     */
     public function write($capitalizedModelNamespace, $modelName, $migrations): string
     {
         $table = '$table';
