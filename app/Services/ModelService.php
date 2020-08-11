@@ -79,8 +79,12 @@ class ModelService extends Command implements ConstantInterface
                 ;
         }, ARRAY_FILTER_USE_BOTH);
 
-        foreach($filteredMigrations as $key => $migration) {
-            $casts[] = "\t\t'{$key}' => '{$migration['field_type']}'";
+        foreach($filteredMigrations as $fieldName => $migration) {
+            $dataType = strtolower($migration['field_type']);
+            if ($dataType === 'boolean') {
+                $dataType = 'bool';
+            }
+            $casts[] = "\t\t'{$fieldName}' => '{$dataType}'";
         }
 
         return implode(",\r", $casts);
