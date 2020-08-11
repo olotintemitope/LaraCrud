@@ -53,12 +53,13 @@ class ModelService extends Command implements ConstantInterface
     protected function getFields(array $migrationFields): string
     {
         return implode(",\r", array_map(function ($field) {
-            return "\t\t'{$field}'";
+                return "\t\t'{$field}'";
             }, $migrationFields)
         );
     }
 
     /**
+     * Get the name of the table in the model
      * @param $modelName
      * @return string
      */
@@ -68,18 +69,17 @@ class ModelService extends Command implements ConstantInterface
         return strtolower($inflector->pluralize($modelName));
     }
 
+    /**
+     * Cast the database fields to their respectively datatype
+     * @param array $migrations
+     * @return string
+     */
     protected function getFieldCasts(array $migrations): string
     {
         $casts = [];
-        $filteredMigrations = array_filter($migrations, function ($field) {
-            return
-                strpos($field['field_type'],'date') !== false ||
-                strpos($field['field_type'],'time') !== false ||
-                strpos($field['field_type'],'boolean') !== false
-                ;
-        }, ARRAY_FILTER_USE_BOTH);
+        $filteredMigrations = $this->filterFieldsToCast($migrations);
 
-        foreach($filteredMigrations as $fieldName => $migration) {
+        foreach ($filteredMigrations as $fieldName => $migration) {
             $dataType = strtolower($migration['field_type']);
             if ($dataType === 'boolean') {
                 $dataType = 'bool';
@@ -88,5 +88,20 @@ class ModelService extends Command implements ConstantInterface
         }
 
         return implode(",\r", $casts);
+    }
+
+    /**
+     * Cast the field to datatype
+     * @param array $migrations
+     * @return array
+     */
+    protected function filterFieldsToCast(array $migrations): array
+    {
+        return array_filter($migrations, function ($field) {
+            return
+                strpos($field['field_type'], 'date') !== false ||
+                strpos($field['field_type'], 'time') !== false ||
+                strpos($field['field_type'], 'boolean') !== false;
+        }, ARRAY_FILTER_USE_BOTH);
     }
 }
