@@ -146,4 +146,21 @@ class ModelService implements ConstantInterface
     {
         return $this->modelDependencies;
     }
+
+    /**
+     * @param mixed ...$comments
+     * @return string
+     */
+    public function comments(...$comments): string
+    {
+        $multiLineComments = '';
+        foreach($comments as $lineComment){
+            $multiLineComments .= PHP_TAB.' * '.$lineComment.PHP_EOL;
+        }
+
+        $startOfComment = static::PHP_TAB.'/**'.PHP_EOL;
+        $endOfComment = static::PHP_TAB.' */';
+
+        return $startOfComment.$multiLineComments.$endOfComment;
+    }
 }
