@@ -8,49 +8,16 @@ use App\Contracts\ConstantInterface;
 use ICanBoogie\Inflector;
 use LaravelZero\Framework\Commands\Command;
 
-class ModelService extends Command implements ConstantInterface
+class ModelService implements ConstantInterface
 {
-    /** Write the model to a file with all the fillables and
-     * casts fields
-     * @param $capitalizedModelNamespace
-     * @param $modelName
-     * @param $migrations
-     * @return string
+    protected $namespace = "";
+    /**
+     * @var string
      */
-    public function write($capitalizedModelNamespace, $modelName, $migrations): string
+    protected $modelDependencies = "";
+
+    public function __construct()
     {
-        $table = '$table';
-        $fillable = '$fillable';
-        $casts = '$casts';
-        $migrationFields = array_keys($migrations);
-
-        $content = "<?php \n\rnamespace {$capitalizedModelNamespace}; \n\r";
-        // Import dependencies here
-        $content .= "use Illuminate\Database\Eloquent\Model;\n\r";
-        $content .= "class {$modelName} extends Model \n{\r";
-        $content .= <<<TEXT
-        \t/**
-         \t* @var string
-         \t*/
-        TEXT;
-        $content .= "\r\tprotected $table = '{$this->getTableName($modelName)}';\n\r";
-        $content .= <<<TEXT
-        \t/**
-         \t* The attributes that are mass assignable.
-         \t*
-         \t* @var array
-         \t*/
-        TEXT;
-        $content .= "\r\tprotected $fillable = [\r{$this->getFields($migrationFields)},\r\t];\n\r";
-        $content .= <<<TEXT
-        \t/**
-         \t* @var array
-         \t*/
-        TEXT;
-        $content .= "\r\tprotected $casts = [\r{$this->getFieldCasts($migrations)}, \r\t];\n\r";
-        $content .= "\r}";
-
-        return $content;
     }
 
     /**
@@ -110,5 +77,73 @@ class ModelService extends Command implements ConstantInterface
                 strpos($field['field_type'], 'time') !== false ||
                 strpos($field['field_type'], 'boolean') !== false;
         }, ARRAY_FILTER_USE_BOTH);
+    }
+
+    /** Write the model to a file with all the fillables and
+     * casts fields
+     * @param $modelNamespace
+     * @param $modelName
+     * @param $migrations
+     * @return string
+     */
+    public function write($modelNamespace, $modelName, $migrations): string
+    {
+        $table = '$table';
+        $fillable = '$fillable';
+        $casts = '$casts';
+        $migrationFields = array_keys($migrations);
+
+        $content = "<?php \n\rnamespace {$modelNamespace}; \n\r";
+        // Import dependencies here
+        $content .= "use Illuminate\Database\Eloquent\Model;\n\r";
+        $content .= "class {$modelName} extends Model \n{\r";
+        $content .= <<<TEXT
+        \t/**
+         \t* @var string
+         \t*/
+        TEXT;
+        $content .= "\r\tprotected $table = '{$this->getTableName($modelName)}';\n\r";
+        $content .= <<<TEXT
+        \t/**
+         \t* The attributes that are mass assignable.
+         \t*
+         \t* @var array
+         \t*/
+        TEXT;
+        $content .= "\r\tprotected $fillable = [\r{$this->getFields($migrationFields)},\r\t];\n\r";
+        $content .= <<<TEXT
+        \t/**
+         \t* @var array
+         \t*/
+        TEXT;
+        $content .= "\r\tprotected $casts = [\r{$this->getFieldCasts($migrations)}, \r\t];\n\r";
+        $content .= "\r}";
+
+        return $content;
+    }
+
+    public function getStartTag(): string
+    {
+        return "<?php".PHP_EOL.static::PHP_CR;
+    }
+
+    public function setNameSpace($modelNamespace): string
+    {
+        return $this->namespace = "namespace {$modelNamespace}".PHP_EOL.static::PHP_CR;
+    }
+
+    public function getNameSpace(): string
+    {
+        return $this->namespace;
+    }
+
+    public function setModelDependencies(array $namespaces) : string
+    {
+        return $this->modelDependencies = implode(";".PHP_EOL.static::PHP_CR, $namespaces);
+    }
+
+    public function getModelDependencies(): string
+    {
+        return $this->modelDependencies;
     }
 }

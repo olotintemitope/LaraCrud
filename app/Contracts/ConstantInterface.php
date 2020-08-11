@@ -10,6 +10,7 @@ interface ConstantInterface
     public const DEFAULT_MODEL_FOLDER = "Models";
     public const FILE_EXTENSION = ".php";
     public const EXIT_CONSOLE = true;
+    public const PHP_CR = "\r";
 
     public const AVAILABLE_COLUMN_TYPES = [
         'bigIncrements' => 'Auto-incrementing UNSIGNED BIGINT (primary key) equivalent column.',
