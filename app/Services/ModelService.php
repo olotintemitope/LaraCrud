@@ -4,10 +4,11 @@
 namespace App\Services;
 
 
+use App\Contracts\ConstantInterface;
 use ICanBoogie\Inflector;
 use LaravelZero\Framework\Commands\Command;
 
-class ModelService extends Command
+class ModelService extends Command implements ConstantInterface
 {
     public function write($capitalizedModelNamespace, $modelName, $migrations): string
     {
@@ -39,7 +40,7 @@ class ModelService extends Command
          \t* @var array
          \t*/
         TEXT;
-        $content .= "\r\tprotected $casts = [\n\r\t];\r";
+        $content .= "\r\tprotected $casts = [\r{$this->getFieldCasts($migrations)}, \r\t];\n\r";
         $content .= "\r}";
 
         return $content;
@@ -65,5 +66,23 @@ class ModelService extends Command
     {
         $inflector = Inflector::get('en');
         return strtolower($inflector->pluralize($modelName));
+    }
+
+    protected function getFieldCasts(array $migrations): string
+    {
+        $casts = [];
+        $filteredMigrations = array_filter($migrations, function ($field) {
+            return
+                strpos($field['field_type'],'date') !== false ||
+                strpos($field['field_type'],'time') !== false ||
+                strpos($field['field_type'],'boolean') !== false
+                ;
+        }, ARRAY_FILTER_USE_BOTH);
+
+        foreach($filteredMigrations as $key => $migration) {
+            $casts[] = "\t\t'{$key}' => '{$migration['field_type']}'";
+        }
+
+        return implode(",\r", $casts);
     }
 }
