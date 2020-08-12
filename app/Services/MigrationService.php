@@ -30,7 +30,7 @@ class MigrationService implements ConstantInterface, MigrationServiceInterface
      * @param array $namespaces
      * @return MigrationService
      */
-    public function setModelDependencies(array $namespaces): MigrationService
+    public function setMigrationDependencies(array $namespaces): MigrationService
     {
         $this->migrationDependencies = implode(";" . PHP_EOL, $namespaces);
         return $this;
