@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Contracts\ModelServiceInterface;
+use App\Services\ModelService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }
@@ -23,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(ModelServiceInterface::class, ModelService::class);
     }
 }

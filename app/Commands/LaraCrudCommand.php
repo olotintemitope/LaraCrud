@@ -2,9 +2,9 @@
 
 namespace App\Commands;
 
+use App\Services\ModelOutPutWriter;
 use App\Contracts\ConstantInterface;
 use App\Services\FileWriter;
-use App\Services\ModelService;
 use LaravelZero\Framework\Commands\Command;
 
 class LaraCrudCommand extends Command implements ConstantInterface
@@ -27,12 +27,11 @@ class LaraCrudCommand extends Command implements ConstantInterface
      * Execute the console command.
      *
      * @param FileWriter $writer
-     * @param ModelService $model
+     * @param ModelOutPutWriter $outputWriter
      * @return mixed
      */
-    public function handle(FileWriter $writer, ModelService $model)
+    public function handle(FileWriter $writer, ModelOutPutWriter $outputWriter)
     {
-        $content = "";
         $migrations = [];
 
         try {
@@ -41,10 +40,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
                 $this->error("Name argument is missing");
             }
 
-            $modelDirectory = $this->option('folder');
-            $applicationNamespace = ucwords(explode("\\", static::class)[0]);
-            $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
-            $modelPath = $writer::geWorkingDirectory($defaultModelDirectory, $modelName);
+            [$defaultModelDirectory, $modelPath] = $this->getModelDirectoryInfo($writer, $modelName);
 
             if ($writer::modelExists($modelPath)) {
                 $this->error("{$modelPath} already exist");
@@ -69,12 +65,13 @@ class LaraCrudCommand extends Command implements ConstantInterface
                 exit();
             }
 
+            $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
+
             if (!empty($modelName)) {
-                $capitalizedModelNamespace = str_replace('/', '\\', $defaultModelDirectory);
-                $content = $model->write($capitalizedModelNamespace, $modelName, $migrations);
+                $this->setModelDefinition($outputWriter, $modelName, $migrations, $modelNamespace);
             }
 
-            $writer::write($defaultModelDirectory, $modelPath, $content);
+            $writer::write($defaultModelDirectory, $modelPath, $outputWriter->buildFileContent());
             $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
@@ -143,5 +140,36 @@ class LaraCrudCommand extends Command implements ConstantInterface
         }
 
         return $migrations;
+    }
+
+    /**
+     * @param FileWriter $writer
+     * @param string $modelName
+     * @return array
+     */
+    protected function getModelDirectoryInfo(FileWriter $writer, string $modelName): array
+    {
+        $modelDirectory = $this->option('folder');
+        $applicationNamespace = ucwords(explode("\\", static::class)[0]);
+        $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
+        $modelPath = $writer::geWorkingDirectory($defaultModelDirectory, $modelName);
+        return array($defaultModelDirectory, $modelPath);
+    }
+
+    /**
+     * @param ModelOutPutWriter $outputWriter
+     * @param string $modelName
+     * @param array $migrations
+     * @param string $modelNamespace
+     */
+    protected function setModelDefinition(ModelOutPutWriter $outputWriter, string $modelName, array $migrations, string $modelNamespace): void
+    {
+        $outputWriter->getModel()
+            ->setModelName($modelName)
+            ->setMigrations($migrations)
+            ->setNameSpace($modelNamespace)
+            ->setModelDependencies([
+                'use Illuminate\Database\Eloquent\Model',
+            ]);
     }
 }

@@ -3,55 +3,62 @@
 
 namespace App\Services;
 
-
+use App\Contracts\ModelServiceInterface;
 use App\Contracts\ConstantInterface;
+use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
-use LaravelZero\Framework\Commands\Command;
 
-class ModelService implements ConstantInterface
+class ModelService implements ConstantInterface, ModelServiceInterface
 {
+    use OutPutWriterTrait;
+
     protected $namespace = "";
     /**
      * @var string
      */
     protected $modelDependencies = "";
-
-    public function __construct()
-    {
-    }
+    /**
+     * @var string
+     */
+    private $modelTableDefinition = "";
+    private $modelName;
+    /**
+     * @var string
+     */
+    private $migrationFields;
+    private $migrations;
+    /** @var OutPutWriter */
+    private $outPutWriter;
 
     /**
-     * @param array $migrationFields
      * @return string
      */
-    protected function getFields(array $migrationFields): string
+    protected function getFields(): string
     {
-        return implode(",\r", array_map(function ($field) {
-                return "\t\t'{$field}'";
-            }, $migrationFields)
+        return implode(",".static::PHP_CRT, array_map(function ($field) {
+                return "{$this->getDoubleTab()}'{$field}'";
+            }, $this->getMigrationFields())
         );
     }
 
     /**
      * Get the name of the table in the model
-     * @param $modelName
      * @return string
      */
-    protected function getTableName($modelName): string
+    protected function getTableName(): string
     {
         $inflector = Inflector::get('en');
-        return strtolower($inflector->pluralize($modelName));
+        return strtolower($inflector->pluralize($this->getModelName()));
     }
 
     /**
      * Cast the database fields to their respectively datatype
-     * @param array $migrations
      * @return string
      */
-    protected function getFieldCasts(array $migrations): string
+    protected function getFieldCasts(): string
     {
         $casts = [];
-        $filteredMigrations = $this->filterFieldsToCast($migrations);
+        $filteredMigrations = $this->filterFieldsToCast($this->getMigrations());
 
         foreach ($filteredMigrations as $fieldName => $migration) {
             $dataType = strtolower($migration['field_type']);
@@ -66,12 +73,11 @@ class ModelService implements ConstantInterface
 
     /**
      * Cast the field to datatype
-     * @param array $migrations
      * @return array
      */
-    protected function filterFieldsToCast(array $migrations): array
+    protected function filterFieldsToCast(): array
     {
-        return array_filter($migrations, function ($field) {
+        return array_filter($this->getMigrations(), function ($field) {
             return
                 strpos($field['field_type'], 'date') !== false ||
                 strpos($field['field_type'], 'time') !== false ||
@@ -81,86 +87,158 @@ class ModelService implements ConstantInterface
 
     /** Write the model to a file with all the fillables and
      * casts fields
-     * @param $modelNamespace
-     * @param $modelName
-     * @param $migrations
      * @return string
      */
-    public function write($modelNamespace, $modelName, $migrations): string
+    public function write(): string
     {
-        $table = '$table';
-        $fillable = '$fillable';
-        $casts = '$casts';
-        $migrationFields = array_keys($migrations);
-
-        $content = "<?php \n\rnamespace {$modelNamespace}; \n\r";
-        // Import dependencies here
-        $content .= "use Illuminate\Database\Eloquent\Model;\n\r";
-        $content .= "class {$modelName} extends Model \n{\r";
-        $content .= <<<TEXT
-        \t/**
-         \t* @var string
-         \t*/
-        TEXT;
-        $content .= "\r\tprotected $table = '{$this->getTableName($modelName)}';\n\r";
-        $content .= <<<TEXT
-        \t/**
-         \t* The attributes that are mass assignable.
-         \t*
-         \t* @var array
-         \t*/
-        TEXT;
-        $content .= "\r\tprotected $fillable = [\r{$this->getFields($migrationFields)},\r\t];\n\r";
-        $content .= <<<TEXT
-        \t/**
-         \t* @var array
-         \t*/
-        TEXT;
-        $content .= "\r\tprotected $casts = [\r{$this->getFieldCasts($migrations)}, \r\t];\n\r";
-        $content .= "\r}";
-
-        return $content;
     }
 
+    /**
+     * @return string
+     */
     public function getStartTag(): string
     {
-        return "<?php".PHP_EOL.static::PHP_CR;
+        return "<?php" . $this->getEndOfLine();
     }
 
-    public function setNameSpace($modelNamespace): string
+    /**
+     * @param $modelNamespace
+     * @return string
+     */
+    public function setNameSpace($modelNamespace): ModelService
     {
-        return $this->namespace = "namespace {$modelNamespace}".PHP_EOL.static::PHP_CR;
+        $this->namespace = "namespace {$modelNamespace}" . $this->getEndOfLine();
+        return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getNameSpace(): string
     {
         return $this->namespace;
     }
 
-    public function setModelDependencies(array $namespaces) : string
+    /**
+     * @param array $namespaces
+     * @return ModelService
+     */
+    public function setModelDependencies(array $namespaces): ModelService
     {
-        return $this->modelDependencies = implode(";".PHP_EOL.static::PHP_CR, $namespaces);
+        $this->modelDependencies = implode(";" . $this->getEndOfLine(), $namespaces);
+        return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getModelDependencies(): string
     {
         return $this->modelDependencies;
     }
 
     /**
-     * @param mixed ...$comments
+     * @param string $table
+     */
+    public function setModelTableDefinition($table = '$table'): string
+    {
+        $this->modelTableDefinition =
+            $this->getTabAlignment() . "protected $table =
+            '{$this->getTableName()}';" . $this->getEndOfLine();
+    }
+
+    /**
      * @return string
      */
-    public function comments(...$comments): string
+    public function getModelTableDefinition(): string
     {
-        $multiLineComments = '';
-        foreach($comments as $lineComment){
-            $multiLineComments .= PHP_TAB.' * '.$lineComment.PHP_EOL;
-        }
+        return $this->modelTableDefinition;
+    }
 
-        $startOfComment = static::PHP_TAB.'/**'.PHP_EOL;
-        $endOfComment = static::PHP_TAB.' */';
+    /**
+     * @param $modelName
+     */
+    public function setModelName($modelName): ModelService
+    {
+        $this->modelName = $modelName;
+        return $this;
+    }
 
-        return $startOfComment.$multiLineComments.$endOfComment;
+    /**
+     * @return mixed
+     */
+    public function getModelName(): string
+    {
+        return $this->modelName;
+    }
+
+    public function getClassDefinition(): string
+    {
+        return "class {$this->getModelName()} extends Model" . PHP_EOL . "{" . static::PHP_CRT;
+    }
+
+    protected function getFillableDefinition($fillable = '$fillable'): string
+    {
+        return
+            $this->getTabAlignment() .
+            "protected $fillable = [" .
+            $this->getCarriageReturn() .
+            "{$this->getFields()}," .
+            $this->getTabAndCarriageReturn() . "];" . $this->getEndOfLine();
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getMigrationFields()
+    {
+        return array_keys($this->getMigrations());
+    }
+
+    protected function getCastsDefinition($casts = '$casts'): string
+    {
+        return
+            $this->getTabAlignment() .
+            "protected $casts = [" .
+            $this->getCarriageReturn() .
+            "{$this->getFieldCasts()}," .
+            $this->getTabAndCarriageReturn() . "];" . $this->getEndOfLine();
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getMigrations()
+    {
+        return $this->migrations;
+    }
+
+    /**
+     * @param mixed $migrations
+     */
+    public function setMigrations($migrations): ModelService
+    {
+        $this->migrations = $migrations;
+        return $this;
+    }
+
+    public function builder(): string
+    {
+        return
+            $this->getStartTag() .
+            $this->getNameSpace() .
+            $this->getModelDependencies() .
+            $this->getClassDefinition() .
+            $this->comments('@var array') .
+            $this->getModelTableDefinition() .
+            $this->comments(
+                'The attributes that are mass assignable.',
+                '',
+                '@var array'
+            ).
+            $this->getFillableDefinition() .
+            $this->comments('@var array') .
+            $this->getCastsDefinition() .
+            $this->getClosingTag();
     }
 }
