@@ -3,8 +3,8 @@
 
 namespace App\Services;
 
-use App\Contracts\ModelServiceInterface;
 use App\Contracts\ConstantInterface;
+use App\Contracts\ModelServiceInterface;
 use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
 
@@ -27,12 +27,13 @@ class ModelService implements ConstantInterface, ModelServiceInterface
      */
     private $migrationFields;
     private $migrations;
+
     /**
      * @return string
      */
     protected function getFields(): string
     {
-        return implode(",".static::PHP_CRT, array_map(function ($field) {
+        return implode("," . static::PHP_CRT, array_map(function ($field) {
                 return "{$this->getDoubleTab()}'{$field}'";
             }, $this->getMigrationFields())
         );
@@ -83,16 +84,8 @@ class ModelService implements ConstantInterface, ModelServiceInterface
     }
 
     /**
-     * @return string
-     */
-    public function getStartTag(): string
-    {
-        return "<?php" . $this->getEndOfLine();
-    }
-
-    /**
      * @param $modelNamespace
-     * @return string
+     * @return ModelService
      */
     public function setNameSpace($modelNamespace): ModelService
     {
@@ -219,7 +212,7 @@ class ModelService implements ConstantInterface, ModelServiceInterface
                 'The attributes that are mass assignable.',
                 '',
                 '@var array'
-            ).
+            ) .
             $this->getFillableDefinition() .
             $this->comments('@var array') .
             $this->getCastsDefinition() .

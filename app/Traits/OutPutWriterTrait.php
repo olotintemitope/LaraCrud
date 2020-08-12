@@ -37,6 +37,9 @@ trait OutPutWriterTrait
         return PHP_EOL . self::PHP_CRT;
     }
 
+    /**
+     * @return string
+     */
     public function getTabAndCarriageReturn(): string
     {
         return static::PHP_CRT . static::PHP_TAB;
@@ -60,6 +63,17 @@ trait OutPutWriterTrait
         return $startOfComment . $multiLineComments . $endOfComment;
     }
 
+    /**
+     * @return string
+     */
+    public function getStartTag(): string
+    {
+        return "<?php" . $this->getEndOfLine();
+    }
+
+    /**
+     * @return string
+     */
     public function getClosingTag(): string
     {
         return $this->getCarriageReturn(). "}";
