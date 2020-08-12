@@ -12,20 +12,26 @@ class ModelService implements ConstantInterface, ModelServiceInterface
 {
     use OutPutWriterTrait;
 
-    protected $namespace = "";
+    protected $namespace;
     /**
      * @var string
      */
-    protected $modelDependencies = "";
+    protected $modelDependencies;
     /**
      * @var string
      */
-    private $modelTableDefinition = "";
+    private $modelTableDefinition;
+    /**
+     * @var string
+     */
     private $modelName;
     /**
-     * @var string
+     * @var array
      */
     private $migrationFields;
+    /**
+     * @var array
+     */
     private $migrations;
 
     /**
@@ -53,27 +59,27 @@ class ModelService implements ConstantInterface, ModelServiceInterface
      * Cast the database fields to their respectively datatype
      * @return string
      */
-    protected function getFieldCasts(): string
+    protected function getCastsField(): string
     {
         $casts = [];
-        $filteredMigrations = $this->filterFieldsToCast();
+        $filteredMigrations = $this->filterCastsField();
 
         foreach ($filteredMigrations as $fieldName => $migration) {
             $dataType = strtolower($migration['field_type']);
             if ($dataType === 'boolean') {
                 $dataType = 'bool';
             }
-            $casts[] = "\t\t'{$fieldName}' => '{$dataType}'";
+            $casts[] = $this->getDoubleTab()."'{$fieldName}' => '{$dataType}'";
         }
 
-        return implode(",\r", $casts);
+        return implode(",".$this->getCarriageReturn(), $casts);
     }
 
     /**
      * Cast the field to datatype
      * @return array
      */
-    protected function filterFieldsToCast(): array
+    protected function filterCastsField(): array
     {
         return array_filter($this->getMigrations(), function ($field) {
             return
@@ -174,7 +180,7 @@ class ModelService implements ConstantInterface, ModelServiceInterface
             $this->getTabAlignment() .
             "protected $casts = [" .
             $this->getCarriageReturn() .
-            "{$this->getFieldCasts()}," .
+            "{$this->getCastsField()}," .
             $this->getTabAndCarriageReturn() . "];" . $this->getEndOfLine();
     }
 
