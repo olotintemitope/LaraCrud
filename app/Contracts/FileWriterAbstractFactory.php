@@ -38,7 +38,7 @@ abstract class FileWriterAbstractFactory
      * @param string $fileName
      * @return mixed
      */
-    abstract public static function geWorkingDirectory(string $defaultDirectory, string $fileName);
+    abstract public static function getWorkingDirectory(string $defaultDirectory, string $fileName);
 
     /**
      * @param string $directory

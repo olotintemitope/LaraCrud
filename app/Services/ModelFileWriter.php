@@ -12,7 +12,7 @@ final class ModelFileWriter extends FileWriterAbstractFactory implements Constan
      * @param string $modelName
      * @return string
      */
-    public static function geWorkingDirectory(string $defaultModelDirectory, string $modelName): string
+    public static function getWorkingDirectory(string $defaultModelDirectory, string $modelName): string
     {
         return sprintf(
             "%s/%s/%s%s",
