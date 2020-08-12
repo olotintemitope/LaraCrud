@@ -13,6 +13,7 @@ interface ConstantInterface
     public const PHP_CRT = "\r";
     public const PHP_TAB = "\t";
     public const END_OF_LINE = ";";
+    public const DEFAULT_MIGRATION_FOLDER = "database/migrations";
 
     public const AVAILABLE_COLUMN_TYPES = [
         'bigIncrements' => 'Auto-incrementing UNSIGNED BIGINT (primary key) equivalent column.',

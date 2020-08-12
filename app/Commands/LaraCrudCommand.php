@@ -4,7 +4,7 @@ namespace App\Commands;
 
 use App\Services\ModelOutPutWriter;
 use App\Contracts\ConstantInterface;
-use App\Services\FileWriter;
+use App\Services\ModelFileWriter;
 use LaravelZero\Framework\Commands\Command;
 
 class LaraCrudCommand extends Command implements ConstantInterface
@@ -26,11 +26,11 @@ class LaraCrudCommand extends Command implements ConstantInterface
     /**
      * Execute the console command.
      *
-     * @param FileWriter $fileWriter
+     * @param ModelFileWriter $fileWriter
      * @param ModelOutPutWriter $outputWriter
      * @return mixed
      */
-    public function handle(FileWriter $fileWriter, ModelOutPutWriter $outputWriter)
+    public function handle(ModelFileWriter $fileWriter, ModelOutPutWriter $outputWriter)
     {
         try {
             [$modelName, $defaultModelDirectory, $modelPath] = $this->inputReader($outputWriter, $fileWriter);
@@ -107,11 +107,11 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * @param FileWriter $writer
+     * @param ModelFileWriter $writer
      * @param string $modelName
      * @return array
      */
-    protected function getModelDirectoryInfo(FileWriter $writer, string $modelName): array
+    protected function getModelDirectoryInfo(ModelFileWriter $writer, string $modelName): array
     {
         $modelDirectory = $this->option('folder');
         $applicationNamespace = ucwords(explode("\\", static::class)[0]);
@@ -139,10 +139,10 @@ class LaraCrudCommand extends Command implements ConstantInterface
 
     /**
      * @param ModelOutPutWriter $outputWriter
-     * @param FileWriter $writer
+     * @param ModelFileWriter $writer
      * @return array
      */
-    protected function inputReader(ModelOutPutWriter $outputWriter, FileWriter $writer): array
+    protected function inputReader(ModelOutPutWriter $outputWriter, ModelFileWriter $writer): array
     {
         $migrations = [];
         $modelName = strip_tags($this->argument('name'));
