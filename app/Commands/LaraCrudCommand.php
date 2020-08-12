@@ -170,6 +170,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
             ->setNameSpace($modelNamespace)
             ->setModelDependencies([
                 'use Illuminate\Database\Eloquent\Model',
+                'use Illuminate\Database\Eloquent\Modal',
             ]);
     }
 }
