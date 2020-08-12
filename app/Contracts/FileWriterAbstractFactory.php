@@ -28,11 +28,22 @@ abstract class FileWriterAbstractFactory
      * @param $filePath
      * @return bool
      */
-    public static function modelExists($filePath): bool
+    public static function fileExists($filePath): bool
     {
         return File::exists($filePath);
     }
 
+    /**
+     * @param string $defaultDirectory
+     * @param string $fileName
+     * @return mixed
+     */
     abstract public static function geWorkingDirectory(string $defaultDirectory, string $fileName);
+
+    /**
+     * @param string $directory
+     * @param string $applicationNamespace
+     * @return mixed
+     */
     abstract public static function getDefaultDirectory(string $directory, string $applicationNamespace);
 }
