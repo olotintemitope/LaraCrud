@@ -209,7 +209,7 @@ class ModelService implements ConstantInterface, ModelServiceInterface
     /**
      * @return string
      */
-    public function builder(): string
+    public function buildModel(): string
     {
         return
             $this->getStartTag() .

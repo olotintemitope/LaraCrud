@@ -23,7 +23,7 @@ class ModelOutPutWriter
      */
     public function buildFileContent(): string
     {
-        return $this->modelService->builder();
+        return $this->modelService->buildModel();
     }
 
     public function getModel(): ModelServiceInterface
