@@ -12,6 +12,9 @@ class ModelService implements ConstantInterface, ModelServiceInterface
 {
     use OutPutWriterTrait;
 
+    /**
+     * @var
+     */
     protected $namespace;
     /**
      * @var string
@@ -136,6 +139,7 @@ class ModelService implements ConstantInterface, ModelServiceInterface
 
     /**
      * @param $modelName
+     * @return ModelService
      */
     public function setModelName($modelName): ModelService
     {
@@ -194,6 +198,7 @@ class ModelService implements ConstantInterface, ModelServiceInterface
 
     /**
      * @param mixed $migrations
+     * @return ModelService
      */
     public function setMigrations($migrations): ModelService
     {
