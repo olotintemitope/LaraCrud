@@ -26,52 +26,16 @@ class LaraCrudCommand extends Command implements ConstantInterface
     /**
      * Execute the console command.
      *
-     * @param FileWriter $writer
+     * @param FileWriter $fileWriter
      * @param ModelOutPutWriter $outputWriter
      * @return mixed
      */
-    public function handle(FileWriter $writer, ModelOutPutWriter $outputWriter)
+    public function handle(FileWriter $fileWriter, ModelOutPutWriter $outputWriter)
     {
-        $migrations = [];
-
         try {
-            $modelName = strip_tags($this->argument('name'));
-            if (empty($modelName)) {
-                $this->error("Name argument is missing");
-            }
+            [$modelName, $defaultModelDirectory, $modelPath] = $this->inputReader($outputWriter, $fileWriter);
 
-            [$defaultModelDirectory, $modelPath] = $this->getModelDirectoryInfo($writer, $modelName);
-
-            if ($writer::modelExists($modelPath)) {
-                $this->error("{$modelPath} already exist");
-                exit();
-            }
-
-            do {
-                $dbFieldName = $this->askForFieldName();
-                if (!empty($dbFieldName) && 'exit' !== $dbFieldName && 'no' !== $dbFieldName) {
-                    $dbColumnFieldType = $this->userWillSelectColumnFieldType();
-                    $migrations = $this->setMigrations($migrations, $dbFieldName, $dbColumnFieldType);
-                }
-                if ('exit' === $dbFieldName) {
-                    if ($this->confirm('Are you sure you want to exit?', self::EXIT_CONSOLE)) {
-                        break;
-                    }
-                }
-            } while (true);
-
-            if (count($migrations) <= 0) {
-                $this->warn("Migration cannot be generated. pls try again!");
-                exit();
-            }
-
-            $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
-
-            if (!empty($modelName)) {
-                $this->setModelDefinition($outputWriter, $modelName, $migrations, $modelNamespace);
-            }
-
-            $writer::write($defaultModelDirectory, $modelPath, $outputWriter->buildFileContent());
+            $fileWriter::write($defaultModelDirectory, $modelPath, $outputWriter->buildFileContent());
             $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
@@ -170,7 +134,53 @@ class LaraCrudCommand extends Command implements ConstantInterface
             ->setNameSpace($modelNamespace)
             ->setModelDependencies([
                 'use Illuminate\Database\Eloquent\Model',
-                'use Illuminate\Database\Eloquent\Modal',
             ]);
+    }
+
+    /**
+     * @param ModelOutPutWriter $outputWriter
+     * @param FileWriter $writer
+     * @return array
+     */
+    protected function inputReader(ModelOutPutWriter $outputWriter, FileWriter $writer): array
+    {
+        $migrations = [];
+        $modelName = strip_tags($this->argument('name'));
+
+        if (empty($modelName)) {
+            $this->error("Name argument is missing");
+        }
+
+        [$defaultModelDirectory, $modelPath] = $this->getModelDirectoryInfo($writer, $modelName);
+
+        if ($writer::modelExists($modelPath)) {
+            $this->error("{$modelPath} already exist");
+            exit();
+        }
+
+        do {
+            $dbFieldName = $this->askForFieldName();
+            if (!empty($dbFieldName) && 'exit' !== $dbFieldName && 'no' !== $dbFieldName) {
+                $dbColumnFieldType = $this->userWillSelectColumnFieldType();
+                $migrations = $this->setMigrations($migrations, $dbFieldName, $dbColumnFieldType);
+            }
+            if ('exit' === $dbFieldName) {
+                if ($this->confirm('Are you sure you want to exit?', self::EXIT_CONSOLE)) {
+                    break;
+                }
+            }
+        } while (true);
+
+        if (count($migrations) <= 0) {
+            $this->warn("Migration cannot be generated. pls try again!");
+            exit();
+        }
+
+        $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
+
+        if (!empty($modelName)) {
+            $this->setModelDefinition($outputWriter, $modelName, $migrations, $modelNamespace);
+        }
+        return array($modelName, $defaultModelDirectory, $modelPath);
     }
 }
