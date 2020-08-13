@@ -79,7 +79,7 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
                     break;
             }
         }
-        $tearUp .= $this->writeLine('$table->timestamps();', 3);
+        $tearUp .= $this->writeLine('$table->timestamps();', 3, false, false);
 
         return $tearUp;
     }
