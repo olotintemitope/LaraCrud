@@ -1,11 +1,12 @@
 <?php
 
 
-namespace app\Services;
+namespace App\Services;
 
 
 use App\Contracts\ConstantInterface;
 use App\Contracts\MigrationServiceInterface;
+use App\Contracts\ModelServiceInterface;
 use App\Traits\OutPutWriterTrait;
 
 class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInterface
@@ -23,9 +24,9 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
 
     /**
      * MigrationServiceBuilder constructor.
-     * @param ModelServiceBuilder $model
+     * @param ModelServiceInterface $model
      */
-    public function __construct(ModelServiceBuilder $model)
+    public function __construct(ModelServiceInterface $model)
     {
         $this->modelService = $model;
     }
@@ -45,34 +46,42 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
      */
     public function getMigrationDependencies(): string
     {
-        return $this->migrationDependencies . $this->getEndOfLine();
+        return $this->migrationDependencies . static::END_OF_LINE;
     }
 
+    /**
+     * @return string
+     */
     public function getClassDefinition(): string
     {
         $migrationClassName = ucwords($this->modelService->getModelName());
         $migrationTableName = "Create{$migrationClassName}Table";
-        return "class {$migrationTableName} extends Migration" . PHP_EOL . "{" . $this->getCarriageReturn();
+
+        return $this->writeLine("class {$migrationTableName} extends Migration", 0) .
+            $this->writeLine("{", 0);
     }
 
+    /**
+     * @param string $table
+     * @return string
+     */
     public function getMigrationFields($table = '$table'): string
     {
-        $ups = '';
+        $tearUp = '';
         foreach ($this->modelService->getMigrations() as $field => $migration) {
             $dataType = $migration['field_type'];
             switch ($dataType) {
                 case 'enum':
-                    $ups .= $this->getEnumFields($migration, $table, $dataType, $field, $ups);
+                    $tearUp .= $this->getEnumFields($migration, $table, $dataType, $field);
                     break;
                 default:
-                    [$otherFields] = $this->getOtherFields($migration, $table, $dataType, $field, $ups);
-                    $ups .= $otherFields;
+                    $tearUp .= $this->getOtherFields($migration, $table, $dataType, $field);
                     break;
             }
         }
-        $ups .= '$table->timestamps();';
+        $tearUp .= $this->writeLine('$table->timestamps();', 3);
 
-        return $ups;
+        return $tearUp;
     }
 
     /**
@@ -81,14 +90,13 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
      */
     public function getSchemaTearUp($table = '$table'): string
     {
-        return $this->getDoubleTab() . "public function up()" . PHP_EOL . "{" .
-            $this->getCarriageReturn() .
-            $this->getDoubleTab() .
-            "Schema::create('{$this->modelService->getTableName()}', function (Blueprint $table)" .
-            $this->getCarriageReturn() . "{" .
-            $this->getMigrationFields() .
-            $this->getDoubleTab(). "});" .
-            $this->getClosingTag();
+        return
+            $this->writeLine("public function up()", 1) .
+            $this->writeLine("{", 1) .
+            $this->writeLine("Schema::create('{$this->modelService->getTableName()}', function (Blueprint $table) {", 2) .
+            $this->writeLine($this->getMigrationFields(), 0) .
+            $this->writeLine("});", 2) .
+            $this->writeLine("}", 1, PHP_EOL);
     }
 
     /**
@@ -96,9 +104,11 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
      */
     public function getSchemaTearDown(): string
     {
-       return $this->getDoubleTab(). "public function down()" .PHP_EOL. "{".
-           $this->getDoubleTab(). "Schema::dropIfExists('{$this->modelService->getTableName()}')". $this->getEndOfLine() .
-           $this->getClosingTag();
+        return
+            $this->writeLine("public function down()", 1) .
+            $this->writeLine("{", 1) .
+            $this->writeLine("Schema::dropIfExists('{$this->modelService->getTableName()}');", 2) .
+            $this->writeLine("}", 1, PHP_EOL);
     }
 
     /**
@@ -127,20 +137,19 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
     }
 
     /**
-     * @param $migration
+     * @param array $migration
      * @param string $table
      * @param $dataType
-     * @param int $field
-     * @param string $ups
+     * @param string $field
      * @return string
      */
-    protected function getEnumFields($migration, string $table, $dataType, int $field, string $ups): string
+    protected function getEnumFields(array $migration, string $table, $dataType, string $field): string
     {
         $enumValues = implode(",", array_map(function ($field) {
             return "'{$field}'";
-        }, $migration));
-        $ups .= $this->getDoubleTab() . "$table->{$dataType}('{$field}', [{$enumValues}]);" . $this->getEndOfLine();
-        return $ups;
+        }, $migration['values']));
+
+        return $this->writeLine("$table->{$dataType}('{$field}', [{$enumValues}]);", 3);
     }
 
     /**
@@ -148,18 +157,16 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
      * @param string $table
      * @param $dataType
      * @param string $field
-     * @param string $ups
-     * @return array
+     * @return string
      */
-    protected function getOtherFields($migration, string $table, $dataType, string $field, string $ups): array
+    protected function getOtherFields($migration, string $table, $dataType, string $field): string
     {
         if (isset($migration['length']) && $migration['length'] > 0) {
             $length = $migration['length'];
-            $ups .= $this->getDoubleTab() . "$table->{$dataType}('{$field}', {$length});" . $this->getEndOfLine();
-        } else {
-            $ups .= $this->getDoubleTab() . "$table->{$dataType}('{$field}');" . $this->getEndOfLine();
+            return $this->writeLine("$table->{$dataType}('{$field}', {$length});", 3);
         }
-        return [$ups];
+
+        return $this->writeLine("$table->{$dataType}('{$field}');", 3);
     }
 
 }

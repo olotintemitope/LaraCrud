@@ -10,7 +10,7 @@ trait OutPutWriterTrait
      */
     public function getDoubleTab(): string
     {
-        return static::PHP_TAB.static::PHP_TAB;
+        return static::PHP_TAB . static::PHP_TAB;
     }
 
     /**
@@ -54,11 +54,11 @@ trait OutPutWriterTrait
         $multiLineComments = '';
 
         foreach ($comments as $lineComment) {
-            $multiLineComments .= static::PHP_TAB . ' * ' . $lineComment . PHP_EOL;
+            $multiLineComments .= $this->writeLine(' * ' . $lineComment, 1);
         }
 
-        $startOfComment = static::PHP_TAB . '/**' . PHP_EOL;
-        $endOfComment = static::PHP_TAB . ' */';
+        $startOfComment = $this->writeLine('/**', 1);
+        $endOfComment = $this->writeLine(' */', 1);
 
         return $startOfComment . $multiLineComments . $endOfComment;
     }
@@ -68,7 +68,7 @@ trait OutPutWriterTrait
      */
     public function getStartTag(): string
     {
-        return "<?php" . $this->getEndOfLine();
+        return $this->writeLine("<?php", 0, PHP_EOL);
     }
 
     /**
@@ -76,6 +76,27 @@ trait OutPutWriterTrait
      */
     public function getClosingTag(): string
     {
-        return $this->getCarriageReturn(). "}";
+        return  $this->writeLine("}", 0);
+    }
+
+    /**
+     * @param string $line
+     * @param int $tabs
+     * @param string $newLine
+     * @return string
+     */
+    public function writeLine(string $line, int $tabs, string $newLine = ""): string
+    {
+        return $this->tabIndent($tabs) . $line . $newLine . static::PHP_CRT;
+    }
+
+    protected function tabIndent(int $times): string
+    {
+        $tabs = "";
+        for ($tab = 1; $tab <= $times; $tab++) {
+            $tabs .= "\t";
+        }
+
+        return $tabs;
     }
 }

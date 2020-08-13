@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use app\Contracts\BuilderServiceTrait;
 use App\Contracts\MigrationServiceInterface;
 use App\Contracts\ModelServiceInterface;
 use app\Services\MigrationServiceBuilder;

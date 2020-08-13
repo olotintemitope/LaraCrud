@@ -2,6 +2,9 @@
 
 namespace App\Commands;
 
+use App\Contracts\FileWriterAbstractFactory;
+use App\Services\MigrationFileWriter;
+use App\Services\MigrationServiceBuilder;
 use App\Services\OutPutWriterDirector;
 use App\Contracts\ConstantInterface;
 use App\Services\ModelFileWriter;
@@ -27,18 +30,31 @@ class LaraCrudCommand extends Command implements ConstantInterface
      * Execute the console command.
      *
      * @param ModelFileWriter $fileWriter
+     * @param MigrationFileWriter $migrationFileWriter
      * @param OutPutWriterDirector $outputWriter
      * @return mixed
      */
-    public function handle(ModelFileWriter $fileWriter, OutPutWriterDirector $outputWriter)
+    public function handle(ModelFileWriter $fileWriter, MigrationFileWriter $migrationFileWriter, OutPutWriterDirector $outputWriter)
     {
         try {
             [$modelName, $defaultModelDirectory, $modelPath] = $this->inputReader($outputWriter, $fileWriter);
 
             $fileWriter::write($defaultModelDirectory, $modelPath, $outputWriter->buildFileContent());
             $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
+            // Write to migration file
+            $migrationBuilder = new MigrationServiceBuilder($outputWriter->getModel());
+            $migrationBuilder->setMigrationDependencies([
+                'use Illuminate\Support\Facades\Schema',
+                'use Illuminate\Database\Schema\Blueprint',
+                'use Illuminate\Database\Migrations\Migration',
+            ]);
+            $migrationFulPath =  $migrationFileWriter->getDefaultDirectory();
+            $filePath = $migrationFulPath . DIRECTORY_SEPARATOR .$migrationFileWriter->getFilename("create_{$modelName}_table");
+            $migrationFileWriter::write($migrationFulPath, $filePath, $migrationBuilder->build());
+            $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
+
         } catch (\Exception $exception) {
-            $this->error($exception->getMessage());
+            $this->error($exception->getMessage() . $exception->getTraceAsString());
         }
     }
 
@@ -82,7 +98,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
     {
         // Cater for enum types. $table->enum('level', ['easy', 'hard']);
         if ('enum' === $dbColumnFieldType) {
-            $enumValues = trim($this->ask('Enter enum values separated by a comma'));
+            $enumValues = str_replace(" ", '', trim($this->ask('Enter enum values separated by a comma')));
             if (empty($enumValues)) {
                 $this->error("field name is missing");
             }
@@ -98,6 +114,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
         if (str_contains($dbColumnFieldType, 'string') || str_contains($dbColumnFieldType, 'integer')) {
             $fieldLength = (int)trim($this->ask('Enter the length'));
             $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'length' => $fieldLength];
+
             if (empty($fieldLength)) {
                 $this->info("Default length will be used instead");
             }
@@ -107,11 +124,11 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * @param ModelFileWriter $writer
+     * @param FileWriterAbstractFactory $writer
      * @param string $modelName
      * @return array
      */
-    protected function getModelDirectoryInfo(ModelFileWriter $writer, string $modelName): array
+    protected function getModelDirectoryInfo(FileWriterAbstractFactory $writer, string $modelName): array
     {
         $modelDirectory = $this->option('folder');
         $applicationNamespace = ucwords(explode("\\", static::class)[0]);
@@ -139,10 +156,10 @@ class LaraCrudCommand extends Command implements ConstantInterface
 
     /**
      * @param OutPutWriterDirector $outputWriter
-     * @param ModelFileWriter $writer
+     * @param FileWriterAbstractFactory $writer
      * @return array
      */
-    protected function inputReader(OutPutWriterDirector $outputWriter, ModelFileWriter $writer): array
+    protected function inputReader(OutPutWriterDirector $outputWriter, FileWriterAbstractFactory $writer): array
     {
         $migrations = ['id' => ['field_type' => 'increments'],];
         $modelName = strip_tags($this->argument('name'));

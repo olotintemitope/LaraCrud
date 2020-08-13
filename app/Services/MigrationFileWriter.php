@@ -1,15 +1,14 @@
 <?php
 
 
-namespace app\Services;
+namespace App\Services;
 
 
 use App\Contracts\ConstantInterface;
-use app\Contracts\FileWriterAbstractFactory;
+use App\Contracts\FileWriterAbstractFactory;
 
 final class MigrationFileWriter extends FileWriterAbstractFactory implements ConstantInterface
 {
-
     public static function getWorkingDirectory(string $defaultDirectory, string $fileName)
     {
         return sprintf(
@@ -18,8 +17,19 @@ final class MigrationFileWriter extends FileWriterAbstractFactory implements Con
         );
     }
 
-    public static function getDefaultDirectory(string $directory, string $applicationNamespace)
+    public static function getDefaultDirectory($directory = "", string $applicationNamespace = "")
     {
-        return $applicationNamespace . DIRECTORY_SEPARATOR . static::DEFAULT_MIGRATION_FOLDER;
+        return getcwd() . DIRECTORY_SEPARATOR .static::DEFAULT_MIGRATION_FOLDER;
+    }
+
+    protected function getDatePrefix()
+    {
+        return date('Y_m_d_His');
+    }
+
+
+    public function getFilename($name): string
+    {
+        return $this->getDatePrefix().'_'.$name.static::FILE_EXTENSION;
     }
 }

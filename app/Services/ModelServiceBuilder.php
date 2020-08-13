@@ -42,10 +42,12 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
      */
     protected function getFields(): string
     {
-        return implode("," . static::PHP_CRT, array_map(function ($field) {
-                return "{$this->getDoubleTab()}'{$field}'";
-            }, $this->getMigrationFields())
-        );
+        return implode(",".static::PHP_CRT, array_map(function ($field) {
+            return "'{$field}'";
+        }, array_filter($this->getMigrationFields(), function ($field) {
+                return 'id' !== $field;
+            })
+        ));
     }
 
     /**
@@ -72,10 +74,10 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
             if ($dataType === 'boolean') {
                 $dataType = 'bool';
             }
-            $casts[] = $this->getDoubleTab()."'{$fieldName}' => '{$dataType}'";
+            $casts[] = "'{$fieldName}' => '{$dataType}'";
         }
 
-        return implode(",".$this->getCarriageReturn(), $casts);
+        return implode(",".static::PHP_CRT , $casts);
     }
 
     /**
@@ -98,7 +100,7 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
      */
     public function setNameSpace($modelNamespace): ModelServiceBuilder
     {
-        $this->namespace = "namespace {$modelNamespace};" . $this->getEndOfLine();
+        $this->namespace = $this->writeLine("namespace {$modelNamespace};", 0, PHP_EOL);
         return $this;
     }
 
@@ -125,7 +127,7 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
      */
     public function getModelDependencies(): string
     {
-        return $this->modelDependencies . static::END_OF_LINE;
+        return $this->writeLine($this->modelDependencies . static::END_OF_LINE, 0, PHP_EOL);
     }
 
     /**
@@ -134,7 +136,7 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
      */
     public function getModelTableDefinition($table = '$table'): string
     {
-        return $this->getTabAlignment() . "protected $table = '{$this->getTableName()}';" . $this->getEndOfLine();
+        return $this->writeLine("protected $table = '{$this->getTableName()}';", 1, PHP_EOL);
     }
 
     /**
@@ -157,17 +159,16 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
 
     public function getClassDefinition(): string
     {
-        return "class {$this->getModelName()} extends Model" . PHP_EOL . "{" . static::PHP_CRT;
+        return $this->writeLine("class {$this->getModelName()} extends Model", 0) .
+            $this->writeLine("{", 0);
     }
 
     protected function getFillableDefinition($fillable = '$fillable'): string
     {
         return
-            $this->getTabAlignment() .
-            "protected $fillable = [" .
-            $this->getCarriageReturn() .
-            "{$this->getFields()}," .
-            $this->getTabAndCarriageReturn() . "];" . $this->getEndOfLine();
+            $this->writeLine("protected $fillable = [", 1).
+            $this->writeLine("{$this->getFields()},", 0).
+            $this->writeLine("];", 1, PHP_EOL);
     }
 
     /**
@@ -181,11 +182,9 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
     protected function getCastsDefinition($casts = '$casts'): string
     {
         return
-            $this->getTabAlignment() .
-            "protected $casts = [" .
-            $this->getCarriageReturn() .
-            "{$this->getCastsField()}," .
-            $this->getTabAndCarriageReturn() . "];" . $this->getEndOfLine();
+            $this->writeLine("protected $casts = [", 1 ).
+            $this->writeLine("{$this->getCastsField()}", 0) .
+            $this->writeLine("];", 1, PHP_EOL);
     }
 
     /**
@@ -215,7 +214,6 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
             $this->getStartTag() .
             $this->getNameSpace() .
             $this->getModelDependencies() .
-            $this->getEndOfLine() .
             $this->getClassDefinition() .
             $this->comments('@var array') .
             $this->getModelTableDefinition() .
