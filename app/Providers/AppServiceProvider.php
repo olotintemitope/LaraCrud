@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\MigrationServiceInterface;
 use App\Contracts\ModelServiceInterface;
-use App\Services\ModelService;
+use app\Services\MigrationServiceBuilder;
+use App\Services\ModelServiceBuilder;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,8 +25,9 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        $this->app->bind(ModelServiceInterface::class, ModelService::class);
+        $this->app->bind(ModelServiceInterface::class, ModelServiceBuilder::class);
+        $this->app->bind(MigrationServiceInterface::class, MigrationServiceBuilder::class);
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\ConstantInterface;
-use app\Contracts\FileWriterAbstractFactory;
+use App\Contracts\FileWriterAbstractFactory;
 
 final class ModelFileWriter extends FileWriterAbstractFactory implements ConstantInterface
 {
@@ -20,7 +20,7 @@ final class ModelFileWriter extends FileWriterAbstractFactory implements Constan
         );
     }
 
-    public static function getDefaultDirectory(string $directory, string $applicationNamespace): string
+    public static function getDefaultDirectory($directory, string $applicationNamespace): string
     {
         return empty($directory)
             ? $applicationNamespace . DIRECTORY_SEPARATOR . static::DEFAULT_MODEL_FOLDER

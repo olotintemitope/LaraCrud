@@ -8,7 +8,7 @@ use App\Contracts\ModelServiceInterface;
 use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
 
-class ModelService implements ConstantInterface, ModelServiceInterface
+class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
 {
     use OutPutWriterTrait;
 
@@ -42,17 +42,19 @@ class ModelService implements ConstantInterface, ModelServiceInterface
      */
     protected function getFields(): string
     {
-        return implode("," . static::PHP_CRT, array_map(function ($field) {
-                return "{$this->getDoubleTab()}'{$field}'";
-            }, $this->getMigrationFields())
-        );
+        return implode(",".$this->getCarriageReturn(), array_map(function ($field) {
+            return $this->writeLine("'{$field}'", 2, false, false);
+        }, array_filter($this->getMigrationFields(), function ($field) {
+                return 'id' !== $field;
+            })
+        ));
     }
 
     /**
      * Get the name of the table in the model
      * @return string
      */
-    protected function getTableName(): string
+    public function getTableName(): string
     {
         $inflector = Inflector::get('en');
         return strtolower($inflector->pluralize($this->getModelName()));
@@ -65,17 +67,16 @@ class ModelService implements ConstantInterface, ModelServiceInterface
     protected function getCastsField(): string
     {
         $casts = [];
-        $filteredMigrations = $this->filterCastsField();
 
-        foreach ($filteredMigrations as $fieldName => $migration) {
+        foreach ($this->filterCastsField() as $fieldName => $migration) {
             $dataType = strtolower($migration['field_type']);
             if ($dataType === 'boolean') {
                 $dataType = 'bool';
             }
-            $casts[] = $this->getDoubleTab()."'{$fieldName}' => '{$dataType}'";
+            $casts[] = $this->writeLine("'{$fieldName}' => '{$dataType}'",2, false , false);
         }
 
-        return implode(",".$this->getCarriageReturn(), $casts);
+        return implode(",".$this->getCarriageReturn() , $casts);
     }
 
     /**
@@ -94,11 +95,11 @@ class ModelService implements ConstantInterface, ModelServiceInterface
 
     /**
      * @param $modelNamespace
-     * @return ModelService
+     * @return ModelServiceBuilder
      */
-    public function setNameSpace($modelNamespace): ModelService
+    public function setNameSpace($modelNamespace): ModelServiceBuilder
     {
-        $this->namespace = "namespace {$modelNamespace};" . $this->getEndOfLine();
+        $this->namespace = $this->writeLine("namespace {$modelNamespace};", 0, true);
         return $this;
     }
 
@@ -112,9 +113,9 @@ class ModelService implements ConstantInterface, ModelServiceInterface
 
     /**
      * @param array $namespaces
-     * @return ModelService
+     * @return ModelServiceBuilder
      */
-    public function setModelDependencies(array $namespaces): ModelService
+    public function setModelDependencies(array $namespaces): ModelServiceBuilder
     {
         $this->modelDependencies = implode(";" . PHP_EOL, $namespaces);
         return $this;
@@ -125,7 +126,7 @@ class ModelService implements ConstantInterface, ModelServiceInterface
      */
     public function getModelDependencies(): string
     {
-        return $this->modelDependencies . static::END_OF_LINE;
+        return $this->writeLine($this->modelDependencies . static::END_OF_LINE, 0 , true);
     }
 
     /**
@@ -134,14 +135,14 @@ class ModelService implements ConstantInterface, ModelServiceInterface
      */
     public function getModelTableDefinition($table = '$table'): string
     {
-        return $this->getTabAlignment() . "protected $table = '{$this->getTableName()}';" . $this->getEndOfLine();
+        return $this->writeLine("protected $table = '{$this->getTableName()}';", 1, true);
     }
 
     /**
      * @param $modelName
-     * @return ModelService
+     * @return ModelServiceBuilder
      */
-    public function setModelName($modelName): ModelService
+    public function setModelName($modelName): ModelServiceBuilder
     {
         $this->modelName = $modelName;
         return $this;
@@ -157,17 +158,16 @@ class ModelService implements ConstantInterface, ModelServiceInterface
 
     public function getClassDefinition(): string
     {
-        return "class {$this->getModelName()} extends Model" . PHP_EOL . "{" . static::PHP_CRT;
+        return $this->writeLine("class {$this->getModelName()} extends Model", 0) .
+            $this->writeLine("{", 0);
     }
 
     protected function getFillableDefinition($fillable = '$fillable'): string
     {
         return
-            $this->getTabAlignment() .
-            "protected $fillable = [" .
-            $this->getCarriageReturn() .
-            "{$this->getFields()}," .
-            $this->getTabAndCarriageReturn() . "];" . $this->getEndOfLine();
+            $this->writeLine("protected $fillable = [", 1).
+            $this->writeLine("{$this->getFields()},", 0).
+            $this->writeLine("];", 1, PHP_EOL);
     }
 
     /**
@@ -181,26 +181,24 @@ class ModelService implements ConstantInterface, ModelServiceInterface
     protected function getCastsDefinition($casts = '$casts'): string
     {
         return
-            $this->getTabAlignment() .
-            "protected $casts = [" .
-            $this->getCarriageReturn() .
-            "{$this->getCastsField()}," .
-            $this->getTabAndCarriageReturn() . "];" . $this->getEndOfLine();
+            $this->writeLine("protected $casts = [", 1 ).
+            $this->writeLine("{$this->getCastsField()}", 0) .
+            $this->writeLine("];", 1);
     }
 
     /**
      * @return mixed
      */
-    protected function getMigrations()
+    public function getMigrations()
     {
         return $this->migrations;
     }
 
     /**
      * @param mixed $migrations
-     * @return ModelService
+     * @return ModelServiceBuilder
      */
-    public function setMigrations($migrations): ModelService
+    public function setMigrations($migrations): ModelServiceBuilder
     {
         $this->migrations = $migrations;
         return $this;
@@ -209,13 +207,12 @@ class ModelService implements ConstantInterface, ModelServiceInterface
     /**
      * @return string
      */
-    public function buildModel(): string
+    public function build(): string
     {
         return
             $this->getStartTag() .
             $this->getNameSpace() .
             $this->getModelDependencies() .
-            $this->getEndOfLine() .
             $this->getClassDefinition() .
             $this->comments('@var array') .
             $this->getModelTableDefinition() .

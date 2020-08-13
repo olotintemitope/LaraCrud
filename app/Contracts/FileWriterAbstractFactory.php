@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\Contracts;
+namespace App\Contracts;
 
 
 use Illuminate\Support\Facades\File;
@@ -45,5 +45,5 @@ abstract class FileWriterAbstractFactory
      * @param string $applicationNamespace
      * @return mixed
      */
-    abstract public static function getDefaultDirectory(string $directory, string $applicationNamespace);
+    abstract public static function getDefaultDirectory($directory, string $applicationNamespace);
 }
