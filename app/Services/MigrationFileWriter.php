@@ -7,6 +7,9 @@ use App\Contracts\FileWriterAbstractFactory;
 
 final class MigrationFileWriter extends FileWriterAbstractFactory
 {
+    /**
+     * @var string
+     */
     protected $fileName = "";
     /**
      * @param string $defaultDirectory
@@ -48,8 +51,22 @@ final class MigrationFileWriter extends FileWriterAbstractFactory
         $this->fileName = $this->getDatePrefix().'_'.$name.static::FILE_EXTENSION;
     }
 
+    /**
+     * @return string
+     */
     public function getFileName(): string
     {
         return $this->fileName;
+    }
+
+    /**
+     * @param FileWriterDirector $fileWriterDirector
+     * @return array
+     */
+    public function getBaseDirectory(FileWriterDirector $fileWriterDirector): array
+    {
+        $migrationFulPath = $fileWriterDirector->getFileWriter()::getDefaultDirectory();
+        $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $fileWriterDirector->getFileName();
+        return array($migrationFulPath, $filePath);
     }
 }
