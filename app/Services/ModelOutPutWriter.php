@@ -3,7 +3,6 @@
 
 namespace App\Services;
 
-
 use App\Contracts\ModelServiceInterface;
 
 class ModelOutPutWriter
@@ -11,11 +10,11 @@ class ModelOutPutWriter
     /**
      * @var $modelService
      */
-    private $modelService;
+    private $modelServiceInterface;
 
     public function __construct(ModelServiceInterface $modelServiceInterface)
     {
-        $this->modelService = $modelServiceInterface;
+        $this->modelServiceInterface = $modelServiceInterface;
     }
 
     /**
@@ -23,11 +22,11 @@ class ModelOutPutWriter
      */
     public function buildFileContent(): string
     {
-        return $this->modelService->buildModel();
+        return $this->modelServiceInterface->build();
     }
 
     public function getModel(): ModelServiceInterface
     {
-        return $this->modelService;
+        return $this->modelServiceInterface;
     }
 }

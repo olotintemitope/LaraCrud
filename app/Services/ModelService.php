@@ -3,12 +3,12 @@
 
 namespace App\Services;
 
+use app\Contracts\BuilderServiceTrait;
 use App\Contracts\ConstantInterface;
-use App\Contracts\ModelServiceInterface;
 use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
 
-class ModelService implements ConstantInterface, ModelServiceInterface
+class ModelService implements ConstantInterface, BuilderServiceTrait
 {
     use OutPutWriterTrait;
 
@@ -52,7 +52,7 @@ class ModelService implements ConstantInterface, ModelServiceInterface
      * Get the name of the table in the model
      * @return string
      */
-    protected function getTableName(): string
+    public function getTableName(): string
     {
         $inflector = Inflector::get('en');
         return strtolower($inflector->pluralize($this->getModelName()));
@@ -191,7 +191,7 @@ class ModelService implements ConstantInterface, ModelServiceInterface
     /**
      * @return mixed
      */
-    protected function getMigrations()
+    public function getMigrations()
     {
         return $this->migrations;
     }
@@ -209,7 +209,7 @@ class ModelService implements ConstantInterface, ModelServiceInterface
     /**
      * @return string
      */
-    public function buildModel(): string
+    public function build(): string
     {
         return
             $this->getStartTag() .

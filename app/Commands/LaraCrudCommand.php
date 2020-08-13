@@ -115,8 +115,8 @@ class LaraCrudCommand extends Command implements ConstantInterface
     {
         $modelDirectory = $this->option('folder');
         $applicationNamespace = ucwords(explode("\\", static::class)[0]);
-        $defaultModelDirectory = $writer::getDefaultModelDirectory($modelDirectory, $applicationNamespace);
-        $modelPath = $writer::geWorkingDirectory($defaultModelDirectory, $modelName);
+        $defaultModelDirectory = $writer::getDefaultDirectory($modelDirectory, $applicationNamespace);
+        $modelPath = $writer::getWorkingDirectory($defaultModelDirectory, $modelName);
         return array($defaultModelDirectory, $modelPath);
     }
 
@@ -144,7 +144,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
      */
     protected function inputReader(ModelOutPutWriter $outputWriter, ModelFileWriter $writer): array
     {
-        $migrations = [];
+        $migrations = ['id' => ['field_type' => 'increments'],];
         $modelName = strip_tags($this->argument('name'));
 
         if (empty($modelName)) {

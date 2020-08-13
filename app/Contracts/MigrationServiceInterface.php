@@ -1,10 +1,8 @@
 <?php
 
 
-namespace app\Contracts;
+namespace App\Contracts;
 
-
-interface MigrationServiceInterface
-{
-    public function buildMigration() :string;
+interface MigrationServiceInterface  {
+    public function build() :string;
 }
