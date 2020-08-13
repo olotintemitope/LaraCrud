@@ -52,7 +52,6 @@ class LaraCrudCommand extends Command implements ConstantInterface
                 $migrationBuilder = $this->getMigrationBuilder($modelBuilder);
                 $fileOutputDirector = new OutPutDirector($migrationBuilder);
                 $fileWriter = new FileWriterDirector($migrationFileWriter);
-
                 // Write to migration folder
                 $fileWriter->setFileName("create_{$modelName}_table");
                 [$migrationFulPath, $filePath] = $this->getMigrationDirectory($fileWriter);
