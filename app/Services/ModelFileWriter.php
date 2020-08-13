@@ -2,28 +2,16 @@
 
 namespace App\Services;
 
-use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
 
-final class ModelFileWriter extends FileWriterAbstractFactory implements ConstantInterface
+final class ModelFileWriter extends FileWriterAbstractFactory
 {
-    /**
-     * @param string $defaultModelDirectory
-     * @param string $modelName
-     * @return string
-     */
-    public static function getWorkingDirectory(string $defaultModelDirectory, string $modelName): string
+    public function getFilename(): string
     {
-        return sprintf(
-            "%s/%s/%s%s",
-            getcwd(), $defaultModelDirectory, $modelName, static::FILE_EXTENSION
-        );
+        return "";
     }
 
-    public static function getDefaultDirectory($directory, string $applicationNamespace): string
+    public function setFileName(string $name): void
     {
-        return empty($directory)
-            ? $applicationNamespace . DIRECTORY_SEPARATOR . static::DEFAULT_MODEL_FOLDER
-            : $applicationNamespace . DIRECTORY_SEPARATOR . $directory;
     }
 }

@@ -3,12 +3,13 @@
 
 namespace App\Services;
 
+use App\Contracts\BuilderServiceInterface;
 use App\Contracts\ConstantInterface;
-use App\Contracts\ModelServiceInterface;
+use App\Contracts\FileWriterAbstractFactory;
 use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
 
-class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
+class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
 {
     use OutPutWriterTrait;
 
@@ -36,6 +37,10 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
      * @var array
      */
     private $migrations;
+    /**
+     * @var FileWriterAbstractFactory
+     */
+    private $fileWriterAbstractFactory;
 
     /**
      * @return string

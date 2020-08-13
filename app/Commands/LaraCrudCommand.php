@@ -3,11 +3,13 @@
 namespace App\Commands;
 
 use App\Contracts\FileWriterAbstractFactory;
+use App\Services\FileWriterDirector;
 use App\Services\MigrationFileWriter;
 use App\Services\MigrationServiceBuilder;
-use App\Services\OutPutWriterDirector;
-use App\Contracts\ConstantInterface;
 use App\Services\ModelFileWriter;
+use App\Services\ModelServiceBuilder;
+use App\Services\OutPutDirector;
+use App\Contracts\ConstantInterface;
 use LaravelZero\Framework\Commands\Command;
 
 class LaraCrudCommand extends Command implements ConstantInterface
@@ -29,32 +31,36 @@ class LaraCrudCommand extends Command implements ConstantInterface
     /**
      * Execute the console command.
      *
-     * @param ModelFileWriter $fileWriter
+     * @param ModelFileWriter $modelFileWriter
      * @param MigrationFileWriter $migrationFileWriter
-     * @param OutPutWriterDirector $outputWriter
      * @return mixed
      */
-    public function handle(ModelFileWriter $fileWriter, MigrationFileWriter $migrationFileWriter, OutPutWriterDirector $outputWriter)
+    public function handle(ModelFileWriter $modelFileWriter, MigrationFileWriter $migrationFileWriter)
     {
         try {
-            [$modelName, $defaultModelDirectory, $modelPath] = $this->inputReader($outputWriter, $fileWriter);
+            [$modelName, $defaultModelDirectory, $modelPath, $migrations] = $this->inputReader();
+            $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
 
-            $fileWriter::write($defaultModelDirectory, $modelPath, $outputWriter->buildFileContent());
-            $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
-            // Write to migration file
-            $migrationBuilder = new MigrationServiceBuilder($outputWriter->getModel());
-            $migrationBuilder->setMigrationDependencies([
-                'use Illuminate\Support\Facades\Schema',
-                'use Illuminate\Database\Schema\Blueprint',
-                'use Illuminate\Database\Migrations\Migration',
-            ]);
-            $migrationFulPath =  $migrationFileWriter->getDefaultDirectory();
-            $filePath = $migrationFulPath . DIRECTORY_SEPARATOR .$migrationFileWriter->getFilename("create_{$modelName}_table");
-            $migrationFileWriter::write($migrationFulPath, $filePath, $migrationBuilder->build());
-            $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
+            if (!empty($modelName)) {
+                $modelBuilder = $this->getModelBuilder($modelName, $migrations, $modelNamespace);
+                $fileOutputDirector = new OutPutDirector($modelBuilder);
+                $fileWriter = new FileWriterDirector($modelFileWriter);
+                // Write to molder folder
+                $fileWriter::write($defaultModelDirectory, $modelPath, $fileOutputDirector->getFileContent());
+                $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
 
+                $migrationBuilder = $this->getMigrationBuilder($modelBuilder);
+                $fileOutputDirector = new OutPutDirector($migrationBuilder);
+                $fileWriter = new FileWriterDirector($migrationFileWriter);
+
+                // Write to migration folder
+                $fileWriter->setFileName("create_{$modelName}_table");
+                [$migrationFulPath, $filePath] = $this->getMigrationDirectory($fileWriter);
+                $fileWriter::write($migrationFulPath, $filePath, $fileOutputDirector->getFileContent());
+                $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
+            }
         } catch (\Exception $exception) {
-            $this->error($exception->getMessage() . $exception->getTraceAsString());
+            $this->error($exception->getMessage());
         }
     }
 
@@ -124,28 +130,26 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * @param FileWriterAbstractFactory $writer
      * @param string $modelName
      * @return array
      */
-    protected function getModelDirectoryInfo(FileWriterAbstractFactory $writer, string $modelName): array
+    protected function getModelDirectoryInfo(string $modelName): array
     {
         $modelDirectory = $this->option('folder');
         $applicationNamespace = ucwords(explode("\\", static::class)[0]);
-        $defaultModelDirectory = $writer::getDefaultDirectory($modelDirectory, $applicationNamespace);
-        $modelPath = $writer::getWorkingDirectory($defaultModelDirectory, $modelName);
+        $defaultModelDirectory = FileWriterAbstractFactory::getDefaultDirectory($modelDirectory, $applicationNamespace);
+        $modelPath = FileWriterAbstractFactory::getWorkingDirectory($defaultModelDirectory, $modelName);
         return array($defaultModelDirectory, $modelPath);
     }
 
     /**
-     * @param OutPutWriterDirector $outputWriter
      * @param string $modelName
      * @param array $migrations
      * @param string $modelNamespace
      */
-    protected function setModelDefinition(OutPutWriterDirector $outputWriter, string $modelName, array $migrations, string $modelNamespace): void
+    protected function getModelBuilder(string $modelName, array $migrations, string $modelNamespace): ModelServiceBuilder
     {
-        $outputWriter->getModel()
+        return (new ModelServiceBuilder)
             ->setModelName($modelName)
             ->setMigrations($migrations)
             ->setNameSpace($modelNamespace)
@@ -155,11 +159,9 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * @param OutPutWriterDirector $outputWriter
-     * @param FileWriterAbstractFactory $writer
      * @return array
      */
-    protected function inputReader(OutPutWriterDirector $outputWriter, FileWriterAbstractFactory $writer): array
+    protected function inputReader(): array
     {
         $migrations = ['id' => ['field_type' => 'increments'],];
         $modelName = strip_tags($this->argument('name'));
@@ -168,9 +170,9 @@ class LaraCrudCommand extends Command implements ConstantInterface
             $this->error("Name argument is missing");
         }
 
-        [$defaultModelDirectory, $modelPath] = $this->getModelDirectoryInfo($writer, $modelName);
+        [$defaultModelDirectory, $modelPath] = $this->getModelDirectoryInfo($modelName);
 
-        if ($writer::fileExists($modelPath)) {
+        if (FileWriterAbstractFactory::fileExists($modelPath)) {
             $this->error("{$modelPath} already exist");
             exit();
         }
@@ -193,11 +195,32 @@ class LaraCrudCommand extends Command implements ConstantInterface
             exit();
         }
 
-        $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
+        return array($modelName, $defaultModelDirectory, $modelPath, $migrations);
+    }
 
-        if (!empty($modelName)) {
-            $this->setModelDefinition($outputWriter, $modelName, $migrations, $modelNamespace);
-        }
-        return array($modelName, $defaultModelDirectory, $modelPath);
+    /**
+     * @param ModelServiceBuilder $model
+     * @return MigrationServiceBuilder
+     */
+    protected function getMigrationBuilder(ModelServiceBuilder $model): MigrationServiceBuilder
+    {
+        $migrationBuilder = new MigrationServiceBuilder($model);
+        $migrationBuilder->setMigrationDependencies([
+            'use Illuminate\Support\Facades\Schema',
+            'use Illuminate\Database\Schema\Blueprint',
+            'use Illuminate\Database\Migrations\Migration',
+        ]);
+        return $migrationBuilder;
+    }
+
+    /**
+     * @param FileWriterDirector $migrationFileWriter
+     * @return array
+     */
+    protected function getMigrationDirectory(FileWriterDirector $migrationFileWriter): array
+    {
+        $migrationFulPath = $migrationFileWriter->getFileWriter()::getDefaultDirectory();
+        $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $migrationFileWriter->getFileName();
+        return array($migrationFulPath, $filePath);
     }
 }

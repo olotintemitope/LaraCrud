@@ -3,13 +3,17 @@
 
 namespace App\Services;
 
-
-use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
 
-final class MigrationFileWriter extends FileWriterAbstractFactory implements ConstantInterface
+final class MigrationFileWriter extends FileWriterAbstractFactory
 {
-    public static function getWorkingDirectory(string $defaultDirectory, string $fileName)
+    protected $fileName = "";
+    /**
+     * @param string $defaultDirectory
+     * @param string $fileName
+     * @return string
+     */
+    public static function getWorkingDirectory(string $defaultDirectory, string $fileName): string
     {
         return sprintf(
             "%s/%s/%s%s",
@@ -17,19 +21,35 @@ final class MigrationFileWriter extends FileWriterAbstractFactory implements Con
         );
     }
 
-    public static function getDefaultDirectory($directory = "", string $applicationNamespace = "")
+    /**
+     * @param string $directory
+     * @param string $applicationNamespace
+     * @return string
+     */
+    public static function getDefaultDirectory($directory = "", string $applicationNamespace = ""): string
     {
         return getcwd() . DIRECTORY_SEPARATOR .static::DEFAULT_MIGRATION_FOLDER;
     }
 
+    /**
+     * @return false|string
+     */
     protected function getDatePrefix()
     {
         return date('Y_m_d_His');
     }
 
-
-    public function getFilename($name): string
+    /**
+     * @param string $name
+     * @return void
+     */
+    public function setFileName(string $name): void
     {
-        return $this->getDatePrefix().'_'.$name.static::FILE_EXTENSION;
+        $this->fileName = $this->getDatePrefix().'_'.$name.static::FILE_EXTENSION;
+    }
+
+    public function getFileName(): string
+    {
+        return $this->fileName;
     }
 }

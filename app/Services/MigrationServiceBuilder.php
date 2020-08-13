@@ -1,15 +1,13 @@
 <?php
 
-
 namespace App\Services;
 
-
 use App\Contracts\ConstantInterface;
-use App\Contracts\MigrationServiceInterface;
-use App\Contracts\ModelServiceInterface;
+use App\Contracts\FileWriterAbstractFactory;
+use App\Contracts\BuilderServiceInterface;
 use App\Traits\OutPutWriterTrait;
 
-class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInterface
+class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterface
 {
     use OutPutWriterTrait;
 
@@ -23,10 +21,11 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
     private $migrationDependencies;
 
     /**
-     * MigrationServiceBuilder constructor.
-     * @param ModelServiceInterface $model
+     * @var FileWriterAbstractFactory
      */
-    public function __construct(ModelServiceInterface $model)
+    private $fileWriterAbstractFactory;
+
+    public function __construct(ModelServiceBuilder $model)
     {
         $this->modelService = $model;
     }
