@@ -3,12 +3,12 @@
 
 namespace App\Services;
 
-use app\Contracts\BuilderServiceTrait;
 use App\Contracts\ConstantInterface;
+use App\Contracts\ModelServiceInterface;
 use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
 
-class ModelService implements ConstantInterface, BuilderServiceTrait
+class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
 {
     use OutPutWriterTrait;
 
@@ -94,9 +94,9 @@ class ModelService implements ConstantInterface, BuilderServiceTrait
 
     /**
      * @param $modelNamespace
-     * @return ModelService
+     * @return ModelServiceBuilder
      */
-    public function setNameSpace($modelNamespace): ModelService
+    public function setNameSpace($modelNamespace): ModelServiceBuilder
     {
         $this->namespace = "namespace {$modelNamespace};" . $this->getEndOfLine();
         return $this;
@@ -112,9 +112,9 @@ class ModelService implements ConstantInterface, BuilderServiceTrait
 
     /**
      * @param array $namespaces
-     * @return ModelService
+     * @return ModelServiceBuilder
      */
-    public function setModelDependencies(array $namespaces): ModelService
+    public function setModelDependencies(array $namespaces): ModelServiceBuilder
     {
         $this->modelDependencies = implode(";" . PHP_EOL, $namespaces);
         return $this;
@@ -139,9 +139,9 @@ class ModelService implements ConstantInterface, BuilderServiceTrait
 
     /**
      * @param $modelName
-     * @return ModelService
+     * @return ModelServiceBuilder
      */
-    public function setModelName($modelName): ModelService
+    public function setModelName($modelName): ModelServiceBuilder
     {
         $this->modelName = $modelName;
         return $this;
@@ -198,9 +198,9 @@ class ModelService implements ConstantInterface, BuilderServiceTrait
 
     /**
      * @param mixed $migrations
-     * @return ModelService
+     * @return ModelServiceBuilder
      */
-    public function setMigrations($migrations): ModelService
+    public function setMigrations($migrations): ModelServiceBuilder
     {
         $this->migrations = $migrations;
         return $this;

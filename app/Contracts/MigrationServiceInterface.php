@@ -3,6 +3,7 @@
 
 namespace App\Contracts;
 
-interface MigrationServiceInterface  {
-    public function build() :string;
+interface MigrationServiceInterface
+{
+    public function build(): string;
 }

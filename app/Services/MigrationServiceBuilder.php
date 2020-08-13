@@ -5,15 +5,15 @@ namespace app\Services;
 
 
 use App\Contracts\ConstantInterface;
-use app\Contracts\BuilderServiceTrait;
+use App\Contracts\MigrationServiceInterface;
 use App\Traits\OutPutWriterTrait;
 
-class MigrationService implements ConstantInterface, BuilderServiceTrait
+class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInterface
 {
     use OutPutWriterTrait;
 
     /**
-     * @var ModelService
+     * @var ModelServiceBuilder
      */
     private $modelService;
     /**
@@ -22,19 +22,19 @@ class MigrationService implements ConstantInterface, BuilderServiceTrait
     private $migrationDependencies;
 
     /**
-     * MigrationService constructor.
-     * @param ModelService $model
+     * MigrationServiceBuilder constructor.
+     * @param ModelServiceBuilder $model
      */
-    public function __construct(ModelService $model)
+    public function __construct(ModelServiceBuilder $model)
     {
         $this->modelService = $model;
     }
 
     /**
      * @param array $namespaces
-     * @return MigrationService
+     * @return MigrationServiceBuilder
      */
-    public function setMigrationDependencies(array $namespaces): MigrationService
+    public function setMigrationDependencies(array $namespaces): MigrationServiceBuilder
     {
         $this->migrationDependencies = implode(";" . PHP_EOL, $namespaces);
         return $this;
@@ -45,14 +45,14 @@ class MigrationService implements ConstantInterface, BuilderServiceTrait
      */
     public function getMigrationDependencies(): string
     {
-        return $this->migrationDependencies . static::END_OF_LINE;
+        return $this->migrationDependencies . $this->getEndOfLine();
     }
 
     public function getClassDefinition(): string
     {
         $migrationClassName = ucwords($this->modelService->getModelName());
         $migrationTableName = "Create{$migrationClassName}Table";
-        return "class {$migrationTableName} extends Migration" . PHP_EOL . "{" . static::PHP_CRT;
+        return "class {$migrationTableName} extends Migration" . PHP_EOL . "{" . $this->getCarriageReturn();
     }
 
     public function getMigrationFields($table = '$table'): string

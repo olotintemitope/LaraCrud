@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Services\ModelOutPutWriter;
+use App\Services\OutPutWriterDirector;
 use App\Contracts\ConstantInterface;
 use App\Services\ModelFileWriter;
 use LaravelZero\Framework\Commands\Command;
@@ -27,10 +27,10 @@ class LaraCrudCommand extends Command implements ConstantInterface
      * Execute the console command.
      *
      * @param ModelFileWriter $fileWriter
-     * @param ModelOutPutWriter $outputWriter
+     * @param OutPutWriterDirector $outputWriter
      * @return mixed
      */
-    public function handle(ModelFileWriter $fileWriter, ModelOutPutWriter $outputWriter)
+    public function handle(ModelFileWriter $fileWriter, OutPutWriterDirector $outputWriter)
     {
         try {
             [$modelName, $defaultModelDirectory, $modelPath] = $this->inputReader($outputWriter, $fileWriter);
@@ -121,12 +121,12 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * @param ModelOutPutWriter $outputWriter
+     * @param OutPutWriterDirector $outputWriter
      * @param string $modelName
      * @param array $migrations
      * @param string $modelNamespace
      */
-    protected function setModelDefinition(ModelOutPutWriter $outputWriter, string $modelName, array $migrations, string $modelNamespace): void
+    protected function setModelDefinition(OutPutWriterDirector $outputWriter, string $modelName, array $migrations, string $modelNamespace): void
     {
         $outputWriter->getModel()
             ->setModelName($modelName)
@@ -138,11 +138,11 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * @param ModelOutPutWriter $outputWriter
+     * @param OutPutWriterDirector $outputWriter
      * @param ModelFileWriter $writer
      * @return array
      */
-    protected function inputReader(ModelOutPutWriter $outputWriter, ModelFileWriter $writer): array
+    protected function inputReader(OutPutWriterDirector $outputWriter, ModelFileWriter $writer): array
     {
         $migrations = ['id' => ['field_type' => 'increments'],];
         $modelName = strip_tags($this->argument('name'));

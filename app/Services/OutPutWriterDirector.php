@@ -5,7 +5,7 @@ namespace App\Services;
 
 use App\Contracts\ModelServiceInterface;
 
-class ModelOutPutWriter
+class OutPutWriterDirector
 {
     /**
      * @var $modelService
