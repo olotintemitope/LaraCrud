@@ -96,7 +96,7 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
             $this->writeLine("Schema::create('{$this->modelService->getTableName()}', function (Blueprint $table) {", 2) .
             $this->writeLine($this->getMigrationFields(), 0) .
             $this->writeLine("});", 2) .
-            $this->writeLine("}", 1, PHP_EOL);
+            $this->writeLine("}", 1);
     }
 
     /**
@@ -108,32 +108,7 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
             $this->writeLine("public function down()", 1) .
             $this->writeLine("{", 1) .
             $this->writeLine("Schema::dropIfExists('{$this->modelService->getTableName()}');", 2) .
-            $this->writeLine("}", 1, PHP_EOL);
-    }
-
-    /**
-     * @return string
-     */
-    public function build(): string
-    {
-        return
-            $this->getStartTag() .
-            $this->getMigrationDependencies() .
-            $this->getEndOfLine() .
-            $this->getClassDefinition() .
-            $this->comments(
-                'Run the migrations.',
-                '',
-                '@return void'
-            ) .
-            $this->getSchemaTearUp() .
-            $this->comments(
-                'Reverse the migrations.',
-                '',
-                '@return void'
-            ) .
-            $this->getSchemaTearDown() .
-            $this->getClosingTag();
+            $this->writeLine("}", 1 );
     }
 
     /**
@@ -169,4 +144,28 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
         return $this->writeLine("$table->{$dataType}('{$field}');", 3);
     }
 
+    /**
+     * @return string
+     */
+    public function build(): string
+    {
+        return
+            $this->getStartTag() .
+            $this->getMigrationDependencies() .
+            $this->getEndOfLine() .
+            $this->getClassDefinition() .
+            $this->comments(
+                'Run the migrations.',
+                '',
+                '@return void'
+            ) .
+            $this->getSchemaTearUp() .
+            $this->comments(
+                'Reverse the migrations.',
+                '',
+                '@return void'
+            ) .
+            $this->getSchemaTearDown() .
+            $this->getClosingTag();
+    }
 }

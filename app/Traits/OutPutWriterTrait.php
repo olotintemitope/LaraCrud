@@ -82,14 +82,19 @@ trait OutPutWriterTrait
     /**
      * @param string $line
      * @param int $tabs
-     * @param string $newLine
+     * @param bool $newLine
+     * @param bool $carriageReturn
      * @return string
      */
-    public function writeLine(string $line, int $tabs, string $newLine = ""): string
+    public function writeLine(string $line, int $tabs, $newLine = false, $carriageReturn = true): string
     {
-        return $this->tabIndent($tabs) . $line . $newLine . static::PHP_CRT;
+        return $this->tabIndent($tabs) . $line . ($newLine ? PHP_EOL : "") . ($carriageReturn ? static::PHP_CRT : "");
     }
 
+    /**
+     * @param int $times
+     * @return string
+     */
     protected function tabIndent(int $times): string
     {
         $tabs = "";

@@ -42,8 +42,8 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
      */
     protected function getFields(): string
     {
-        return implode(",".static::PHP_CRT, array_map(function ($field) {
-            return "'{$field}'";
+        return implode(",".$this->getCarriageReturn(), array_map(function ($field) {
+            return $this->writeLine("'{$field}'", 2, false, false);
         }, array_filter($this->getMigrationFields(), function ($field) {
                 return 'id' !== $field;
             })
@@ -67,17 +67,16 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
     protected function getCastsField(): string
     {
         $casts = [];
-        $filteredMigrations = $this->filterCastsField();
 
-        foreach ($filteredMigrations as $fieldName => $migration) {
+        foreach ($this->filterCastsField() as $fieldName => $migration) {
             $dataType = strtolower($migration['field_type']);
             if ($dataType === 'boolean') {
                 $dataType = 'bool';
             }
-            $casts[] = "'{$fieldName}' => '{$dataType}'";
+            $casts[] = $this->writeLine("'{$fieldName}' => '{$dataType}'",2, false , false);
         }
 
-        return implode(",".static::PHP_CRT , $casts);
+        return implode(",".$this->getCarriageReturn() , $casts);
     }
 
     /**
@@ -100,7 +99,7 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
      */
     public function setNameSpace($modelNamespace): ModelServiceBuilder
     {
-        $this->namespace = $this->writeLine("namespace {$modelNamespace};", 0, PHP_EOL);
+        $this->namespace = $this->writeLine("namespace {$modelNamespace};", 0, true);
         return $this;
     }
 
@@ -127,7 +126,7 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
      */
     public function getModelDependencies(): string
     {
-        return $this->writeLine($this->modelDependencies . static::END_OF_LINE, 0, PHP_EOL);
+        return $this->writeLine($this->modelDependencies . static::END_OF_LINE, 0 , true);
     }
 
     /**
@@ -136,7 +135,7 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
      */
     public function getModelTableDefinition($table = '$table'): string
     {
-        return $this->writeLine("protected $table = '{$this->getTableName()}';", 1, PHP_EOL);
+        return $this->writeLine("protected $table = '{$this->getTableName()}';", 1, true);
     }
 
     /**
@@ -184,7 +183,7 @@ class ModelServiceBuilder implements ConstantInterface, ModelServiceInterface
         return
             $this->writeLine("protected $casts = [", 1 ).
             $this->writeLine("{$this->getCastsField()}", 0) .
-            $this->writeLine("];", 1, PHP_EOL);
+            $this->writeLine("];", 1);
     }
 
     /**
