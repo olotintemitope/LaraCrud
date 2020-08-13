@@ -5,7 +5,7 @@ namespace App\Services;
 
 use App\Contracts\BuilderServiceInterface;
 
-class OutPutWriterDirector
+class OutPutDirector
 {
     /**
      * @var BuilderServiceInterface

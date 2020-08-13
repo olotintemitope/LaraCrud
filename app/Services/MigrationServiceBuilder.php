@@ -28,7 +28,7 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
      */
     private $fileWriterAbstractFactory;
 
-    public function __construct(MigrationFileWriter $fileWriterAbstractFactory, ModelServiceInterface $model)
+    public function __construct(MigrationFileWriter $fileWriterAbstractFactory, ModelServiceBuilder $model)
     {
         $this->fileWriterAbstractFactory = $fileWriterAbstractFactory;
         $this->modelService = $model;

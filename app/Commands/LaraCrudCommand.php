@@ -3,12 +3,10 @@
 namespace App\Commands;
 
 use App\Contracts\FileWriterAbstractFactory;
-use App\Services\MigrationFileWriter;
 use App\Services\MigrationServiceBuilder;
 use App\Services\ModelServiceBuilder;
-use App\Services\OutPutWriterDirector;
+use App\Services\OutPutDirector;
 use App\Contracts\ConstantInterface;
-use App\Services\ModelFileWriter;
 use LaravelZero\Framework\Commands\Command;
 
 class LaraCrudCommand extends Command implements ConstantInterface
@@ -39,14 +37,14 @@ class LaraCrudCommand extends Command implements ConstantInterface
 
             if (!empty($modelName)) {
                 $modelBuilder = $this->getModelBuilder($modelName, $migrations, $modelNamespace);
-                $fileWriterDirector = new OutPutWriterDirector($modelBuilder);
+                $fileWriterDirector = new OutPutDirector($modelBuilder);
 
                 $fileWriter = $modelBuilder->getFileWriter();
                 $fileWriter::write($defaultModelDirectory, $modelPath, $fileWriterDirector->writeFileContent());
                 $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
 
                 [$migrationBuilder, $migrationFileWriter, $migrationFulPath, $filePath] = $this->getMigrationBuilder($modelBuilder, $modelName);
-                $fileWriterDirector = new OutPutWriterDirector($migrationBuilder);
+                $fileWriterDirector = new OutPutDirector($migrationBuilder);
                 // Write to migration file
                 $migrationFileWriter::write($migrationFulPath, $filePath, $fileWriterDirector->writeFileContent());
                 $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
@@ -122,16 +120,15 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * @param FileWriterAbstractFactory $writer
      * @param string $modelName
      * @return array
      */
-    protected function getModelDirectoryInfo(FileWriterAbstractFactory $writer, string $modelName): array
+    protected function getModelDirectoryInfo(string $modelName): array
     {
         $modelDirectory = $this->option('folder');
         $applicationNamespace = ucwords(explode("\\", static::class)[0]);
-        $defaultModelDirectory = $writer::getDefaultDirectory($modelDirectory, $applicationNamespace);
-        $modelPath = $writer::getWorkingDirectory($defaultModelDirectory, $modelName);
+        $defaultModelDirectory = FileWriterAbstractFactory::getDefaultDirectory($modelDirectory, $applicationNamespace);
+        $modelPath = FileWriterAbstractFactory::getWorkingDirectory($defaultModelDirectory, $modelName);
         return array($defaultModelDirectory, $modelPath);
     }
 
@@ -155,7 +152,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
      * @param FileWriterAbstractFactory $writer
      * @return array
      */
-    protected function inputReader(FileWriterAbstractFactory $writer): array
+    protected function inputReader(): array
     {
         $migrations = ['id' => ['field_type' => 'increments'],];
         $modelName = strip_tags($this->argument('name'));
@@ -164,9 +161,9 @@ class LaraCrudCommand extends Command implements ConstantInterface
             $this->error("Name argument is missing");
         }
 
-        [$defaultModelDirectory, $modelPath] = $this->getModelDirectoryInfo($writer, $modelName);
+        [$defaultModelDirectory, $modelPath] = $this->getModelDirectoryInfo($modelName);
 
-        if ($writer::fileExists($modelPath)) {
+        if (FileWriterAbstractFactory::fileExists($modelPath)) {
             $this->error("{$modelPath} already exist");
             exit();
         }
@@ -200,7 +197,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
      */
     protected function setMigrationDefinition(ModelServiceBuilder $model): MigrationServiceBuilder
     {
-        $migrationBuilder = new MigrationServiceBuilder($model);
+        $migrationBuilder = new MigrationServiceBuilder(null, $model);
         $migrationBuilder->setMigrationDependencies([
             'use Illuminate\Support\Facades\Schema',
             'use Illuminate\Database\Schema\Blueprint',

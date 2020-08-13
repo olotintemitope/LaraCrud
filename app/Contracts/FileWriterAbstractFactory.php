@@ -7,7 +7,7 @@ namespace App\Contracts;
 use Illuminate\Support\Facades\File;
 use RuntimeException;
 
-abstract class FileWriterAbstractFactory
+abstract class FileWriterAbstractFactory implements ConstantInterface
 {
     /**
      * @param $directory
@@ -33,19 +33,26 @@ abstract class FileWriterAbstractFactory
         return File::exists($filePath);
     }
 
-    /**
-     * @param string $defaultDirectory
-     * @param string $fileName
-     * @return mixed
-     */
-    abstract public static function getWorkingDirectory(string $defaultDirectory, string $fileName);
 
     /**
-     * @param string $directory
-     * @param string $applicationNamespace
-     * @return mixed
+     * @param string $defaultModelDirectory
+     * @param string $modelName
+     * @return string
      */
-    abstract public static function getDefaultDirectory($directory = "", string $applicationNamespace = "");
+    public static function getWorkingDirectory(string $defaultModelDirectory, string $modelName): string
+    {
+        return sprintf(
+            "%s/%s/%s%s",
+            getcwd(), $defaultModelDirectory, $modelName, static::FILE_EXTENSION
+        );
+    }
+
+    public static function getDefaultDirectory($directory, string $applicationNamespace): string
+    {
+        return empty($directory)
+            ? $applicationNamespace . DIRECTORY_SEPARATOR . static::DEFAULT_MODEL_FOLDER
+            : $applicationNamespace . DIRECTORY_SEPARATOR . $directory;
+    }
 
     abstract public function getFilename(string $name): string;
 }
