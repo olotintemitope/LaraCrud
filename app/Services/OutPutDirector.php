@@ -20,7 +20,7 @@ class OutPutDirector
     /**
      * @return string
      */
-    public function writeFileContent(): string
+    public function getFileContent(): string
     {
         return $this->builderService->build();
     }

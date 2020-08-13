@@ -47,12 +47,14 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
         );
     }
 
-    public static function getDefaultDirectory($directory, string $applicationNamespace): string
+    public static function getDefaultDirectory($directory = "", string $applicationNamespace = ""): string
     {
         return empty($directory)
             ? $applicationNamespace . DIRECTORY_SEPARATOR . static::DEFAULT_MODEL_FOLDER
             : $applicationNamespace . DIRECTORY_SEPARATOR . $directory;
     }
 
-    abstract public function getFilename(string $name): string;
+    abstract public function setFileName(string $name): void;
+
+    abstract public function getFileName(): string;
 }

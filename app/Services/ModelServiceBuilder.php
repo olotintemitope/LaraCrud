@@ -6,11 +6,10 @@ namespace App\Services;
 use App\Contracts\BuilderServiceInterface;
 use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
-use App\Contracts\FileWriterInterface;
 use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
 
-class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface, FileWriterInterface
+class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
 {
     use OutPutWriterTrait;
 
@@ -42,11 +41,6 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface,
      * @var FileWriterAbstractFactory
      */
     private $fileWriterAbstractFactory;
-
-    public function __construct(ModelFileWriter $fileWriterAbstractFactory)
-    {
-        $this->fileWriterAbstractFactory = $fileWriterAbstractFactory;
-    }
 
     /**
      * @return string
@@ -236,13 +230,5 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface,
             $this->comments('@var array') .
             $this->getCastsDefinition() .
             $this->getClosingTag();
-    }
-
-    /**
-     * @return FileWriterAbstractFactory
-     */
-    public function getFileWriter(): FileWriterAbstractFactory
-    {
-        return $this->fileWriterAbstractFactory;
     }
 }

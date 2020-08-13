@@ -2,13 +2,16 @@
 
 namespace App\Services;
 
-use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
 
-final class ModelFileWriter extends FileWriterAbstractFactory implements ConstantInterface
+final class ModelFileWriter extends FileWriterAbstractFactory
 {
-    public function getFilename(string $name): string
+    public function getFilename(): string
     {
-        // TODO: Implement getFilename() method.
+        return "";
+    }
+
+    public function setFileName(string $name): void
+    {
     }
 }

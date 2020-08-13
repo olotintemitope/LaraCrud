@@ -1,16 +1,13 @@
 <?php
 
-
 namespace App\Services;
-
 
 use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
-use App\Contracts\FileWriterInterface;
 use App\Contracts\BuilderServiceInterface;
 use App\Traits\OutPutWriterTrait;
 
-class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterface, FileWriterInterface
+class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterface
 {
     use OutPutWriterTrait;
 
@@ -28,9 +25,8 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
      */
     private $fileWriterAbstractFactory;
 
-    public function __construct(MigrationFileWriter $fileWriterAbstractFactory, ModelServiceBuilder $model)
+    public function __construct(ModelServiceBuilder $model)
     {
-        $this->fileWriterAbstractFactory = $fileWriterAbstractFactory;
         $this->modelService = $model;
     }
 
@@ -170,13 +166,5 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
             ) .
             $this->getSchemaTearDown() .
             $this->getClosingTag();
-    }
-
-    /**
-     * @return FileWriterAbstractFactory
-     */
-    public function getFileWriter(): FileWriterAbstractFactory
-    {
-        return $this->fileWriterAbstractFactory;
     }
 }

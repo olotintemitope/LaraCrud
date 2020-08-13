@@ -3,12 +3,11 @@
 
 namespace App\Services;
 
-
-use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
 
-final class MigrationFileWriter extends FileWriterAbstractFactory implements ConstantInterface
+final class MigrationFileWriter extends FileWriterAbstractFactory
 {
+    protected $fileName = "";
     /**
      * @param string $defaultDirectory
      * @param string $fileName
@@ -42,10 +41,15 @@ final class MigrationFileWriter extends FileWriterAbstractFactory implements Con
 
     /**
      * @param string $name
-     * @return string
+     * @return void
      */
-    public function getFilename(string $name): string
+    public function setFileName(string $name): void
     {
-        return $this->getDatePrefix().'_'.$name.static::FILE_EXTENSION;
+        $this->fileName = $this->getDatePrefix().'_'.$name.static::FILE_EXTENSION;
+    }
+
+    public function getFileName(): string
+    {
+        return $this->fileName;
     }
 }
