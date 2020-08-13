@@ -28,7 +28,7 @@ final class MigrationFileWriter extends FileWriterAbstractFactory implements Con
     }
 
 
-    public function getFilename($name): string
+    public function getFilename(string $name): string
     {
         return $this->getDatePrefix().'_'.$name.static::FILE_EXTENSION;
     }

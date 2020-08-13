@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Contracts\FileWriterAbstractFactory;
 use App\Services\MigrationFileWriter;
 use App\Services\MigrationServiceBuilder;
+use App\Services\ModelServiceBuilder;
 use App\Services\OutPutWriterDirector;
 use App\Contracts\ConstantInterface;
 use App\Services\ModelFileWriter;
@@ -29,32 +30,29 @@ class LaraCrudCommand extends Command implements ConstantInterface
     /**
      * Execute the console command.
      *
-     * @param ModelFileWriter $fileWriter
-     * @param MigrationFileWriter $migrationFileWriter
-     * @param OutPutWriterDirector $outputWriter
      * @return mixed
      */
-    public function handle(ModelFileWriter $fileWriter, MigrationFileWriter $migrationFileWriter, OutPutWriterDirector $outputWriter)
+    public function handle()
     {
         try {
-            [$modelName, $defaultModelDirectory, $modelPath] = $this->inputReader($outputWriter, $fileWriter);
+            [$modelName, $defaultModelDirectory, $modelPath, $modelNamespace, $migrations] = $this->inputReader();
 
-            $fileWriter::write($defaultModelDirectory, $modelPath, $outputWriter->buildFileContent());
-            $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
-            // Write to migration file
-            $migrationBuilder = new MigrationServiceBuilder($outputWriter->getModel());
-            $migrationBuilder->setMigrationDependencies([
-                'use Illuminate\Support\Facades\Schema',
-                'use Illuminate\Database\Schema\Blueprint',
-                'use Illuminate\Database\Migrations\Migration',
-            ]);
-            $migrationFulPath =  $migrationFileWriter->getDefaultDirectory();
-            $filePath = $migrationFulPath . DIRECTORY_SEPARATOR .$migrationFileWriter->getFilename("create_{$modelName}_table");
-            $migrationFileWriter::write($migrationFulPath, $filePath, $migrationBuilder->build());
-            $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
+            if (!empty($modelName)) {
+                $modelBuilder = $this->getModelBuilder($modelName, $migrations, $modelNamespace);
+                $fileWriterDirector = new OutPutWriterDirector($modelBuilder);
 
+                $fileWriter = $modelBuilder->getFileWriter();
+                $fileWriter::write($defaultModelDirectory, $modelPath, $fileWriterDirector->writeFileContent());
+                $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
+
+                [$migrationBuilder, $migrationFileWriter, $migrationFulPath, $filePath] = $this->getMigrationBuilder($modelBuilder, $modelName);
+                $fileWriterDirector = new OutPutWriterDirector($migrationBuilder);
+                // Write to migration file
+                $migrationFileWriter::write($migrationFulPath, $filePath, $fileWriterDirector->writeFileContent());
+                $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
+            }
         } catch (\Exception $exception) {
-            $this->error($exception->getMessage() . $exception->getTraceAsString());
+            $this->error($exception->getMessage());
         }
     }
 
@@ -138,14 +136,13 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * @param OutPutWriterDirector $outputWriter
      * @param string $modelName
      * @param array $migrations
      * @param string $modelNamespace
      */
-    protected function setModelDefinition(OutPutWriterDirector $outputWriter, string $modelName, array $migrations, string $modelNamespace): void
+    protected function getModelBuilder(string $modelName, array $migrations, string $modelNamespace): ModelServiceBuilder
     {
-        $outputWriter->getModel()
+        return (new ModelServiceBuilder)
             ->setModelName($modelName)
             ->setMigrations($migrations)
             ->setNameSpace($modelNamespace)
@@ -155,11 +152,10 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * @param OutPutWriterDirector $outputWriter
      * @param FileWriterAbstractFactory $writer
      * @return array
      */
-    protected function inputReader(OutPutWriterDirector $outputWriter, FileWriterAbstractFactory $writer): array
+    protected function inputReader(FileWriterAbstractFactory $writer): array
     {
         $migrations = ['id' => ['field_type' => 'increments'],];
         $modelName = strip_tags($this->argument('name'));
@@ -195,9 +191,36 @@ class LaraCrudCommand extends Command implements ConstantInterface
 
         $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
 
-        if (!empty($modelName)) {
-            $this->setModelDefinition($outputWriter, $modelName, $migrations, $modelNamespace);
-        }
-        return array($modelName, $defaultModelDirectory, $modelPath);
+        return array($modelName, $defaultModelDirectory, $modelPath, $modelNamespace, $migrations);
+    }
+
+    /**
+     * @param ModelServiceBuilder $model
+     * @return MigrationServiceBuilder
+     */
+    protected function setMigrationDefinition(ModelServiceBuilder $model): MigrationServiceBuilder
+    {
+        $migrationBuilder = new MigrationServiceBuilder($model);
+        $migrationBuilder->setMigrationDependencies([
+            'use Illuminate\Support\Facades\Schema',
+            'use Illuminate\Database\Schema\Blueprint',
+            'use Illuminate\Database\Migrations\Migration',
+        ]);
+        return $migrationBuilder;
+    }
+
+    /**
+     * @param ModelServiceBuilder $modelBuilder
+     * @param $modelName
+     * @return array
+     */
+    protected function getMigrationBuilder(ModelServiceBuilder $modelBuilder, string $modelName): array
+    {
+        $migrationBuilder = $this->setMigrationDefinition($modelBuilder);
+        $migrationFileWriter = $migrationBuilder->getFileWriter();
+
+        $migrationFulPath = $migrationFileWriter::getDefaultDirectory();
+        $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $migrationFileWriter->getFilename("create_{$modelName}_table");
+        return array($migrationBuilder, $migrationFileWriter, $migrationFulPath, $filePath);
     }
 }

@@ -3,30 +3,25 @@
 
 namespace App\Services;
 
-use App\Contracts\ModelServiceInterface;
+use App\Contracts\BuilderServiceInterface;
 
 class OutPutWriterDirector
 {
     /**
-     * @var $modelService
+     * @var BuilderServiceInterface
      */
-    private $modelServiceInterface;
+    private $builderService;
 
-    public function __construct(ModelServiceInterface $modelServiceInterface)
+    public function __construct(BuilderServiceInterface $builderService)
     {
-        $this->modelServiceInterface = $modelServiceInterface;
+        $this->builderService = $builderService;
     }
 
     /**
      * @return string
      */
-    public function buildFileContent(): string
+    public function writeFileContent(): string
     {
-        return $this->modelServiceInterface->build();
-    }
-
-    public function getModel(): ModelServiceInterface
-    {
-        return $this->modelServiceInterface;
+        return $this->builderService->build();
     }
 }

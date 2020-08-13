@@ -45,5 +45,7 @@ abstract class FileWriterAbstractFactory
      * @param string $applicationNamespace
      * @return mixed
      */
-    abstract public static function getDefaultDirectory($directory, string $applicationNamespace);
+    abstract public static function getDefaultDirectory($directory = "", string $applicationNamespace = "");
+
+    abstract public function getFilename(string $name): string;
 }

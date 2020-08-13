@@ -5,11 +5,12 @@ namespace App\Services;
 
 
 use App\Contracts\ConstantInterface;
-use App\Contracts\MigrationServiceInterface;
-use App\Contracts\ModelServiceInterface;
+use App\Contracts\FileWriterAbstractFactory;
+use App\Contracts\FileWriterInterface;
+use App\Contracts\BuilderServiceInterface;
 use App\Traits\OutPutWriterTrait;
 
-class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInterface
+class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterface, FileWriterInterface
 {
     use OutPutWriterTrait;
 
@@ -23,11 +24,13 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
     private $migrationDependencies;
 
     /**
-     * MigrationServiceBuilder constructor.
-     * @param ModelServiceInterface $model
+     * @var FileWriterAbstractFactory
      */
-    public function __construct(ModelServiceInterface $model)
+    private $fileWriterAbstractFactory;
+
+    public function __construct(MigrationFileWriter $fileWriterAbstractFactory, ModelServiceInterface $model)
     {
+        $this->fileWriterAbstractFactory = $fileWriterAbstractFactory;
         $this->modelService = $model;
     }
 
@@ -167,5 +170,13 @@ class MigrationServiceBuilder implements ConstantInterface, MigrationServiceInte
             ) .
             $this->getSchemaTearDown() .
             $this->getClosingTag();
+    }
+
+    /**
+     * @return FileWriterAbstractFactory
+     */
+    public function getFileWriter(): FileWriterAbstractFactory
+    {
+        return $this->fileWriterAbstractFactory;
     }
 }
