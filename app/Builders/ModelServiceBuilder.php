@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services;
+namespace App\Builders;
 
 use App\Contracts\BuilderServiceInterface;
 use App\Contracts\ConstantInterface;

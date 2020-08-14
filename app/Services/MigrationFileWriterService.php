@@ -5,7 +5,7 @@ namespace App\Services;
 
 use App\Contracts\FileWriterAbstractFactory;
 
-final class MigrationFileWriter extends FileWriterAbstractFactory
+final class MigrationFileWriterService extends FileWriterAbstractFactory
 {
     /**
      * @var string

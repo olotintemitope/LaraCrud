@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Builders;
 
 use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;

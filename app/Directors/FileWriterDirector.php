@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services;
+namespace App\Directors;
 
 
 use App\Contracts\FileWriterAbstractFactory;

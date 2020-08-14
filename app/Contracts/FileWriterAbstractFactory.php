@@ -33,7 +33,6 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
         return File::exists($filePath);
     }
 
-
     /**
      * @param string $defaultModelDirectory
      * @param string $modelName
@@ -47,6 +46,11 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
         );
     }
 
+    /**
+     * @param string $directory
+     * @param string $applicationNamespace
+     * @return string
+     */
     public static function getDefaultDirectory($directory = "", string $applicationNamespace = ""): string
     {
         return empty($directory)
@@ -54,7 +58,13 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
             : $applicationNamespace . DIRECTORY_SEPARATOR . $directory;
     }
 
+    /**
+     * @param string $name
+     */
     abstract public function setFileName(string $name): void;
 
+    /**
+     * @return string
+     */
     abstract public function getFileName(): string;
 }

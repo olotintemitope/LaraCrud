@@ -27,7 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //$this->app->bind(BuilderServiceInterface::class, ModelServiceBuilder::class);
-        //$this->app->bind(BuilderServiceInterface::class, MigrationServiceBuilder::class);
+        //
     }
 }

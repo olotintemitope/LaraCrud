@@ -2,14 +2,13 @@
 
 namespace App\Commands;
 
-use App\Contracts\FileWriterAbstractFactory;
-use App\Services\FileWriterDirector;
+use App\Builders\MigrationServiceBuilder;
+use App\Builders\ModelServiceBuilder;
+use App\Directors\FileWriterDirector;
+use App\Directors\OutPutDirector;
 use App\Services\InputReaderService;
-use App\Services\MigrationFileWriter;
-use App\Services\MigrationServiceBuilder;
-use App\Services\ModelFileWriter;
-use App\Services\ModelServiceBuilder;
-use App\Services\OutPutDirector;
+use App\Services\MigrationFileWriterService;
+use App\Services\ModelFileWriterService;
 use App\Contracts\ConstantInterface;
 use Exception;
 use LaravelZero\Framework\Commands\Command;
@@ -41,11 +40,11 @@ class LaraCrudCommand extends Command implements ConstantInterface
     /**
      * Execute the console command.
      *
-     * @param ModelFileWriter $modelFileWriter
-     * @param MigrationFileWriter $migrationFileWriter
+     * @param ModelFileWriterService $modelFileWriter
+     * @param MigrationFileWriterService $migrationFileWriter
      * @return mixed
      */
-    public function handle(ModelFileWriter $modelFileWriter, MigrationFileWriter $migrationFileWriter)
+    public function handle(ModelFileWriterService $modelFileWriter, MigrationFileWriterService $migrationFileWriter)
     {
         try {
             [$modelName, $defaultModelDirectory, $modelPath, $migrations] = $this->inputReader();

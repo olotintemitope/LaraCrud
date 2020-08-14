@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Contracts\FileWriterAbstractFactory;
 
-final class ModelFileWriter extends FileWriterAbstractFactory
+final class ModelFileWriterService extends FileWriterAbstractFactory
 {
     public function getFilename(): string
     {
