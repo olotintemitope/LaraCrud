@@ -68,7 +68,7 @@ trait OutPutWriterTrait
      */
     public function getStartTag(): string
     {
-        return $this->writeLine("<?php", 0, PHP_EOL);
+        return $this->writeLine("<?php", 0);
     }
 
     /**
@@ -88,7 +88,10 @@ trait OutPutWriterTrait
      */
     public function writeLine(string $line, int $tabs, $newLine = false, $carriageReturn = true): string
     {
-        return $this->tabIndent($tabs) . $line . ($newLine ? PHP_EOL : "") . ($carriageReturn ? static::PHP_CRT : "");
+        //@TODO Fix os new lines
+        // windows os "\r\n"
+        // other os "\n"
+        return $this->tabIndent($tabs) . $line . ($carriageReturn ? static::PHP_CRT : "") . ($newLine ? PHP_EOL : "");
     }
 
     /**
