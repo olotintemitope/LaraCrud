@@ -13,19 +13,17 @@ class User extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'firstname'
-,		'lastname'
-,		'age'
-,		'dob'
-,		'isAdmitted'
-,
+		'firstname',
+		'lastname',
+		'dob',
+		'isAdmitted',
+		'age',
 	];
 	/**
 	 * @var array
 	 */
 	protected $casts = [
-		'dob' => 'date'
-,		'isAdmitted' => 'bool'
-
+		'dob' => 'date',
+		'isAdmitted' => 'bool'
 	];
 }

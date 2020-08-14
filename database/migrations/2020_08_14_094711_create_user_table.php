@@ -2,7 +2,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-class CreateStudyTable extends Migration
+class CreateUserTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -11,13 +11,13 @@ use Illuminate\Database\Migrations\Migration;
 	 */
 	public function up()
 	{
-		Schema::create('studies', function (Blueprint $table) {
+		Schema::create('users', function (Blueprint $table) {
 			$table->increments('id');
 			$table->string('firstname');
 			$table->string('lastname');
-			$table->integer('age');
 			$table->date('dob');
 			$table->boolean('isAdmitted');
+			$table->integer('age', 2);
 			$table->timestamps();
 		});
 	}
@@ -28,6 +28,6 @@ use Illuminate\Database\Migrations\Migration;
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('studies');
+		Schema::dropIfExists('users');
 	}
 }

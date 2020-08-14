@@ -47,8 +47,8 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
      */
     protected function getFields(): string
     {
-        return implode(",".$this->getCarriageReturn(), array_map(function ($field) {
-            return $this->writeLine("'{$field}'", 2);
+        return implode(",".PHP_EOL, array_map(function ($field) {
+            return $this->writeLine("'{$field}'", 2, false);
         }, array_filter($this->getMigrationFields(), function ($field) {
                 return 'id' !== $field;
             })
@@ -78,10 +78,10 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
             if ($dataType === 'boolean') {
                 $dataType = 'bool';
             }
-            $casts[] = $this->writeLine("'{$fieldName}' => '{$dataType}'",2);
+            $casts[] = $this->writeLine("'{$fieldName}' => '{$dataType}'", 2, false);
         }
 
-        return implode(",".$this->getCarriageReturn() , $casts);
+        return implode(",".PHP_EOL, $casts);
     }
 
     /**
@@ -131,7 +131,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
      */
     public function getModelDependencies(): string
     {
-        return $this->writeLine($this->modelDependencies . static::END_OF_LINE, 0 , true);
+        return $this->writeLine($this->modelDependencies . static::END_OF_LINE, 0);
     }
 
     /**
@@ -140,7 +140,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
      */
     public function getModelTableDefinition($table = '$table'): string
     {
-        return $this->writeLine("protected $table = '{$this->getTableName()}';", 1, true);
+        return $this->writeLine("protected $table = '{$this->getTableName()}';", 1);
     }
 
     /**
@@ -170,8 +170,8 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
     protected function getFillableDefinition($fillable = '$fillable'): string
     {
         return
-            $this->writeLine("protected $fillable = [", 1).
-            $this->writeLine("{$this->getFields()},", 0).
+            $this->writeLine("protected $fillable = [", 1) .
+            $this->writeLine("{$this->getFields()},", 0) .
             $this->writeLine("];", 1);
     }
 
@@ -186,7 +186,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
     protected function getCastsDefinition($casts = '$casts'): string
     {
         return
-            $this->writeLine("protected $casts = [", 1).
+            $this->writeLine("protected $casts = [", 1) .
             $this->writeLine("{$this->getCastsField()}", 0) .
             $this->writeLine("];", 1);
     }
