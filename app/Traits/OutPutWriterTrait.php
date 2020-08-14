@@ -86,12 +86,17 @@ trait OutPutWriterTrait
      * @param bool $carriageReturn
      * @return string
      */
-    public function writeLine(string $line, int $tabs, $newLine = false, $carriageReturn = true): string
+    public function writeLine(string $line, int $tabs, $newLine = true, $carriageReturn = true): string
     {
         //@TODO Fix os new lines
         // windows os "\r\n"
         // other os "\n"
-        return $this->tabIndent($tabs) . $line . ($carriageReturn ? static::PHP_CRT : "") . ($newLine ? PHP_EOL : "");
+        $systemOs = PHP_OS;
+
+        if ($systemOs === 'Windows') {
+            return $this->tabIndent($tabs) . $line . ($carriageReturn ? static::PHP_CRT : "") . ($newLine ? PHP_EOL : "");
+        }
+        return $this->tabIndent($tabs) . $line  . ($newLine ? PHP_EOL : "");
     }
 
     /**

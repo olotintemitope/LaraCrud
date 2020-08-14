@@ -18,7 +18,7 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
     {
         if (!File::exists($filePath)) {
             File::ensureDirectoryExists($directory);
-            File::put($filePath, trim($content), false);
+            File::put($filePath, trim($content), LOCK_EX);
         } else {
             throw new RuntimeException("{$filePath} already exists");
         }
