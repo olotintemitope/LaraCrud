@@ -48,7 +48,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
     protected function getFields(): string
     {
         return implode(",".$this->getCarriageReturn(), array_map(function ($field) {
-            return $this->writeLine("'{$field}'", 2, false, false);
+            return $this->writeLine("'{$field}'", 2);
         }, array_filter($this->getMigrationFields(), function ($field) {
                 return 'id' !== $field;
             })
@@ -78,7 +78,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
             if ($dataType === 'boolean') {
                 $dataType = 'bool';
             }
-            $casts[] = $this->writeLine("'{$fieldName}' => '{$dataType}'",2, false , false);
+            $casts[] = $this->writeLine("'{$fieldName}' => '{$dataType}'",2);
         }
 
         return implode(",".$this->getCarriageReturn() , $casts);
@@ -172,7 +172,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
         return
             $this->writeLine("protected $fillable = [", 1).
             $this->writeLine("{$this->getFields()},", 0).
-            $this->writeLine("];", 1, PHP_EOL);
+            $this->writeLine("];", 1);
     }
 
     /**
@@ -186,7 +186,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
     protected function getCastsDefinition($casts = '$casts'): string
     {
         return
-            $this->writeLine("protected $casts = [", 1 ).
+            $this->writeLine("protected $casts = [", 1).
             $this->writeLine("{$this->getCastsField()}", 0) .
             $this->writeLine("];", 1);
     }
