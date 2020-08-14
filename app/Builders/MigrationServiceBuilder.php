@@ -2,9 +2,9 @@
 
 namespace App\Builders;
 
+use App\Contracts\BuilderServiceInterface;
 use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
-use App\Contracts\BuilderServiceInterface;
 use App\Traits\OutPutWriterTrait;
 
 class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterface
@@ -45,7 +45,7 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
      */
     public function getMigrationDependencies(): string
     {
-        return $this->migrationDependencies . static::END_OF_LINE;
+        return $this->migrationDependencies . static::END_OF_LINE . PHP_EOL;
     }
 
     /**
@@ -107,7 +107,7 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
             $this->writeLine("public function down()", 1) .
             $this->writeLine("{", 1) .
             $this->writeLine("Schema::dropIfExists('{$this->modelService->getTableName()}');", 2) .
-            $this->writeLine("}", 1 );
+            $this->writeLine("}", 1);
     }
 
     /**
@@ -149,9 +149,8 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
     public function build(): string
     {
         return
-            $this->getStartTag() .
-            $this->getMigrationDependencies() .
-            $this->getEndOfLine() .
+            $this->getStartTag() . PHP_EOL .
+            $this->getMigrationDependencies() . PHP_EOL .
             $this->getClassDefinition() .
             $this->comments(
                 'Run the migrations.',

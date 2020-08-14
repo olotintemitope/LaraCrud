@@ -47,7 +47,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
      */
     protected function getFields(): string
     {
-        return implode(",".PHP_EOL, array_map(function ($field) {
+        return implode("," . PHP_EOL, array_map(function ($field) {
             return $this->writeLine("'{$field}'", 2, false);
         }, array_filter($this->getMigrationFields(), function ($field) {
                 return 'id' !== $field;
@@ -81,7 +81,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
             $casts[] = $this->writeLine("'{$fieldName}' => '{$dataType}'", 2, false);
         }
 
-        return implode(",".PHP_EOL, $casts);
+        return implode("," . PHP_EOL, $casts);
     }
 
     /**
@@ -215,9 +215,9 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
     public function build(): string
     {
         return
-            $this->getStartTag() .
-            $this->getNameSpace() .
-            $this->getModelDependencies() .
+            $this->getStartTag() . PHP_EOL .
+            $this->getNameSpace() . PHP_EOL .
+            $this->getModelDependencies() . PHP_EOL .
             $this->getClassDefinition() .
             $this->comments('@var array') .
             $this->getModelTableDefinition() .
