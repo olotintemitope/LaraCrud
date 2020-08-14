@@ -58,15 +58,4 @@ final class MigrationFileWriter extends FileWriterAbstractFactory
     {
         return $this->fileName;
     }
-
-    /**
-     * @param FileWriterDirector $fileWriterDirector
-     * @return array
-     */
-    public function getBaseDirectory(FileWriterDirector $fileWriterDirector): array
-    {
-        $migrationFulPath = $fileWriterDirector->getFileWriter()::getDefaultDirectory();
-        $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $fileWriterDirector->getFileName();
-        return array($migrationFulPath, $filePath);
-    }
 }

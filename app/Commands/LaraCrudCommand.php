@@ -11,6 +11,7 @@ use App\Services\ModelFileWriter;
 use App\Services\ModelServiceBuilder;
 use App\Services\OutPutDirector;
 use App\Contracts\ConstantInterface;
+use Exception;
 use LaravelZero\Framework\Commands\Command;
 
 class LaraCrudCommand extends Command implements ConstantInterface
@@ -60,14 +61,15 @@ class LaraCrudCommand extends Command implements ConstantInterface
 
                 $migrationBuilder = $this->getMigrationBuilder($modelBuilder);
                 $fileOutputDirector = new OutPutDirector($migrationBuilder);
-                [$migrationFulPath, $filePath] = $migrationFileWriter->getBaseDirectory($fileWriter);
                 $fileWriter = new FileWriterDirector($migrationFileWriter);
-                // Write to migration folder
+                $fileWriter->setFileName(strtolower("create_{$modelName}_table"));
+                [$migrationFulPath, $filePath] = $this->getMigrationDirectory($fileWriter);
+                 //Write to migration folder
                 $fileWriter::write($migrationFulPath, $filePath, $fileOutputDirector->getFileContent());
                 $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
             }
-        } catch (\Exception $exception) {
-            $this->error($exception->getMessage());
+        } catch (Exception $exception) {
+            $this->error($exception->getMessage(). $exception->getTraceAsString());
         }
     }
 
@@ -108,5 +110,16 @@ class LaraCrudCommand extends Command implements ConstantInterface
             'use Illuminate\Database\Migrations\Migration',
         ]);
         return $migrationBuilder;
+    }
+
+    /**
+     * @param FileWriterDirector $fileWriterDirector
+     * @return array
+     */
+    public function getMigrationDirectory(FileWriterDirector $fileWriterDirector): array
+    {
+        $migrationFulPath = $fileWriterDirector->getFileWriter()::getDefaultDirectory();
+        $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $fileWriterDirector->getFileName();
+        return array($migrationFulPath, $filePath);
     }
 }

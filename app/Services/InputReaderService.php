@@ -97,7 +97,7 @@ class InputReaderService implements ConstantInterface
     {
         // Cater for enum types. $table->enum('level', ['easy', 'hard']);
         if ('enum' === $dbColumnFieldType) {
-            $enumValues = str_replace(" ", '', trim($this->ask('Enter enum values separated by a comma')));
+            $enumValues = str_replace(" ", '', trim($this->laraCrudCommand->ask('Enter enum values separated by a comma')));
             if (empty($enumValues)) {
                 $this->laraCrudCommand->error("field name is missing");
             }
