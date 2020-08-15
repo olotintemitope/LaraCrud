@@ -2,12 +2,13 @@
 
 namespace App\Builders;
 
+use App\Contracts\AbstractBuilderServiceConstants;
 use App\Contracts\BuilderServiceInterface;
 use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
 use App\Traits\OutPutWriterTrait;
 
-class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterface
+class MigrationServiceBuilder extends AbstractBuilderServiceConstants implements ConstantInterface, BuilderServiceInterface
 {
     use OutPutWriterTrait;
 
@@ -36,7 +37,7 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
      */
     public function setMigrationDependencies(array $namespaces): MigrationServiceBuilder
     {
-        $this->migrationDependencies = implode(";" . PHP_EOL, $namespaces);
+        $this->migrationDependencies = implode(";" . $this->getNewLine(), $namespaces);
         return $this;
     }
 
@@ -45,7 +46,7 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
      */
     public function getMigrationDependencies(): string
     {
-        return $this->migrationDependencies . static::END_OF_LINE . PHP_EOL;
+        return $this->migrationDependencies . static::END_OF_LINE . $this->getNewLine();
     }
 
     /**
@@ -149,8 +150,10 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
     public function build(): string
     {
         return
-            $this->getStartTag() . PHP_EOL .
-            $this->getMigrationDependencies() . PHP_EOL .
+            $this->getStartTag() .
+            $this->getNewLine() .
+            $this->getMigrationDependencies() .
+            $this->getNewLine() .
             $this->getClassDefinition() .
             $this->comments(
                 'Run the migrations.',
@@ -158,12 +161,14 @@ class MigrationServiceBuilder implements ConstantInterface, BuilderServiceInterf
                 '@return void'
             ) .
             $this->getSchemaTearUp() .
+            $this->getNewLine() .
             $this->comments(
                 'Reverse the migrations.',
                 '',
                 '@return void'
             ) .
             $this->getSchemaTearDown() .
+            $this->getNewLine() .
             $this->getClosingTag();
     }
 }

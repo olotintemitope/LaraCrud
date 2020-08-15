@@ -34,7 +34,7 @@ trait OutPutWriterTrait
      */
     protected function getEndOfLine(): string
     {
-        return PHP_EOL . self::PHP_CRT;
+        return $this->getNewLine() . self::PHP_CRT;
     }
 
     /**
@@ -94,9 +94,9 @@ trait OutPutWriterTrait
         $systemOs = PHP_OS;
 
         if ($systemOs === 'Windows') {
-            return $this->tabIndent($tabs) . $line . ($carriageReturn ? static::PHP_CRT : "") . ($newLine ? PHP_EOL : "");
+            return $this->tabIndent($tabs) . $line . ($carriageReturn ? static::PHP_CRT : "") . ($newLine ? $this->getNewLine() : "");
         }
-        return $this->tabIndent($tabs) . $line  . ($newLine ? PHP_EOL : "");
+        return $this->tabIndent($tabs) . $line  . ($newLine ? $this->getNewLine() : "");
     }
 
     /**

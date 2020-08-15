@@ -1,15 +1,15 @@
 <?php
 
-
 namespace App\Builders;
 
+use App\Contracts\AbstractBuilderServiceConstants;
 use App\Contracts\BuilderServiceInterface;
 use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
 use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
 
-class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
+class ModelServiceBuilder extends AbstractBuilderServiceConstants implements ConstantInterface, BuilderServiceInterface
 {
     use OutPutWriterTrait;
 
@@ -47,7 +47,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
      */
     protected function getFields(): string
     {
-        return implode("," . PHP_EOL, array_map(function ($field) {
+        return implode("," . $this->getNewLine(), array_map(function ($field) {
             return $this->writeLine("'{$field}'", 2, false);
         }, array_filter($this->getMigrationFields(), function ($field) {
                 return 'id' !== $field;
@@ -81,7 +81,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
             $casts[] = $this->writeLine("'{$fieldName}' => '{$dataType}'", 2, false);
         }
 
-        return implode("," . PHP_EOL, $casts);
+        return implode("," . $this->getNewLine(), $casts);
     }
 
     /**
@@ -122,7 +122,7 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
      */
     public function setModelDependencies(array $namespaces): ModelServiceBuilder
     {
-        $this->modelDependencies = implode(";" . PHP_EOL, $namespaces);
+        $this->modelDependencies = implode(";" . $this->getNewLine(), $namespaces);
         return $this;
     }
 
@@ -215,20 +215,25 @@ class ModelServiceBuilder implements ConstantInterface, BuilderServiceInterface
     public function build(): string
     {
         return
-            $this->getStartTag() . PHP_EOL .
-            $this->getNameSpace() . PHP_EOL .
-            $this->getModelDependencies() . PHP_EOL .
+            $this->getStartTag() .
+            $this->getNewLine() .
+            $this->getNameSpace() .
+            $this->getNewLine() .
+            $this->getModelDependencies() .
+            $this->getNewLine() .
             $this->getClassDefinition() .
-            $this->comments('@var array') .
             $this->getModelTableDefinition() .
+            $this->getNewLine() .
             $this->comments(
                 'The attributes that are mass assignable.',
                 '',
                 '@var array'
             ) .
             $this->getFillableDefinition() .
+            $this->getNewLine() .
             $this->comments('@var array') .
             $this->getCastsDefinition() .
+            $this->getNewLine() .
             $this->getClosingTag();
     }
 }
