@@ -68,7 +68,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
                 $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
             }
         } catch (Exception $exception) {
-            $this->error($exception->getMessage(). $exception->getTraceAsString());
+            $this->error($exception->getMessage());
         }
     }
 

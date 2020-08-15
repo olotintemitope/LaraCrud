@@ -22,7 +22,7 @@ class InputReaderService implements ConstantInterface
     {
         $migrations = ['id' => ['field_type' => 'increments'],];
 
-        $modelName = strip_tags($this->laraCrudCommand->argument('name'));
+        $modelName = $this->getModelNameValue($this->laraCrudCommand->argument('name'));
         if (empty($modelName)) {
             $this->laraCrudCommand->error("Name argument is missing");
         }
@@ -34,7 +34,7 @@ class InputReaderService implements ConstantInterface
         }
 
         do {
-            $dbFieldName = $this->getModelValue($this->askForFieldName());
+            $dbFieldName = $this->getModelFieldValue($this->askForFieldName());
             if (!empty($dbFieldName) && 'exit' !== $dbFieldName && 'no' !== $dbFieldName) {
                 $dbColumnFieldType = $this->userWillSelectColumnFieldType();
                 $migrations = $this->setMigrations($migrations, $dbFieldName, $dbColumnFieldType);
@@ -62,7 +62,7 @@ class InputReaderService implements ConstantInterface
         return $this->laraCrudCommand->choice(
             'Select field type',
             array_keys(static::AVAILABLE_COLUMN_TYPES),
-            $defaultIndex = 38,
+            $defaultIndex = static::STRING_FIELD,
             $maxAttempts = null,
             $allowMultipleSelections = false
         );
@@ -142,7 +142,7 @@ class InputReaderService implements ConstantInterface
      * @param $input
      * @return mixed
      */
-    protected function getModelValue(string $input): string
+    protected function getModelFieldValue(string $input): string
     {
         $fieldName = '';
         $pattern = '/^([A-Za-z\s])*\w+/i';
@@ -155,6 +155,10 @@ class InputReaderService implements ConstantInterface
         return $fieldName;
     }
 
+    /**
+     * @param string $input
+     * @return string
+     */
     protected function getEnumValue(string $input): string
     {
         $fieldName = '';
@@ -163,6 +167,24 @@ class InputReaderService implements ConstantInterface
 
         if (isset($matches[0])) {
             $fieldName = $matches[0];
+        }
+
+        return $fieldName;
+    }
+
+    /**
+     * @param $input
+     * @return string
+     */
+    protected function getModelNameValue($input): string
+    {
+        $fieldName = '';
+
+        $pattern = '/^([A-Za-z])\w+/i';
+        preg_match($pattern, $input, $matches);
+
+        if (isset($matches[0])) {
+            $fieldName = ucwords($matches[0]);
         }
 
         return $fieldName;
