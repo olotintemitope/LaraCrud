@@ -2,14 +2,14 @@
 
 namespace App\Builders;
 
-use App\Contracts\AbstractBuilderServiceConstants;
+use App\Contracts\AbstractBuilderServiceCommon;
 use App\Contracts\BuilderServiceInterface;
 use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
 use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
 
-class ModelServiceBuilder extends AbstractBuilderServiceConstants implements ConstantInterface, BuilderServiceInterface
+class ModelServiceBuilder extends AbstractBuilderServiceCommon implements ConstantInterface, BuilderServiceInterface
 {
     use OutPutWriterTrait;
 
@@ -187,7 +187,7 @@ class ModelServiceBuilder extends AbstractBuilderServiceConstants implements Con
     {
         return
             $this->writeLine("protected $casts = [", 1) .
-            $this->writeLine("{$this->getCastsField()}", 0) .
+            $this->writeLine("{$this->getCastsField()},", 0) .
             $this->writeLine("];", 1);
     }
 

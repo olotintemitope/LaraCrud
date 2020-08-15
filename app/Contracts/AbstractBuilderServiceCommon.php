@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-abstract class AbstractBuilderServiceConstants
+abstract class AbstractBuilderServiceCommon
 {
     /**
      * @return string

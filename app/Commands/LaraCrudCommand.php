@@ -34,7 +34,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
     public function __construct()
     {
         parent::__construct();
-        $this->inputReaderService = new InputReaderService($this);
+        $this->inputReaderService = new InputReaderService($this, new ModelFileWriterService);
     }
 
     /**

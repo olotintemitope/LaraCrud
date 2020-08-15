@@ -2,13 +2,13 @@
 
 namespace App\Builders;
 
-use App\Contracts\AbstractBuilderServiceConstants;
+use App\Contracts\AbstractBuilderServiceCommon;
 use App\Contracts\BuilderServiceInterface;
 use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
 use App\Traits\OutPutWriterTrait;
 
-class MigrationServiceBuilder extends AbstractBuilderServiceConstants implements ConstantInterface, BuilderServiceInterface
+class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements ConstantInterface, BuilderServiceInterface
 {
     use OutPutWriterTrait;
 

@@ -9,12 +9,15 @@ interface ConstantInterface
 {
     public const DEFAULT_MODEL_FOLDER = "Models";
     public const FILE_EXTENSION = ".php";
-    public const EXIT_CONSOLE = true;
+    public const YES_PLEASE = true;
     public const PHP_CRT = "\r";
     public const PHP_TAB = "\t";
     public const END_OF_LINE = ";";
     public const DEFAULT_MIGRATION_FOLDER = "database/migrations";
     public const STRING_FIELD = 38;
+    public const EXIT = "exit";
+    public const ENUM = "enum";
+    public const NO_PLEASE = "no";
 
     public const AVAILABLE_COLUMN_TYPES = [
         'bigIncrements' => 'Auto-incrementing UNSIGNED BIGINT (primary key) equivalent column.',

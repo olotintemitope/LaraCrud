@@ -4,15 +4,19 @@ namespace App\Services;
 
 use App\Commands\LaraCrudCommand;
 use App\Contracts\ConstantInterface;
-use App\Contracts\FileWriterAbstractFactory;
 
 class InputReaderService implements ConstantInterface
 {
     private $laraCrudCommand;
+    /**
+     * @var ModelFileWriterService
+     */
+    private $modelWriter;
 
-    public function __construct(LaraCrudCommand $laraCrudCommand)
+    public function __construct(LaraCrudCommand $laraCrudCommand, ModelFileWriterService $writer)
     {
         $this->laraCrudCommand = $laraCrudCommand;
+        $this->modelWriter = $writer;
     }
 
     /**
@@ -27,20 +31,22 @@ class InputReaderService implements ConstantInterface
             $this->laraCrudCommand->error("Name argument is missing");
         }
 
-        [$defaultModelDirectory, $modelPath] = $this->getModelDirectoryInfo($modelName);
-        if (FileWriterAbstractFactory::fileExists($modelPath)) {
+        $modelDirectory = $this->laraCrudCommand->option('folder');
+        [$defaultModelDirectory, $modelPath] = $this->modelWriter::getDirectoryInfo($modelName, $modelDirectory);
+
+        if ($this->modelWriter::fileExists($modelPath)) {
             $this->laraCrudCommand->error("{$modelPath} already exist");
             exit();
         }
 
         do {
             $dbFieldName = $this->getModelFieldValue($this->askForFieldName());
-            if (!empty($dbFieldName) && 'exit' !== $dbFieldName && 'no' !== $dbFieldName) {
+            if (!empty($dbFieldName) && static::EXIT !== $dbFieldName && static::NO_PLEASE !== $dbFieldName) {
                 $dbColumnFieldType = $this->userWillSelectColumnFieldType();
                 $migrations = $this->setMigrations($migrations, $dbFieldName, $dbColumnFieldType);
             }
-            if ('exit' === $dbFieldName) {
-                if ($this->laraCrudCommand->confirm('Are you sure you want to exit?', static::EXIT_CONSOLE)) {
+            if (static::EXIT === $dbFieldName) {
+                if ($this->laraCrudCommand->confirm('Are you sure you want to exit?', static::YES_PLEASE)) {
                     break;
                 }
             }
@@ -92,7 +98,7 @@ class InputReaderService implements ConstantInterface
      */
     public function setMigrations(array $migrations, string $dbFieldName, string $dbColumnFieldType): array
     {
-        if ('enum' === $dbColumnFieldType) {
+        if (static::ENUM === $dbColumnFieldType) {
             $enumValues = $this->getEnumValue(
                 str_replace(
                     ' ',
@@ -108,34 +114,19 @@ class InputReaderService implements ConstantInterface
             }
         }
 
-        if ('enum' !== $dbColumnFieldType) {
+        if (static::ENUM !== $dbColumnFieldType) {
             $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType];
         }
 
         if (str_contains($dbColumnFieldType, 'string') || str_contains($dbColumnFieldType, 'integer')) {
             $fieldLength = (int)trim($this->laraCrudCommand->ask('Enter the length'));
-            $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'length' => $fieldLength];
-
             if (empty($fieldLength)) {
                 $this->laraCrudCommand->info('Default length will be used instead');
             }
+            $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'length' => $fieldLength];
         }
 
         return $migrations;
-    }
-
-    /**
-     * @param string $modelName
-     * @return array
-     */
-    protected function getModelDirectoryInfo(string $modelName): array
-    {
-        $modelDirectory = $this->laraCrudCommand->option('folder');
-        $applicationNamespace = ucwords(explode('\\', static::class)[0]);
-        $defaultModelDirectory = FileWriterAbstractFactory::getDefaultDirectory($modelDirectory, $applicationNamespace);
-        $modelPath = FileWriterAbstractFactory::getWorkingDirectory($defaultModelDirectory, $modelName);
-
-        return [$defaultModelDirectory, $modelPath];
     }
 
     /**
@@ -144,15 +135,10 @@ class InputReaderService implements ConstantInterface
      */
     protected function getModelFieldValue(string $input): string
     {
-        $fieldName = '';
         $pattern = '/^([A-Za-z\s])*\w+/i';
         preg_match($pattern, $input, $matches);
 
-        if (isset($matches[0])) {
-            $fieldName = $matches[0];
-        }
-
-        return $fieldName;
+        return isset($matches[0]) ? $matches[0] : '';
     }
 
     /**
@@ -161,15 +147,10 @@ class InputReaderService implements ConstantInterface
      */
     protected function getEnumValue(string $input): string
     {
-        $fieldName = '';
         $pattern = '/^([A-Za-z\s,])+\w+/i';
         preg_match($pattern, $input, $matches);
 
-        if (isset($matches[0])) {
-            $fieldName = $matches[0];
-        }
-
-        return $fieldName;
+        return isset($matches[0]) ? $matches[0] : '';
     }
 
     /**
@@ -178,15 +159,9 @@ class InputReaderService implements ConstantInterface
      */
     protected function getModelNameValue($input): string
     {
-        $fieldName = '';
-
         $pattern = '/^([A-Za-z])\w+/i';
         preg_match($pattern, $input, $matches);
 
-        if (isset($matches[0])) {
-            $fieldName = ucwords($matches[0]);
-        }
-
-        return $fieldName;
+        return isset($matches[0]) ? $matches[0] : '';
     }
 }
