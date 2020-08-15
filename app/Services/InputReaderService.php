@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Commands\LaraCrudCommand;
 use App\Contracts\ConstantInterface;
+use App\Contracts\FileWriterAbstractFactory;
 
 class InputReaderService implements ConstantInterface
 {
@@ -13,13 +14,15 @@ class InputReaderService implements ConstantInterface
      */
     private $modelWriter;
 
-    public function __construct(LaraCrudCommand $laraCrudCommand, ModelFileWriterService $writer)
+    public function __construct(LaraCrudCommand $laraCrudCommand, FileWriterAbstractFactory $writer)
     {
         $this->laraCrudCommand = $laraCrudCommand;
         $this->modelWriter = $writer;
     }
 
     /**
+     * Get all the console inputs
+     *
      * @return array
      */
     public function inputReader(): array
@@ -61,6 +64,8 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
+     * Get options from the console
+     *
      * @return string
      */
     private function userWillSelectColumnFieldType(): string
@@ -75,7 +80,9 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
-     * @return mixed|string|string[]
+     * Get the field name from the console
+     *
+     * @return string
      */
     private function userWillEnterFieldName(): string
     {
@@ -83,7 +90,9 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
-     * @return mixed|string|string[]
+     * Get the field name from the console
+     *
+     * @return string
      */
     private function askForFieldName(): string
     {
@@ -91,6 +100,9 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
+     * Set all the console input into a migration variable
+     * that help define each field properties
+     *
      * @param $migrations
      * @param $dbFieldName
      * @param $dbColumnFieldType
@@ -130,6 +142,8 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
+     * Validate and return model field value
+     *
      * @param $input
      * @return mixed
      */
@@ -142,6 +156,8 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
+     * Validate and return enum field value
+     *
      * @param string $input
      * @return string
      */
@@ -154,6 +170,8 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
+     * Validate and return model name value
+     *
      * @param $input
      * @return string
      */

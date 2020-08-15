@@ -47,6 +47,8 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
     }
 
     /**
+     * Get the default directory of the model
+     *
      * @param string $directory
      * @param string $applicationNamespace
      * @return string
@@ -59,11 +61,15 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
     }
 
     /**
+     * Should be implemented to set the filename
+     *
      * @param string $name
      */
     abstract public function setFileName(string $name): void;
 
     /**
+     * Should be implemented to get the filename
+     *
      * @return string
      */
     abstract public function getFileName(): string;

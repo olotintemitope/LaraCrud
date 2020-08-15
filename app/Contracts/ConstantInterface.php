@@ -93,4 +93,13 @@ interface ConstantInterface
         'datetime',
         'timestamp',
     ];
+
+    public const columnTypesWithoutArguments = [
+        'nullableTimestamps',
+        'rememberToken',
+        'softDeletes',
+        'softDeletesTz',
+        'timestamps',
+        'timestampsTz',
+    ];
 }

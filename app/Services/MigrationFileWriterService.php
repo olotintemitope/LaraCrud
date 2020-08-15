@@ -4,6 +4,7 @@
 namespace App\Services;
 
 use App\Contracts\FileWriterAbstractFactory;
+use App\Directors\FileWriterDirector;
 
 final class MigrationFileWriterService extends FileWriterAbstractFactory
 {
@@ -11,7 +12,10 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
      * @var string
      */
     protected $fileName = "";
+
     /**
+     * Get migration folder full path
+     *
      * @param string $defaultDirectory
      * @param string $fileName
      * @return string
@@ -25,6 +29,7 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
     }
 
     /**
+     * Get migration folder absolute path
      * @param string $directory
      * @param string $applicationNamespace
      * @return string
@@ -35,6 +40,8 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
     }
 
     /**
+     * Get date string
+     *
      * @return false|string
      */
     protected function getDatePrefix()
@@ -43,6 +50,8 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
     }
 
     /**
+     * Set the filename
+     *
      * @param string $name
      * @return void
      */
@@ -52,10 +61,24 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
     }
 
     /**
+     * Get the filename
      * @return string
      */
     public function getFileName(): string
     {
         return $this->fileName;
+    }
+
+    /**
+     * Get the migration path and the complete migration file absolute path
+     *
+     * @param FileWriterDirector $fileWriterDirector
+     * @return array
+     */
+    public function getDirectory(FileWriterDirector $fileWriterDirector): array
+    {
+        $migrationFulPath = $fileWriterDirector->getFileWriter()::getDefaultDirectory();
+        $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $fileWriterDirector->getFileName();
+        return array($migrationFulPath, $filePath);
     }
 }

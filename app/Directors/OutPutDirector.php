@@ -18,6 +18,7 @@ class OutPutDirector
     }
 
     /**
+     * Get builder content
      * @return string
      */
     public function getFileContent(): string

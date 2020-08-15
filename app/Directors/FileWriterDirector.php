@@ -20,6 +20,8 @@ class FileWriterDirector extends FileWriterAbstractFactory implements FileWriter
     }
 
     /**
+     * Get the FileWriter Instance
+     *
      * @return FileWriterAbstractFactory
      */
     public function getFileWriter(): FileWriterAbstractFactory
@@ -27,11 +29,21 @@ class FileWriterDirector extends FileWriterAbstractFactory implements FileWriter
         return $this->fileWriter;
     }
 
+    /**
+     * Get the filename
+     *
+     * @return string
+     */
     public function getFilename(): string
     {
         return $this->fileWriter->getFilename();
     }
 
+    /**
+     * Set the filename
+     *
+     * @param string $name
+     */
     public function setFileName(string $name): void
     {
         $this->fileWriter->setFileName($name);

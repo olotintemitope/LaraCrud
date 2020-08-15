@@ -62,7 +62,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
                 $fileOutputDirector = new OutPutDirector($migrationBuilder);
                 $fileWriter = new FileWriterDirector($migrationFileWriter);
                 $fileWriter->setFileName(strtolower("create_{$modelName}_table"));
-                [$migrationFulPath, $filePath] = $this->getMigrationDirectory($fileWriter);
+                [$migrationFulPath, $filePath] = $migrationFileWriter->getDirectory($fileWriter);
                  //Write to migration folder
                 $fileWriter::write($migrationFulPath, $filePath, $fileOutputDirector->getFileContent());
                 $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
@@ -73,6 +73,8 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
+     * Get the model builder
+     *
      * @param string $modelName
      * @param array $migrations
      * @param string $modelNamespace
@@ -89,6 +91,8 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
+     * Read all the input from the console
+     *
      * @return array
      */
     protected function inputReader(): array
@@ -97,28 +101,18 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
+     * Get the migration builder
+     *
      * @param ModelServiceBuilder $model
      * @return MigrationServiceBuilder
      */
     protected function getMigrationBuilder(ModelServiceBuilder $model): MigrationServiceBuilder
     {
-        $migrationBuilder = new MigrationServiceBuilder($model);
-        $migrationBuilder->setMigrationDependencies([
-            'use Illuminate\Support\Facades\Schema',
-            'use Illuminate\Database\Schema\Blueprint',
-            'use Illuminate\Database\Migrations\Migration',
-        ]);
-        return $migrationBuilder;
-    }
-
-    /**
-     * @param FileWriterDirector $fileWriterDirector
-     * @return array
-     */
-    public function getMigrationDirectory(FileWriterDirector $fileWriterDirector): array
-    {
-        $migrationFulPath = $fileWriterDirector->getFileWriter()::getDefaultDirectory();
-        $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $fileWriterDirector->getFileName();
-        return array($migrationFulPath, $filePath);
+        return (new MigrationServiceBuilder($model))
+            ->setMigrationDependencies([
+                'use Illuminate\Support\Facades\Schema',
+                'use Illuminate\Database\Schema\Blueprint',
+                'use Illuminate\Database\Migrations\Migration',
+                ]);
     }
 }

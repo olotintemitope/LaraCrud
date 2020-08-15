@@ -85,6 +85,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     }
 
     /**
+     * Get the migration schema up function
+     *
      * @param string $table
      * @return string
      */
@@ -100,6 +102,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     }
 
     /**
+     * Get the migration schema down function
+     *
      * @return string
      */
     public function getSchemaTearDown(): string
@@ -112,6 +116,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     }
 
     /**
+     * Get enum field values from the console
+     *
      * @param array $migration
      * @param string $table
      * @param $dataType
@@ -128,6 +134,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     }
 
     /**
+     * Get fields, length and datatype from the console
+     *
      * @param $migration
      * @param string $table
      * @param $dataType
@@ -145,6 +153,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     }
 
     /**
+     * build the complete migration file content
+     *
      * @return string
      */
     public function build(): string
