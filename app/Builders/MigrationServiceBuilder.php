@@ -70,18 +70,13 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
         $tearUp = '';
 
         foreach ($this->modelService->getMigrations() as $field => $migration) {
-            $dataType = $migration['field_type'];
-            switch ($dataType) {
-                case static::ENUM:
-                    $tearUp .= $this->getEnumFields($migration, $table, $dataType, $field);
-                    break;
-                default:
-                    $tearUp .= $this->getOtherFields($migration, $table, $dataType, $field);
-                    break;
+            $fieldType = $migration['field_type'];
+            if (static::ENUM === $fieldType) {
+                $tearUp .= $this->getEnumFields($migration, $table, $fieldType, $field);
+            } else {
+                $tearUp .= $this->getOtherFields($migration, $table, $fieldType, $field);
             }
         }
-
-        //$tearUp .= $this->writeLine('$table->timestamps();', 3, false, false);
 
         return $tearUp;
     }

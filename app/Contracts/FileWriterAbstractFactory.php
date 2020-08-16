@@ -34,6 +34,9 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
     }
 
     /**
+     * Get the full path of the model
+     *
+     * @override
      * @param string $defaultModelDirectory
      * @param string $modelName
      * @return string
@@ -49,6 +52,7 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
     /**
      * Get the default directory of the model
      *
+     * @override
      * @param string $directory
      * @param string $applicationNamespace
      * @return string

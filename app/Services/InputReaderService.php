@@ -45,7 +45,7 @@ class InputReaderService implements ConstantInterface
         do {
             $dbFieldName = $this->getModelFieldValue($this->askForFieldName());
             if (!empty($dbFieldName) && static::EXIT !== $dbFieldName && static::NO_PLEASE !== $dbFieldName) {
-                $dbColumnFieldType = $this->userWillSelectColumnFieldType();
+                $dbColumnFieldType = $this->userWillSelectFieldType();
                 $migrations = $this->setMigrations($migrations, $dbFieldName, $dbColumnFieldType);
             }
             if (static::EXIT === $dbFieldName) {
@@ -68,7 +68,7 @@ class InputReaderService implements ConstantInterface
      *
      * @return string
      */
-    private function userWillSelectColumnFieldType(): string
+    private function userWillSelectFieldType(): string
     {
         return $this->laraCrudCommand->choice(
             'Select field type',
@@ -115,7 +115,7 @@ class InputReaderService implements ConstantInterface
                 str_replace(
                     ' ',
                     '',
-                    trim($this->laraCrudCommand->ask('Enter enum values separated by a comma'))
+                    trim($this->laraCrudCommand->ask('Enter the ENUM values separated by a comma'))
                 )
             );
             if (empty($enumValues)) {

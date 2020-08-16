@@ -46,6 +46,8 @@ trait OutPutWriterTrait
     }
 
     /**
+     * Write comments to the file
+     *
      * @param mixed ...$comments
      * @return string
      */
@@ -88,9 +90,6 @@ trait OutPutWriterTrait
      */
     public function writeLine(string $line, int $tabs, $newLine = true, $carriageReturn = true): string
     {
-        //@TODO Fix os new lines
-        // windows os "\r\n"
-        // other os "\n"
         $systemOs = PHP_OS;
 
         if ($systemOs === 'Windows') {
