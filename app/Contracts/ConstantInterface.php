@@ -102,4 +102,10 @@ interface ConstantInterface
         'timestamps',
         'timestampsTz',
     ];
+
+    public const TIMESTAMPS = [
+        'timestamps',
+        'timestampsTz',
+        'nullableTimestamps',
+    ];
 }

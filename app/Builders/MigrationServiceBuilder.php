@@ -7,6 +7,7 @@ use App\Contracts\BuilderServiceInterface;
 use App\Contracts\ConstantInterface;
 use App\Contracts\FileWriterAbstractFactory;
 use App\Traits\OutPutWriterTrait;
+use phpDocumentor\Reflection\Types\Static_;
 
 class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements ConstantInterface, BuilderServiceInterface
 {
@@ -158,6 +159,10 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
 
         if (in_array($dataType, static::COLUMN_TYPES_WITHOUT_ARGUMENTS, true)) {
             return $this->writeLine("$table->{$dataType}();", 3);
+        }
+
+        if (!in_array($dataType, static::TIMESTAMPS, true)) {
+            return $this->writeLine('$table->timestamps();', 3);
         }
 
         return $this->writeLine("$table->{$dataType}('{$field}');", 3);
