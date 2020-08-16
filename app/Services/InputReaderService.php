@@ -43,7 +43,7 @@ class InputReaderService implements ConstantInterface
         }
 
         do {
-            $dbFieldName = $this->getModelFieldValue($this->askForFieldName());
+            $dbFieldName = strtolower($this->getModelFieldValue($this->askForFieldName()));
             if (!empty($dbFieldName) && static::EXIT !== $dbFieldName && static::NO_PLEASE !== $dbFieldName) {
                 $dbColumnFieldType = $this->userWillSelectFieldType();
                 $migrations = $this->setMigrations($migrations, $dbFieldName, $dbColumnFieldType);

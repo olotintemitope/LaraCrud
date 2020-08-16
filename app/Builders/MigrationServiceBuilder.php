@@ -68,18 +68,21 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      */
     public function getMigrationFields($table = '$table'): string
     {
-        $tearUp = '';
+        $schemaTearUpFields = '';
+        $migrationFields = '';
 
         foreach ($this->modelService->getMigrations() as $field => $migration) {
             $fieldType = $migration['field_type'];
             if (static::ENUM === $fieldType) {
-                $tearUp .= $this->getEnumFields($migration, $table, $fieldType, $field);
+                $schemaTearUpFields .= $this->getEnumFields($migration, $table, $fieldType, $field);
             } else {
-                $tearUp .= $this->getOtherFields($migration, $table, $fieldType, $field);
+                $schemaTearUpFields .= $this->getOtherFields($migration, $table, $fieldType, $field);
             }
         }
 
-        return $tearUp;
+        $migrationFields = $this->getDefaultFields($schemaTearUpFields, $table, $migrationFields);
+
+        return $migrationFields;
     }
 
     /**
@@ -157,12 +160,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
             return $this->writeLine("$table->{$dataType}('{$field}', {$length});", 3);
         }
 
-        if (in_array($dataType, static::COLUMN_TYPES_WITHOUT_ARGUMENTS, true)) {
+        if (in_array($dataType, static::FIELD_TYPES_WITHOUT_ARGUMENTS, true)) {
             return $this->writeLine("$table->{$dataType}();", 3);
-        }
-
-        if (!in_array($dataType, static::TIMESTAMPS, true)) {
-            return $this->writeLine('$table->timestamps();', 3);
         }
 
         return $this->writeLine("$table->{$dataType}('{$field}');", 3);
@@ -186,5 +185,28 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
             $this->getSchemaTearDown() .
             $this->getNewLine() .
             $this->getClosingTag();
+    }
+
+    /**
+     * Add increment and timestamp
+     *
+     * @param string $schemaTearUpFields
+     * @param string $table
+     * @param string $migrationFields
+     * @return string
+     */
+    protected function getDefaultFields(string $schemaTearUpFields, string $table, string $migrationFields): string
+    {
+        if (!str_contains(strtolower($schemaTearUpFields), 'increments')) {
+            $increments = 'increments';
+            $migrationFields .= $this->writeLine("$table->{$increments}('id');", 3);
+        }
+
+        $migrationFields .= $schemaTearUpFields;
+
+        if (!str_contains(strtolower($schemaTearUpFields), 'timestamps')) {
+            $migrationFields .= $this->writeLine('$table->timestamps();', 3);
+        }
+        return $migrationFields;
     }
 }
