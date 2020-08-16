@@ -94,7 +94,7 @@ interface ConstantInterface
         'timestamp',
     ];
 
-    public const columnTypesWithoutArguments = [
+    public const COLUMN_TYPES_WITHOUT_ARGUMENTS = [
         'nullableTimestamps',
         'rememberToken',
         'softDeletes',

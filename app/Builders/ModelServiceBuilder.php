@@ -170,6 +170,11 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
     protected function getFillableDefinition($fillable = '$fillable'): string
     {
         return
+            $this->comments(
+                'The attributes that are mass assignable.',
+                '',
+                '@var array'
+            ) .
             $this->writeLine("protected $fillable = [", 1) .
             $this->writeLine("{$this->getFields()},", 0) .
             $this->writeLine("];", 1);
@@ -185,7 +190,12 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
 
     protected function getCastsDefinition($casts = '$casts'): string
     {
+        if (empty($this->getCastsField())) {
+            return '';
+        }
+
         return
+            $this->comments('@var array') .
             $this->writeLine("protected $casts = [", 1) .
             $this->writeLine("{$this->getCastsField()},", 0) .
             $this->writeLine("];", 1);
@@ -224,14 +234,8 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
             $this->getClassDefinition() .
             $this->getModelTableDefinition() .
             $this->getNewLine() .
-            $this->comments(
-                'The attributes that are mass assignable.',
-                '',
-                '@var array'
-            ) .
             $this->getFillableDefinition() .
             $this->getNewLine() .
-            $this->comments('@var array') .
             $this->getCastsDefinition() .
             $this->getNewLine() .
             $this->getClosingTag();

@@ -68,10 +68,11 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     public function getMigrationFields($table = '$table'): string
     {
         $tearUp = '';
+
         foreach ($this->modelService->getMigrations() as $field => $migration) {
             $dataType = $migration['field_type'];
             switch ($dataType) {
-                case 'enum':
+                case static::ENUM:
                     $tearUp .= $this->getEnumFields($migration, $table, $dataType, $field);
                     break;
                 default:
@@ -79,7 +80,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
                     break;
             }
         }
-        $tearUp .= $this->writeLine('$table->timestamps();', 3, false, false);
+
+        //$tearUp .= $this->writeLine('$table->timestamps();', 3, false, false);
 
         return $tearUp;
     }
@@ -93,6 +95,11 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     public function getSchemaTearUp($table = '$table'): string
     {
         return
+            $this->comments(
+                'Run the migrations.',
+                '',
+                '@return void'
+            ) .
             $this->writeLine("public function up()", 1) .
             $this->writeLine("{", 1) .
             $this->writeLine("Schema::create('{$this->modelService->getTableName()}', function (Blueprint $table) {", 2) .
@@ -109,6 +116,11 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     public function getSchemaTearDown(): string
     {
         return
+            $this->comments(
+                'Reverse the migrations.',
+                '',
+                '@return void'
+            ) .
             $this->writeLine("public function down()", 1) .
             $this->writeLine("{", 1) .
             $this->writeLine("Schema::dropIfExists('{$this->modelService->getTableName()}');", 2) .
@@ -149,6 +161,10 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
             return $this->writeLine("$table->{$dataType}('{$field}', {$length});", 3);
         }
 
+        if (in_array($dataType, static::COLUMN_TYPES_WITHOUT_ARGUMENTS, true)) {
+            return $this->writeLine("$table->{$dataType}();", 3);
+        }
+
         return $this->writeLine("$table->{$dataType}('{$field}');", 3);
     }
 
@@ -165,18 +181,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
             $this->getMigrationDependencies() .
             $this->getNewLine() .
             $this->getClassDefinition() .
-            $this->comments(
-                'Run the migrations.',
-                '',
-                '@return void'
-            ) .
             $this->getSchemaTearUp() .
             $this->getNewLine() .
-            $this->comments(
-                'Reverse the migrations.',
-                '',
-                '@return void'
-            ) .
             $this->getSchemaTearDown() .
             $this->getNewLine() .
             $this->getClosingTag();

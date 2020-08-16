@@ -27,7 +27,7 @@ class InputReaderService implements ConstantInterface
      */
     public function inputReader(): array
     {
-        $migrations = ['id' => ['field_type' => 'increments'],];
+        $migrations = [];
 
         $modelName = $this->getModelNameValue($this->laraCrudCommand->argument('name'));
         if (empty($modelName)) {
