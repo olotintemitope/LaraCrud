@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace Laztopaz\Laracrud\Services;
 
-use App\Commands\LaraCrudCommand;
-use App\Contracts\ConstantInterface;
-use App\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Laracrud\Commands\LaraCrudCommand;
+use Laztopaz\Laracrud\Contracts\ConstantInterface;
+use Laztopaz\Laracrud\Contracts\FileWriterAbstractFactory;
 
 class InputReaderService implements ConstantInterface
 {
@@ -64,19 +64,41 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
-     * Get options from the console
+     * Validate and return model name value
+     *
+     * @param $input
+     * @return string
+     */
+    protected function getModelNameValue($input): string
+    {
+        $pattern = '/^([A-Za-z])\w+/i';
+        preg_match($pattern, $input, $matches);
+
+        return isset($matches[0]) ? $matches[0] : '';
+    }
+
+    /**
+     * Validate and return model field value
+     *
+     * @param $input
+     * @return mixed
+     */
+    protected function getModelFieldValue(string $input): string
+    {
+        $pattern = '/^([A-Za-z\s])*\w+/i';
+        preg_match($pattern, $input, $matches);
+
+        return isset($matches[0]) ? $matches[0] : '';
+    }
+
+    /**
+     * Get the field name from the console
      *
      * @return string
      */
-    private function userWillSelectFieldType(): string
+    private function askForFieldName(): string
     {
-        return $this->laraCrudCommand->choice(
-            'Select field type',
-            array_keys(static::AVAILABLE_COLUMN_TYPES),
-            $defaultIndex = static::STRING_FIELD,
-            $maxAttempts = null,
-            $allowMultipleSelections = false
-        );
+        return $this->userWillEnterFieldName();
     }
 
     /**
@@ -90,13 +112,19 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
-     * Get the field name from the console
+     * Get options from the console
      *
      * @return string
      */
-    private function askForFieldName(): string
+    private function userWillSelectFieldType(): string
     {
-        return $this->userWillEnterFieldName();
+        return $this->laraCrudCommand->choice(
+            'Select field type',
+            array_keys(static::AVAILABLE_COLUMN_TYPES),
+            $defaultIndex = static::STRING_FIELD,
+            $maxAttempts = null,
+            $allowMultipleSelections = false
+        );
     }
 
     /**
@@ -142,20 +170,6 @@ class InputReaderService implements ConstantInterface
     }
 
     /**
-     * Validate and return model field value
-     *
-     * @param $input
-     * @return mixed
-     */
-    protected function getModelFieldValue(string $input): string
-    {
-        $pattern = '/^([A-Za-z\s])*\w+/i';
-        preg_match($pattern, $input, $matches);
-
-        return isset($matches[0]) ? $matches[0] : '';
-    }
-
-    /**
      * Validate and return enum field value
      *
      * @param string $input
@@ -164,20 +178,6 @@ class InputReaderService implements ConstantInterface
     protected function getEnumValue(string $input): string
     {
         $pattern = '/^([A-Za-z\s,])+\w+/i';
-        preg_match($pattern, $input, $matches);
-
-        return isset($matches[0]) ? $matches[0] : '';
-    }
-
-    /**
-     * Validate and return model name value
-     *
-     * @param $input
-     * @return string
-     */
-    protected function getModelNameValue($input): string
-    {
-        $pattern = '/^([A-Za-z])\w+/i';
         preg_match($pattern, $input, $matches);
 
         return isset($matches[0]) ? $matches[0] : '';

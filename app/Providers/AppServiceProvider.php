@@ -1,11 +1,7 @@
 <?php
 
-namespace App\Providers;
+namespace Laztopaz\Laracrud\Providers;
 
-use App\Contracts\BuilderServiceInterface;
-use App\Contracts\ModelServiceInterface;
-use app\Services\MigrationServiceBuilder;
-use App\Services\ModelServiceBuilder;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

@@ -1,9 +1,9 @@
 <?php
 
 
-namespace App\Directors;
+namespace Laztopaz\Laracrud\Directors;
 
-use App\Contracts\BuilderServiceInterface;
+use Laztopaz\Laracrud\Contracts\BuilderServiceInterface;
 
 class OutPutDirector
 {

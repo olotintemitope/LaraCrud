@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Contracts;
+namespace Laztopaz\Laracrud\Contracts;
 
 abstract class AbstractBuilderServiceCommon
 {

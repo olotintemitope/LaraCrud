@@ -1,11 +1,27 @@
 <?php
 
-namespace App\Services;
+namespace Laztopaz\Laracrud\Services;
 
-use App\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Laracrud\Contracts\FileWriterAbstractFactory;
 
 final class ModelFileWriterService extends FileWriterAbstractFactory
 {
+    /**
+     * @override
+     * Get the information about the model directory
+     *
+     * @param string $modelName
+     * @param string|null $modelDirectory
+     * @return array
+     */
+    public static function getDirectoryInfo(string $modelName, ?string $modelDirectory): array
+    {
+        $defaultModelDirectory = static::getDefaultDirectory($modelDirectory, 'app');
+        $modelPath = static::getWorkingDirectory($defaultModelDirectory, $modelName);
+
+        return [$defaultModelDirectory, $modelPath];
+    }
+
     /**
      * Get the filename
      *
@@ -24,22 +40,5 @@ final class ModelFileWriterService extends FileWriterAbstractFactory
      */
     public function setFileName(string $name): void
     {
-    }
-
-    /**
-     * @override
-     * Get the information about the model directory
-     *
-     * @param string $modelName
-     * @param string|null $modelDirectory
-     * @return array
-     */
-    public static function getDirectoryInfo(string $modelName, ?string $modelDirectory): array
-    {
-        $applicationNamespace = ucwords(explode('\\', static::class)[0]);
-        $defaultModelDirectory = static::getDefaultDirectory($modelDirectory, $applicationNamespace);
-        $modelPath = static::getWorkingDirectory($defaultModelDirectory, $modelName);
-
-        return [$defaultModelDirectory, $modelPath];
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Builders;
+namespace Laztopaz\Laracrud\Builders;
 
-use App\Contracts\AbstractBuilderServiceCommon;
-use App\Contracts\BuilderServiceInterface;
-use App\Contracts\ConstantInterface;
-use App\Contracts\FileWriterAbstractFactory;
-use App\Traits\OutPutWriterTrait;
 use ICanBoogie\Inflector;
+use Laztopaz\Laracrud\Contracts\AbstractBuilderServiceCommon;
+use Laztopaz\Laracrud\Contracts\BuilderServiceInterface;
+use Laztopaz\Laracrud\Contracts\ConstantInterface;
+use Laztopaz\Laracrud\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Laracrud\Traits\OutPutWriterTrait;
 
 class ModelServiceBuilder extends AbstractBuilderServiceCommon implements ConstantInterface, BuilderServiceInterface
 {
@@ -45,6 +45,120 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
     /**
      * @return string
      */
+    public function build(): string
+    {
+        return
+            $this->getStartTag() .
+            $this->getNewLine() .
+            $this->getNameSpace() .
+            $this->getNewLine() .
+            $this->getModelDependencies() .
+            $this->getNewLine() .
+            $this->getClassDefinition() .
+            $this->getModelTableDefinition() .
+            $this->getNewLine() .
+            $this->getFillableDefinition() .
+            $this->getNewLine() .
+            $this->getCastsDefinition() .
+            $this->getNewLine() .
+            $this->getClosingTag();
+    }
+
+    /**
+     * @return string
+     */
+    public function getNameSpace(): string
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * @param $modelNamespace
+     * @return ModelServiceBuilder
+     */
+    public function setNameSpace($modelNamespace): ModelServiceBuilder
+    {
+        $this->namespace = $this->writeLine("namespace {$modelNamespace};", 0, true);
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModelDependencies(): string
+    {
+        return $this->writeLine($this->modelDependencies . static::END_OF_LINE, 0);
+    }
+
+    /**
+     * @param array $namespaces
+     * @return ModelServiceBuilder
+     */
+    public function setModelDependencies(array $namespaces): ModelServiceBuilder
+    {
+        $this->modelDependencies = implode(";" . $this->getNewLine(), $namespaces);
+        return $this;
+    }
+
+    public function getClassDefinition(): string
+    {
+        return $this->writeLine("class {$this->getModelName()} extends Model", 0) .
+            $this->writeLine("{", 0);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getModelName(): string
+    {
+        return $this->modelName;
+    }
+
+    /**
+     * @param $modelName
+     * @return ModelServiceBuilder
+     */
+    public function setModelName($modelName): ModelServiceBuilder
+    {
+        $this->modelName = $modelName;
+        return $this;
+    }
+
+    /**
+     * @param string $table
+     * @return string
+     */
+    public function getModelTableDefinition($table = '$table'): string
+    {
+        return $this->writeLine("protected $table = '{$this->getTableName()}';", 1);
+    }
+
+    /**
+     * Get the name of the table in the model
+     * @return string
+     */
+    public function getTableName(): string
+    {
+        $inflector = Inflector::get('en');
+        return strtolower($inflector->pluralize($this->getModelName()));
+    }
+
+    protected function getFillableDefinition($fillable = '$fillable'): string
+    {
+        return
+            $this->comments(
+                'The attributes that are mass assignable.',
+                '',
+                '@var array'
+            ) .
+            $this->writeLine("protected $fillable = [", 1) .
+            $this->writeLine("{$this->getFields()},", 0) .
+            $this->writeLine("];", 1);
+    }
+
+    /**
+     * @return string
+     */
     protected function getFields(): string
     {
         return implode("," . $this->getNewLine(), array_map(function ($field) {
@@ -56,13 +170,42 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
     }
 
     /**
-     * Get the name of the table in the model
-     * @return string
+     * @return mixed
      */
-    public function getTableName(): string
+    protected function getMigrationFields()
     {
-        $inflector = Inflector::get('en');
-        return strtolower($inflector->pluralize($this->getModelName()));
+        return array_keys($this->getMigrations());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMigrations()
+    {
+        return $this->migrations;
+    }
+
+    /**
+     * @param mixed $migrations
+     * @return ModelServiceBuilder
+     */
+    public function setMigrations($migrations): ModelServiceBuilder
+    {
+        $this->migrations = $migrations;
+        return $this;
+    }
+
+    protected function getCastsDefinition($casts = '$casts'): string
+    {
+        if (empty($this->getCastsField())) {
+            return '';
+        }
+
+        return
+            $this->comments('@var array') .
+            $this->writeLine("protected $casts = [", 1) .
+            $this->writeLine("{$this->getCastsField()},", 0) .
+            $this->writeLine("];", 1);
     }
 
     /**
@@ -96,148 +239,5 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
                 strpos($field['field_type'], 'time') !== false ||
                 strpos($field['field_type'], 'boolean') !== false;
         }, ARRAY_FILTER_USE_BOTH);
-    }
-
-    /**
-     * @param $modelNamespace
-     * @return ModelServiceBuilder
-     */
-    public function setNameSpace($modelNamespace): ModelServiceBuilder
-    {
-        $this->namespace = $this->writeLine("namespace {$modelNamespace};", 0, true);
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNameSpace(): string
-    {
-        return $this->namespace;
-    }
-
-    /**
-     * @param array $namespaces
-     * @return ModelServiceBuilder
-     */
-    public function setModelDependencies(array $namespaces): ModelServiceBuilder
-    {
-        $this->modelDependencies = implode(";" . $this->getNewLine(), $namespaces);
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getModelDependencies(): string
-    {
-        return $this->writeLine($this->modelDependencies . static::END_OF_LINE, 0);
-    }
-
-    /**
-     * @param string $table
-     * @return string
-     */
-    public function getModelTableDefinition($table = '$table'): string
-    {
-        return $this->writeLine("protected $table = '{$this->getTableName()}';", 1);
-    }
-
-    /**
-     * @param $modelName
-     * @return ModelServiceBuilder
-     */
-    public function setModelName($modelName): ModelServiceBuilder
-    {
-        $this->modelName = $modelName;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getModelName(): string
-    {
-        return $this->modelName;
-    }
-
-    public function getClassDefinition(): string
-    {
-        return $this->writeLine("class {$this->getModelName()} extends Model", 0) .
-            $this->writeLine("{", 0);
-    }
-
-    protected function getFillableDefinition($fillable = '$fillable'): string
-    {
-        return
-            $this->comments(
-                'The attributes that are mass assignable.',
-                '',
-                '@var array'
-            ) .
-            $this->writeLine("protected $fillable = [", 1) .
-            $this->writeLine("{$this->getFields()},", 0) .
-            $this->writeLine("];", 1);
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function getMigrationFields()
-    {
-        return array_keys($this->getMigrations());
-    }
-
-    protected function getCastsDefinition($casts = '$casts'): string
-    {
-        if (empty($this->getCastsField())) {
-            return '';
-        }
-
-        return
-            $this->comments('@var array') .
-            $this->writeLine("protected $casts = [", 1) .
-            $this->writeLine("{$this->getCastsField()},", 0) .
-            $this->writeLine("];", 1);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMigrations()
-    {
-        return $this->migrations;
-    }
-
-    /**
-     * @param mixed $migrations
-     * @return ModelServiceBuilder
-     */
-    public function setMigrations($migrations): ModelServiceBuilder
-    {
-        $this->migrations = $migrations;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function build(): string
-    {
-        return
-            $this->getStartTag() .
-            $this->getNewLine() .
-            $this->getNameSpace() .
-            $this->getNewLine() .
-            $this->getModelDependencies() .
-            $this->getNewLine() .
-            $this->getClassDefinition() .
-            $this->getModelTableDefinition() .
-            $this->getNewLine() .
-            $this->getFillableDefinition() .
-            $this->getNewLine() .
-            $this->getCastsDefinition() .
-            $this->getNewLine() .
-            $this->getClosingTag();
     }
 }

@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Commands;
+namespace Laztopaz\Laracrud\Commands;
 
-use App\Builders\MigrationServiceBuilder;
-use App\Builders\ModelServiceBuilder;
-use App\Directors\FileWriterDirector;
-use App\Directors\OutPutDirector;
-use App\Services\InputReaderService;
-use App\Services\MigrationFileWriterService;
-use App\Services\ModelFileWriterService;
-use App\Contracts\ConstantInterface;
 use Exception;
 use LaravelZero\Framework\Commands\Command;
+use Laztopaz\Laracrud\Builders\MigrationServiceBuilder;
+use Laztopaz\Laracrud\Builders\ModelServiceBuilder;
+use Laztopaz\Laracrud\Contracts\ConstantInterface;
+use Laztopaz\Laracrud\Directors\FileWriterDirector;
+use Laztopaz\Laracrud\Directors\OutPutDirector;
+use Laztopaz\Laracrud\Services\InputReaderService;
+use Laztopaz\Laracrud\Services\MigrationFileWriterService;
+use Laztopaz\Laracrud\Services\ModelFileWriterService;
 
 class LaraCrudCommand extends Command implements ConstantInterface
 {
@@ -63,13 +63,23 @@ class LaraCrudCommand extends Command implements ConstantInterface
                 $fileWriter = new FileWriterDirector($migrationFileWriter);
                 $fileWriter->setFileName(strtolower("create_{$modelName}_table"));
                 [$migrationFulPath, $filePath] = $migrationFileWriter->getDirectory($fileWriter);
-                 //Write to migration folder
+                //Write to migration folder
                 $fileWriter::write($migrationFulPath, $filePath, $fileOutputDirector->getFileContent());
                 $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
             }
         } catch (Exception $exception) {
             $this->error($exception->getMessage());
         }
+    }
+
+    /**
+     * Read all the input from the console
+     *
+     * @return array
+     */
+    protected function inputReader(): array
+    {
+        return $this->inputReaderService->inputReader();
     }
 
     /**
@@ -91,16 +101,6 @@ class LaraCrudCommand extends Command implements ConstantInterface
     }
 
     /**
-     * Read all the input from the console
-     *
-     * @return array
-     */
-    protected function inputReader(): array
-    {
-        return $this->inputReaderService->inputReader();
-    }
-
-    /**
      * Get the migration builder
      *
      * @param ModelServiceBuilder $model
@@ -113,6 +113,6 @@ class LaraCrudCommand extends Command implements ConstantInterface
                 'use Illuminate\Support\Facades\Schema',
                 'use Illuminate\Database\Schema\Blueprint',
                 'use Illuminate\Database\Migrations\Migration',
-                ]);
+            ]);
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-
-namespace App\Traits;
+namespace Laztopaz\Laracrud\Traits;
 
 trait OutPutWriterTrait
 {
@@ -19,22 +18,6 @@ trait OutPutWriterTrait
     public function getCarriageReturn(): string
     {
         return static::PHP_CRT;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getTabAlignment(): string
-    {
-        return static::PHP_CRT . static::PHP_TAB;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getEndOfLine(): string
-    {
-        return $this->getNewLine() . self::PHP_CRT;
     }
 
     /**
@@ -66,22 +49,6 @@ trait OutPutWriterTrait
     }
 
     /**
-     * @return string
-     */
-    public function getStartTag(): string
-    {
-        return $this->writeLine("<?php", 0);
-    }
-
-    /**
-     * @return string
-     */
-    public function getClosingTag(): string
-    {
-        return  $this->writeLine("}", 0);
-    }
-
-    /**
      * @param string $line
      * @param int $tabs
      * @param bool $newLine
@@ -95,7 +62,7 @@ trait OutPutWriterTrait
         if ($systemOs === 'Windows') {
             return $this->tabIndent($tabs) . $line . ($carriageReturn ? static::PHP_CRT : "") . ($newLine ? $this->getNewLine() : "");
         }
-        return $this->tabIndent($tabs) . $line  . ($newLine ? $this->getNewLine() : "");
+        return $this->tabIndent($tabs) . $line . ($newLine ? $this->getNewLine() : "");
     }
 
     /**
@@ -110,5 +77,37 @@ trait OutPutWriterTrait
         }
 
         return $tabs;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStartTag(): string
+    {
+        return $this->writeLine("<?php", 0);
+    }
+
+    /**
+     * @return string
+     */
+    public function getClosingTag(): string
+    {
+        return $this->writeLine("}", 0);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTabAlignment(): string
+    {
+        return static::PHP_CRT . static::PHP_TAB;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getEndOfLine(): string
+    {
+        return $this->getNewLine() . self::PHP_CRT;
     }
 }

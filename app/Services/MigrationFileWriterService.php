@@ -1,10 +1,9 @@
 <?php
 
+namespace Laztopaz\Laracrud\Services;
 
-namespace App\Services;
-
-use App\Contracts\FileWriterAbstractFactory;
-use App\Directors\FileWriterDirector;
+use Laztopaz\Laracrud\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Laracrud\Directors\FileWriterDirector;
 
 final class MigrationFileWriterService extends FileWriterAbstractFactory
 {
@@ -36,17 +35,16 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
      */
     public static function getDefaultDirectory($directory = "", string $applicationNamespace = ""): string
     {
-        return getcwd() . DIRECTORY_SEPARATOR .static::DEFAULT_MIGRATION_FOLDER;
+        return getcwd() . DIRECTORY_SEPARATOR . static::DEFAULT_MIGRATION_FOLDER;
     }
 
     /**
-     * Get date string
-     *
-     * @return false|string
+     * Get the filename
+     * @return string
      */
-    protected function getDatePrefix()
+    public function getFileName(): string
     {
-        return date('Y_m_d_His');
+        return $this->fileName;
     }
 
     /**
@@ -57,16 +55,17 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
      */
     public function setFileName(string $name): void
     {
-        $this->fileName = $this->getDatePrefix().'_'.$name.static::FILE_EXTENSION;
+        $this->fileName = $this->getDatePrefix() . '_' . $name . static::FILE_EXTENSION;
     }
 
     /**
-     * Get the filename
-     * @return string
+     * Get date string
+     *
+     * @return false|string
      */
-    public function getFileName(): string
+    protected function getDatePrefix()
     {
-        return $this->fileName;
+        return date('Y_m_d_His');
     }
 
     /**
