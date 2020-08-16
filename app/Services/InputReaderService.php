@@ -105,12 +105,12 @@ class InputReaderService implements ConstantInterface
      *
      * @param $migrations
      * @param $dbFieldName
-     * @param $dbColumnFieldType
+     * @param $dbFieldType
      * @return mixed
      */
-    public function setMigrations(array $migrations, string $dbFieldName, string $dbColumnFieldType): array
+    public function setMigrations(array $migrations, string $dbFieldName, string $dbFieldType): array
     {
-        if (static::ENUM === $dbColumnFieldType) {
+        if (static::ENUM === $dbFieldType) {
             $enumValues = $this->getEnumValue(
                 str_replace(
                     ' ',
@@ -122,20 +122,20 @@ class InputReaderService implements ConstantInterface
                 $this->laraCrudCommand->error('field name is missing');
             }
             if (!empty($enumValues)) {
-                $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'values' => explode(',', $enumValues)];
+                $migrations[($dbFieldName)] = ['field_type' => $dbFieldType, 'values' => explode(',', $enumValues)];
             }
         }
 
-        if (static::ENUM !== $dbColumnFieldType) {
-            $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType];
+        if (static::ENUM !== $dbFieldType) {
+            $migrations[($dbFieldName)] = ['field_type' => $dbFieldType];
         }
 
-        if (str_contains($dbColumnFieldType, 'string') || str_contains($dbColumnFieldType, 'integer')) {
+        if (str_contains($dbFieldType, 'string') || str_contains($dbFieldType, 'integer')) {
             $fieldLength = (int)trim($this->laraCrudCommand->ask('Enter the length'));
             if (empty($fieldLength)) {
                 $this->laraCrudCommand->info('Default length will be used instead');
             }
-            $migrations[($dbFieldName)] = ['field_type' => $dbColumnFieldType, 'length' => $fieldLength];
+            $migrations[($dbFieldName)] = ['field_type' => $dbFieldType, 'length' => $fieldLength];
         }
 
         return $migrations;
