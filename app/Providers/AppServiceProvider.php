@@ -1,6 +1,6 @@
 <?php
 
-namespace Laztopaz\Laracrud\Providers;
+namespace Laztopaz\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

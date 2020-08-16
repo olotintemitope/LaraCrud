@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Laztopaz\Laracrud\Contracts;
+namespace Laztopaz\Contracts;
 
 interface BuilderServiceInterface
 {

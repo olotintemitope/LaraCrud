@@ -1,6 +1,6 @@
 <?php
 
-namespace Laztopaz\Laracrud\Traits;
+namespace Laztopaz\Traits;
 
 trait OutPutWriterTrait
 {

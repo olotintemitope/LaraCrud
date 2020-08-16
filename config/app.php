@@ -54,7 +54,7 @@ return [
     */
 
     'providers' => [
-        Laztopaz\Laracrud\Providers\AppServiceProvider::class,
+        Laztopaz\Providers\AppServiceProvider::class,
     ],
 
 ];

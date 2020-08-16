@@ -1,9 +1,9 @@
 <?php
 
-namespace Laztopaz\Laracrud\Directors;
+namespace Laztopaz\Directors;
 
-use Laztopaz\Laracrud\Contracts\FileWriterAbstractFactory;
-use Laztopaz\Laracrud\Contracts\FileWriterInterface;
+use Laztopaz\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Contracts\FileWriterInterface;
 
 class FileWriterDirector extends FileWriterAbstractFactory implements FileWriterInterface
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Laztopaz\Laracrud\Builders;
+namespace Laztopaz\Builders;
 
-use Laztopaz\Laracrud\Contracts\AbstractBuilderServiceCommon;
-use Laztopaz\Laracrud\Contracts\BuilderServiceInterface;
-use Laztopaz\Laracrud\Contracts\ConstantInterface;
-use Laztopaz\Laracrud\Contracts\FileWriterAbstractFactory;
-use Laztopaz\Laracrud\Traits\OutPutWriterTrait;
+use Laztopaz\Contracts\AbstractBuilderServiceCommon;
+use Laztopaz\Contracts\BuilderServiceInterface;
+use Laztopaz\Contracts\ConstantInterface;
+use Laztopaz\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Traits\OutPutWriterTrait;
 
 class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements ConstantInterface, BuilderServiceInterface
 {

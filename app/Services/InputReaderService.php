@@ -1,10 +1,10 @@
 <?php
 
-namespace Laztopaz\Laracrud\Services;
+namespace Laztopaz\Services;
 
-use Laztopaz\Laracrud\Commands\LaraCrudCommand;
-use Laztopaz\Laracrud\Contracts\ConstantInterface;
-use Laztopaz\Laracrud\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Commands\LaraCrudCommand;
+use Laztopaz\Contracts\ConstantInterface;
+use Laztopaz\Contracts\FileWriterAbstractFactory;
 
 class InputReaderService implements ConstantInterface
 {

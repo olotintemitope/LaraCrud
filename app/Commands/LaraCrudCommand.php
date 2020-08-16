@@ -1,17 +1,17 @@
 <?php
 
-namespace Laztopaz\Laracrud\Commands;
+namespace Laztopaz\Commands;
 
 use Exception;
 use LaravelZero\Framework\Commands\Command;
-use Laztopaz\Laracrud\Builders\MigrationServiceBuilder;
-use Laztopaz\Laracrud\Builders\ModelServiceBuilder;
-use Laztopaz\Laracrud\Contracts\ConstantInterface;
-use Laztopaz\Laracrud\Directors\FileWriterDirector;
-use Laztopaz\Laracrud\Directors\OutPutDirector;
-use Laztopaz\Laracrud\Services\InputReaderService;
-use Laztopaz\Laracrud\Services\MigrationFileWriterService;
-use Laztopaz\Laracrud\Services\ModelFileWriterService;
+use Laztopaz\Builders\MigrationServiceBuilder;
+use Laztopaz\Builders\ModelServiceBuilder;
+use Laztopaz\Contracts\ConstantInterface;
+use Laztopaz\Directors\FileWriterDirector;
+use Laztopaz\Directors\OutPutDirector;
+use Laztopaz\Services\InputReaderService;
+use Laztopaz\Services\MigrationFileWriterService;
+use Laztopaz\Services\ModelFileWriterService;
 
 class LaraCrudCommand extends Command implements ConstantInterface
 {

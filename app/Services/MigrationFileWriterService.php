@@ -1,9 +1,9 @@
 <?php
 
-namespace Laztopaz\Laracrud\Services;
+namespace Laztopaz\Services;
 
-use Laztopaz\Laracrud\Contracts\FileWriterAbstractFactory;
-use Laztopaz\Laracrud\Directors\FileWriterDirector;
+use Laztopaz\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Directors\FileWriterDirector;
 
 final class MigrationFileWriterService extends FileWriterAbstractFactory
 {

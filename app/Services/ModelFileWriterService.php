@@ -1,8 +1,8 @@
 <?php
 
-namespace Laztopaz\Laracrud\Services;
+namespace Laztopaz\Services;
 
-use Laztopaz\Laracrud\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Contracts\FileWriterAbstractFactory;
 
 final class ModelFileWriterService extends FileWriterAbstractFactory
 {

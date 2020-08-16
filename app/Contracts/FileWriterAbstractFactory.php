@@ -1,6 +1,6 @@
 <?php
 
-namespace Laztopaz\Laracrud\Contracts;
+namespace Laztopaz\Contracts;
 
 
 use Illuminate\Support\Facades\File;
