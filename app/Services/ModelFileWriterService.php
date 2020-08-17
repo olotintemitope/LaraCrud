@@ -16,7 +16,7 @@ final class ModelFileWriterService extends FileWriterAbstractFactory
      */
     public static function getDirectoryInfo(string $modelName, ?string $modelDirectory): array
     {
-        $defaultModelDirectory = static::getDefaultDirectory($modelDirectory, 'app');
+        $defaultModelDirectory = static::getDefaultDirectory($modelDirectory, static::DEFAULT_LARAVEL_NAMESPACE);
         $modelPath = static::getWorkingDirectory($defaultModelDirectory, $modelName);
 
         return [$defaultModelDirectory, $modelPath];

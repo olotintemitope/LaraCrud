@@ -18,6 +18,7 @@ interface ConstantInterface
     public const EXIT = "exit";
     public const ENUM = "enum";
     public const NO_PLEASE = "no";
+    public const DEFAULT_LARAVEL_NAMESPACE = 'App';
 
     public const AVAILABLE_COLUMN_TYPES = [
         'bigIncrements' => 'Auto-incrementing UNSIGNED BIGINT (primary key) equivalent column.',
