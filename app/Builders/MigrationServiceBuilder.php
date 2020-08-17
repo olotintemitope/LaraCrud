@@ -25,6 +25,10 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      * @var FileWriterAbstractFactory
      */
     private $fileWriterAbstractFactory;
+    /**
+     * @var string
+     */
+    private $traits;
 
     public function __construct(ModelServiceBuilder $model)
     {
@@ -207,5 +211,26 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
             $this->writeLine("{", 1) .
             $this->writeLine("Schema::dropIfExists('{$this->modelService->getTableName()}');", 2) .
             $this->writeLine("}", 1);
+    }
+
+    /**
+     * Set array of traits to be used by the migration
+     * @param array $traits
+     * @return $this
+     */
+    public function setTraits(array $traits): MigrationServiceBuilder
+    {
+        $this->traits = implode(";" .$this->getNewLine(), $traits);
+
+        return $this;
+    }
+
+    /**
+     * Get traits
+     * @return string
+     */
+    public function getTraits(): string
+    {
+        return $this->traits . static::END_OF_LINE . $this->getNewLine();
     }
 }
