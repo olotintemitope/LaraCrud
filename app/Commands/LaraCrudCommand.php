@@ -3,6 +3,7 @@
 namespace Laztopaz\Commands;
 
 use Exception;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use Laztopaz\Builders\MigrationServiceBuilder;
 use Laztopaz\Builders\ModelServiceBuilder;
@@ -108,11 +109,25 @@ class LaraCrudCommand extends Command implements ConstantInterface
      */
     protected function getMigrationBuilder(ModelServiceBuilder $model): MigrationServiceBuilder
     {
-        return (new MigrationServiceBuilder($model))
-            ->setMigrationDependencies([
-                'use Illuminate\Support\Facades\Schema',
-                'use Illuminate\Database\Schema\Blueprint',
-                'use Illuminate\Database\Migrations\Migration',
+        $migrationBuilder = new MigrationServiceBuilder($model);
+        $dependencies = [
+            'use Illuminate\Support\Facades\Schema',
+            'use Illuminate\Database\Schema\Blueprint',
+            'use Illuminate\Database\Migrations\Migration',
+        ];
+
+        $softDeletes = array_filter(array_values($model->getMigrations()), function($migration) {
+            return Str::contains(strtolower($migration['field_type']), 'softdeletes');
+        });
+        if (count($softDeletes) > 0) {
+            $dependencies[] = 'use Illuminate\Database\Eloquent\SoftDeletes';
+            $migrationBuilder->setTraits([
+                'use SoftDeletes',
             ]);
+        }
+
+        $migrationBuilder->setMigrationDependencies($dependencies);
+
+        return $migrationBuilder;
     }
 }

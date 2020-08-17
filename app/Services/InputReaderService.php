@@ -2,6 +2,7 @@
 
 namespace Laztopaz\Services;
 
+use Illuminate\Support\Str;
 use Laztopaz\Commands\LaraCrudCommand;
 use Laztopaz\Contracts\ConstantInterface;
 use Laztopaz\Contracts\FileWriterAbstractFactory;
@@ -158,7 +159,7 @@ class InputReaderService implements ConstantInterface
             $migrations[($dbFieldName)] = ['field_type' => $dbFieldType];
         }
 
-        if (str_contains($dbFieldType, 'string') || str_contains($dbFieldType, 'integer')) {
+        if (Str::contains($dbFieldType, 'string') || Str::contains($dbFieldType, 'integer')) {
             $fieldLength = (int)trim($this->laraCrudCommand->ask('Enter the length'));
             if (empty($fieldLength)) {
                 $this->laraCrudCommand->info('Default length will be used instead');

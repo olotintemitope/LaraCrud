@@ -12,7 +12,7 @@ interface ConstantInterface
     public const YES_PLEASE = true;
     public const PHP_CRT = "\r";
     public const PHP_TAB = "\t";
-    public const END_OF_LINE = ";";
+    public const LINE_TERMINATOR = ";";
     public const DEFAULT_MIGRATION_FOLDER = "database/migrations";
     public const STRING_FIELD = 38;
     public const EXIT = "exit";

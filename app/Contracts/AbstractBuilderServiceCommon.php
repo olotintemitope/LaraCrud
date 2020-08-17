@@ -9,6 +9,11 @@ abstract class AbstractBuilderServiceCommon
      */
     protected function getNewLine(): string
     {
+        $systemOs = PHP_OS;
+
+        if ($systemOs === 'Windows') {
+            return static::PHP_CRT . PHP_EOL;
+        }
         return PHP_EOL;
     }
 }

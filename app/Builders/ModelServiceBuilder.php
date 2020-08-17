@@ -3,6 +3,7 @@
 namespace Laztopaz\Builders;
 
 use ICanBoogie\Inflector;
+use Illuminate\Support\Str;
 use Laztopaz\Contracts\AbstractBuilderServiceCommon;
 use Laztopaz\Contracts\BuilderServiceInterface;
 use Laztopaz\Contracts\ConstantInterface;
@@ -87,7 +88,7 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
      */
     public function getModelDependencies(): string
     {
-        return $this->writeLine($this->modelDependencies . static::END_OF_LINE, 0);
+        return $this->writeLine($this->modelDependencies . static::LINE_TERMINATOR, 0);
     }
 
     /**
@@ -164,7 +165,7 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
         return implode("," . $this->getNewLine(), array_map(function ($field) {
             return $this->writeLine("'{$field}'", 2, false);
         }, array_filter($this->getMigrationFields(), function ($field) {
-                return 'id' !== $field;
+                return 'id' !== $field &&  !Str::contains(strtolower($field), 'softdelete');
             })
         ));
     }

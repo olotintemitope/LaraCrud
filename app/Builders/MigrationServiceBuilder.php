@@ -7,6 +7,7 @@ use Laztopaz\Contracts\BuilderServiceInterface;
 use Laztopaz\Contracts\ConstantInterface;
 use Laztopaz\Contracts\FileWriterAbstractFactory;
 use Laztopaz\Traits\OutPutWriterTrait;
+use Illuminate\Support\Str;
 
 class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements ConstantInterface, BuilderServiceInterface
 {
@@ -36,31 +37,11 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     }
 
     /**
-     * build the complete migration file content
-     *
-     * @return string
-     */
-    public function build(): string
-    {
-        return
-            $this->getStartTag() .
-            $this->getNewLine() .
-            $this->getMigrationDependencies() .
-            $this->getNewLine() .
-            $this->getClassDefinition() .
-            $this->getSchemaTearUp() .
-            $this->getNewLine() .
-            $this->getSchemaTearDown() .
-            $this->getNewLine() .
-            $this->getClosingTag();
-    }
-
-    /**
      * @return string
      */
     public function getMigrationDependencies(): string
     {
-        return $this->migrationDependencies . static::END_OF_LINE . $this->getNewLine();
+        return $this->migrationDependencies . static::LINE_TERMINATOR . $this->getNewLine();
     }
 
     /**
@@ -181,14 +162,14 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      */
     protected function getDefaultFields(string $schemaTearUpFields, string $table, string $migrationFields): string
     {
-        if (!str_contains(strtolower($schemaTearUpFields), 'increments')) {
+        if (!Str::contains(strtolower($schemaTearUpFields), 'increments')) {
             $increments = 'increments';
             $migrationFields .= $this->writeLine("$table->{$increments}('id');", 3);
         }
 
         $migrationFields .= $schemaTearUpFields;
 
-        if (!str_contains(strtolower($schemaTearUpFields), 'timestamps')) {
+        if (!Str::contains(strtolower($schemaTearUpFields), 'timestamps')) {
             $migrationFields .= $this->writeLine('$table->timestamps();', 3);
         }
         return $migrationFields;
@@ -231,6 +212,30 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      */
     public function getTraits(): string
     {
-        return $this->traits . static::END_OF_LINE . $this->getNewLine();
+        return empty($this->traits)
+            ? ''
+            : $this->writeLine($this->traits . static::LINE_TERMINATOR, 1);
+    }
+
+    /**
+     * build the complete migration file content
+     *
+     * @return string
+     */
+    public function build(): string
+    {
+        return
+            $this->getStartTag() .
+            $this->getNewLine() .
+            $this->getMigrationDependencies() .
+            $this->getNewLine() .
+            $this->getClassDefinition() .
+            $this->getTraits() .
+            $this->getNewLine() .
+            $this->getSchemaTearUp() .
+            $this->getNewLine() .
+            $this->getSchemaTearDown() .
+            $this->getNewLine() .
+            $this->getClosingTag();
     }
 }
