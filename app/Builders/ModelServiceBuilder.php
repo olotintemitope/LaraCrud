@@ -46,28 +46,6 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
     /**
      * @return string
      */
-    public function build(): string
-    {
-        return
-            $this->getStartTag() .
-            $this->getNewLine() .
-            $this->getNameSpace() .
-            $this->getNewLine() .
-            $this->getModelDependencies() .
-            $this->getNewLine() .
-            $this->getClassDefinition() .
-            $this->getModelTableDefinition() .
-            $this->getNewLine() .
-            $this->getFillableDefinition() .
-            $this->getNewLine() .
-            $this->getCastsDefinition() .
-            $this->getNewLine() .
-            $this->getClosingTag();
-    }
-
-    /**
-     * @return string
-     */
     public function getNameSpace(): string
     {
         return $this->namespace;
@@ -165,7 +143,7 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
         return implode("," . $this->getNewLine(), array_map(function ($field) {
             return $this->writeLine("'{$field}'", 2, false);
         }, array_filter($this->getMigrationFields(), function ($field) {
-                return 'id' !== $field &&  !Str::contains(strtolower($field), 'softdelete');
+                return 'id' !== $field && !Str::contains(strtolower($field), 'softdelete');
             })
         ));
     }
@@ -241,4 +219,28 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
                 strpos($field['field_type'], 'boolean') !== false;
         }, ARRAY_FILTER_USE_BOTH);
     }
+
+    /**
+     * @return string
+     */
+    public function build(): string
+    {
+        return
+            $this->getStartTag() .
+            $this->getNewLine() .
+            $this->getNameSpace() .
+            $this->getNewLine() .
+            $this->getModelDependencies() .
+            $this->getNewLine() .
+            $this->getClassDefinition() .
+            $this->getModelTableDefinition() .
+            $this->getNewLine() .
+            $this->getFillableDefinition() .
+            $this->getNewLine() .
+            $this->getCastsDefinition() .
+            $this->getNewLine() .
+            $this->getClosingTag();
+    }
+
+
 }
