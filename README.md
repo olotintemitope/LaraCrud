@@ -2,12 +2,18 @@
 Generate a full CRUD ready to deploy application from your console
 ## Documentation
 
+### What this project currently does
+- Generate a fresh model into your app/Models folder and let you specify your default path.
+
+  -- it helps you generate the $fillables and the $casts arrays to your model
+- Generate a migration file for you.
+
 ### Installation
 `composer global create-project -s dev laztopaz/laracrud`
 
 ### How to use
-- On your current Laravel project directory, type or copy php `~/.composer/laracrud/laracrud make:crud [name]`
-it has come parameters you should be aware of.
+- From your terminal navigate to your current Laravel project directory, type or copy php `~/.composer/laracrud/laracrud make:crud [name]`
+it has some optional parameters you should be aware of.
 
 - `--m=[create|update]` can be passed to the command if you want a new migration file or you just
 want to update the existing schema.
