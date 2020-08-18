@@ -55,7 +55,7 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
      */
     public function setFileName(string $name): void
     {
-        $this->fileName = $this->getDatePrefix() . '_' . $name . static::FILE_EXTENSION;
+        $this->fileName = strtolower($this->getDatePrefix() . '_' . $name . static::FILE_EXTENSION);
     }
 
     /**

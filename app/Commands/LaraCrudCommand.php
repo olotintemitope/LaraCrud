@@ -21,7 +21,11 @@ class LaraCrudCommand extends Command implements ConstantInterface
      *
      * @var string
      */
-    protected $signature = 'make:crud {name : The name of the model (required)} {--folder= : The path to the model folder (optional)}';
+    protected $signature = 'make:crud
+        {name : The name of the model (required)}
+        {--f= : The path to the model folder (optional)}
+        {--m= : The model mode which can create|update (optional)}
+        {--g= : Optional parameter for generating either model or migration. But the default mode is create  (optional)}';
 
     /**
      * The description of the command.
@@ -48,25 +52,30 @@ class LaraCrudCommand extends Command implements ConstantInterface
     public function handle(ModelFileWriterService $modelFileWriter, MigrationFileWriterService $migrationFileWriter)
     {
         try {
-            [$modelName, $defaultModelDirectory, $modelPath, $migrations] = $this->inputReader();
+            [$modelName, $defaultModelDirectory, $modelPath, $migrations, $writerOption, $modelOption] = $this->inputReader();
             $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
-
             if (!empty($modelName)) {
                 $modelBuilder = $this->getModelBuilder($modelName, $migrations, $modelNamespace);
-                $fileOutputDirector = new OutPutDirector($modelBuilder);
-                $fileWriter = new FileWriterDirector($modelFileWriter);
-                // Write to molder folder
-                $fileWriter::write($defaultModelDirectory, $modelPath, $fileOutputDirector->getFileContent());
-                $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
+                if (static::CRUD_MODEL_ONLY === $writerOption || is_null($writerOption)) {
+                    $fileOutputDirector = new OutPutDirector($modelBuilder);
+                    $fileWriter = new FileWriterDirector($modelFileWriter);
+                    // Write to molder folder
+                    $fileWriter::write($defaultModelDirectory, $modelPath, $fileOutputDirector->getFileContent());
+                    $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
+                }
 
-                $migrationBuilder = $this->getMigrationBuilder($modelBuilder);
-                $fileOutputDirector = new OutPutDirector($migrationBuilder);
-                $fileWriter = new FileWriterDirector($migrationFileWriter);
-                $fileWriter->setFileName(strtolower("create_{$modelName}_table"));
-                [$migrationFulPath, $filePath] = $migrationFileWriter->getDirectory($fileWriter);
-                //Write to migration folder
-                $fileWriter::write($migrationFulPath, $filePath, $fileOutputDirector->getFileContent());
-                $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
+                if (static::CRUD_MIGRATION_ONLY === $writerOption || is_null($writerOption)) {
+                    $migrationBuilder = $this->getMigrationBuilder($modelBuilder);
+                    $migrationBuilder->setSchemaMode($modelOption);
+
+                    $fileOutputDirector = new OutPutDirector($migrationBuilder);
+                    $fileWriter = new FileWriterDirector($migrationFileWriter);
+                    $fileWriter->setFileName(strtolower("{$migrationBuilder->getSchemaMode()}_{$modelName}_table"));
+                    [$migrationFulPath, $filePath] = $migrationFileWriter->getDirectory($fileWriter);
+                    //Write to migration folder
+                    $fileWriter::write($migrationFulPath, $filePath, $fileOutputDirector->getFileContent());
+                    $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
+                }
             }
         } catch (Exception $exception) {
             $this->error($exception->getMessage());

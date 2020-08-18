@@ -30,6 +30,10 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      * @var string
      */
     private $traits;
+    /**
+     * @var string
+     */
+    private $mode;
 
     public function __construct(ModelServiceBuilder $model)
     {
@@ -82,7 +86,7 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
             ) .
             $this->writeLine("public function up()", 1) .
             $this->writeLine("{", 1) .
-            $this->writeLine("Schema::create('{$this->modelService->getTableName()}', function (Blueprint $table) {", 2) .
+            $this->writeLine("Schema::{$this->getSchemaMode()}('{$this->modelService->getTableName()}', function (Blueprint $table) {", 2) .
             $this->writeLine($this->getMigrationFields(), 0) .
             $this->writeLine("});", 2) .
             $this->writeLine("}", 1);
@@ -162,6 +166,10 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      */
     protected function getDefaultFields(string $schemaTearUpFields, string $table, string $migrationFields): string
     {
+        if ('update' === $this->getSchemaMode()) {
+            return $migrationFields;
+        }
+
         if (!Str::contains(strtolower($schemaTearUpFields), 'increments')) {
             $increments = 'increments';
             $migrationFields .= $this->writeLine("$table->{$increments}('id');", 3);
@@ -217,6 +225,26 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
             : $this->writeLine($this->traits . static::LINE_TERMINATOR, 1);
     }
 
+    /**
+     * Set the schema mode. Could be to create
+     * a new schema or update an existing one.
+     *
+     * @param string $mode
+     * @return $this
+     */
+    public function setSchemaMode(?string $mode = null): MigrationServiceBuilder
+    {
+        $this->mode = $mode ?? 'create';
+        if (strtolower($mode) === 'update') {
+            $this->mode = 'table';
+        }
+        return $this;
+    }
+
+    public function getSchemaMode(): string
+    {
+        return $this->mode;
+    }
     /**
      * build the complete migration file content
      *

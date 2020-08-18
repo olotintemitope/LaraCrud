@@ -19,6 +19,10 @@ interface ConstantInterface
     public const ENUM = "enum";
     public const NO_PLEASE = "no";
     public const DEFAULT_LARAVEL_NAMESPACE = 'App';
+    public const CRUD_GENERATOR_OPTIONS = ['migration', 'model'];
+    public const CRUD_MIGRATION_ONLY = 'migration';
+    public const CRUD_MODEL_ONLY = 'model';
+    public const CRUD_MIGRATION_SCHEMA_OPTIONS = ['create', 'update'];
 
     public const AVAILABLE_COLUMN_TYPES = [
         'bigIncrements' => 'Auto-incrementing UNSIGNED BIGINT (primary key) equivalent column.',
