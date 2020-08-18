@@ -24,14 +24,6 @@ And finally you can type `generator` in your terminal and see
 
 ![alt text](https://github.com/olotintemitope/LaraCrud/blob/master/laracrud.png  "Laracrud console")
 
-If you're on mac, you can set the path like
-
-```echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> ~/.bashrc```
-
-This will help you run the command on a global level. After that, you can now run the command anywhere in your terminal
-like; `laracrud make:crud [Any alphabetical name]`
-
-
 ### How to use
 - From your terminal, navigate to your current Laravel project directory and type or copy php `~/.composer/laracrud/laracrud make:crud [name]`
   - It has some optional parameters you should be aware of, such as;
