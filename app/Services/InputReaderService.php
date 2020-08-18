@@ -30,18 +30,7 @@ class InputReaderService implements ConstantInterface
     {
         $migrations = [];
 
-        $modelName = $this->getModelNameValue($this->laraCrudCommand->argument('name'));
-        if (empty($modelName)) {
-            $this->laraCrudCommand->error("Name argument is missing");
-        }
-
-        $modelDirectory = $this->laraCrudCommand->option('folder');
-        [$defaultModelDirectory, $modelPath] = $this->modelWriter::getDirectoryInfo($modelName, $modelDirectory);
-
-        if ($this->modelWriter::fileExists($modelPath)) {
-            $this->laraCrudCommand->error("{$modelPath} already exist");
-            exit();
-        }
+        [$writerOption, $modelOption, $modelName, $modelPath, $defaultModelDirectory] = $this->validationOptionalParameters();
 
         do {
             $dbFieldName = strtolower($this->getModelFieldValue($this->askForFieldName()));
@@ -61,7 +50,7 @@ class InputReaderService implements ConstantInterface
             exit();
         }
 
-        return [$modelName, $defaultModelDirectory, $modelPath, $migrations];
+        return [$modelName, $defaultModelDirectory, $modelPath, $migrations, $writerOption, $modelOption];
     }
 
     /**
@@ -87,6 +76,20 @@ class InputReaderService implements ConstantInterface
     protected function getModelFieldValue(string $input): string
     {
         $pattern = '/^([A-Za-z\s])*\w+/i';
+        preg_match($pattern, $input, $matches);
+
+        return isset($matches[0]) ? $matches[0] : '';
+    }
+
+    /**
+     * Validate and return enum field value
+     *
+     * @param string $input
+     * @return string
+     */
+    protected function getEnumValue(string $input): string
+    {
+        $pattern = '/^([A-Za-z\s,])+\w+/i';
         preg_match($pattern, $input, $matches);
 
         return isset($matches[0]) ? $matches[0] : '';
@@ -170,17 +173,39 @@ class InputReaderService implements ConstantInterface
         return $migrations;
     }
 
-    /**
-     * Validate and return enum field value
+    /** Validate the optional parameters
      *
-     * @param string $input
-     * @return string
+     * @return string[]
      */
-    protected function getEnumValue(string $input): string
+    protected function validationOptionalParameters(): array
     {
-        $pattern = '/^([A-Za-z\s,])+\w+/i';
-        preg_match($pattern, $input, $matches);
+        $writerOption = $this->laraCrudCommand->option('g');
+        $modelOption = $this->laraCrudCommand->option('m');
+        $modelDirectory = $this->laraCrudCommand->option('f');
 
-        return isset($matches[0]) ? $matches[0] : '';
+        $modelName = $this->getModelNameValue($this->laraCrudCommand->argument('name'));
+        [$defaultModelDirectory, $modelPath] = $this->modelWriter::getDirectoryInfo($modelName, $modelDirectory);
+
+        if (empty($modelName)) {
+            $this->laraCrudCommand->error("Name argument is missing");
+            exit();
+        }
+
+        if (static::CRUD_MIGRATION_ONLY !== $writerOption && $this->modelWriter::fileExists($modelPath)) {
+            $this->laraCrudCommand->error("{$modelPath} already exist");
+            exit();
+        }
+
+        if (!is_null($writerOption) && !in_array($writerOption, static::CRUD_GENERATOR_OPTIONS, true)) {
+            $this->laraCrudCommand->warn("model|migration options expected for optional --g parameter");
+            exit();
+        }
+
+        if (!is_null($modelOption) && !in_array($modelOption, self::CRUD_MIGRATION_SCHEMA_OPTIONS, true)) {
+            $this->laraCrudCommand->warn("create|update options expected for optional --m parameter");
+            exit();
+        }
+
+        return [$writerOption, $modelOption, $modelName, $modelPath, $defaultModelDirectory];
     }
 }
