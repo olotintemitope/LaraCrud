@@ -9,7 +9,20 @@ Generate a full CRUD ready to deploy application from your console
 - Generate a migration file for you.
 
 ### Installation
-`composer global create-project --prefer-dist laztopaz/laracrud`
+- Go to the release page and download the laracrud binary
+- Move it to the `sudo mv path/to/laracrud /usr/local/bin/` to run it as a root all the time
+- Give it permission `sudo chmod 755 /usr/local/bin/laracrud` to make it executable
+- We need to let bash know where the executable file is `nano ~/.bash_profile`
+
+Add this line below to bash_profile and save
+- `alias generator="php /usr/local/bin/laracrud"`
+
+and then run this command:
+- `source ~/.bash_profile`
+
+And finally you can type `generator` in your terminal and see 
+
+![alt text](https://github.com/olotintemitope/LaraCrud/blob/master/laracrud.png  "Laracrud console")
 
 If you're on mac, you can set the path like
 
