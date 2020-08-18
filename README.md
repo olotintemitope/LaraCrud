@@ -11,6 +11,14 @@ Generate a full CRUD ready to deploy application from your console
 ### Installation
 `composer global create-project --prefer-dist laztopaz/laracrud`
 
+If you're on mac, you can set the path like
+
+```echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> ~/.bashrc```
+
+This will help you run the command on a global level. After that, you can now run the command anywhere in your terminal
+like; `laracrud make:crud [Any alphabetical name]`
+
+
 ### How to use
 - From your terminal, navigate to your current Laravel project directory and type or copy php `~/.composer/laracrud/laracrud make:crud [name]`
   - It has some optional parameters you should be aware of, such as;
