@@ -25,8 +25,8 @@ both model and migration files.
 the new file to the app/Models folder
 
 ### Supported Field Types
-- This project supports all Laravel field types
-- The default field type is string. Therefore, you can hit the return key if you do not want to
+- This project supports all [Laravel migration column types](https://laravel.com/docs/5.5/migrations#creating-columns)
+- The default column type is string. Therefore, you can hit the return key if you do not want to
 change the type.
 - For string and integer field type, you can also omit the length so that it will use the default
 length.
