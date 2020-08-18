@@ -9,7 +9,7 @@ Generate a full CRUD ready to deploy application from your console
 - Generate a migration file for you.
 
 ### Installation
-`composer global create-project -s dev laztopaz/laracrud`
+`composer global create-project --prefer-dist laztopaz/laracrud`
 
 ### How to use
 - From your terminal navigate to your current Laravel project directory, type or copy php `~/.composer/laracrud/laracrud make:crud [name]`
