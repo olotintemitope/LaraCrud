@@ -5,7 +5,7 @@ Generate a full CRUD ready to deploy application from your console
 ### What this project currently does
 - Let you interactively define your database schema
 - Generate a fresh model into your app/Models folder and let you specify your default path.
-  - It helps you generate the $fillables and the $casts arrays to your model
+  - It helps you generate the $fillables, and the $casts arrays to your model
 - Generate a migration file for you.
 
 ### Installation
