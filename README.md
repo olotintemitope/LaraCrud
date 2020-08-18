@@ -12,8 +12,8 @@ Generate a full CRUD ready to deploy application from your console
 `composer global create-project --prefer-dist laztopaz/laracrud`
 
 ### How to use
-- From your terminal navigate to your current Laravel project directory, type or copy php `~/.composer/laracrud/laracrud make:crud [name]`
-it has some optional parameters you should be aware of.
+- From your terminal, navigate to your current Laravel project directory and type or copy php `~/.composer/laracrud/laracrud make:crud [name]`
+  - It has some optional parameters you should be aware of, such as;
 
 - `--m=[create|update]` can be passed to the command if you want a new migration file or you just
 want to update the existing schema.
@@ -21,5 +21,5 @@ want to update the existing schema.
 a model or a migration. Without passing this parameter, the default mode will generate
 both model and migration files.
 
-- `--f[directy name]` You can optionally pass it if your model folder is not app/Models. Otherwise, it will create or append 
+- `--f[directory]` You can optionally pass it, if your model folder is not in app/Models. Otherwise, it will create or append 
 the new file to the app/Models folder
