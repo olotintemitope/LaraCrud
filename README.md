@@ -23,3 +23,10 @@ both model and migration files.
 
 - `--f[directory]` You can optionally pass it, if your model folder is not in app/Models. Otherwise, it will create or append 
 the new file to the app/Models folder
+
+### Supported Field Types
+- This project supports all Laravel field types
+- The default field type is string. Therefore, you can hit the return key if you do not want to
+change the type.
+- For string and integer field type, you can also omit the length so that it will use the default
+length.
