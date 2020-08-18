@@ -25,9 +25,7 @@ And finally you can type `generator` in your terminal and see
 ![alt text](https://github.com/olotintemitope/LaraCrud/blob/master/laracrud.png  "Laracrud console")
 
 ### How to use
-- From your terminal, navigate to your current Laravel project directory and type or copy php `~/.composer/laracrud/laracrud make:crud [name]`
-  - It has some optional parameters you should be aware of, such as;
-
+- From your terminal, navigate to your current Laravel project directory and type `laracrud` or the alias you've provided in the bash profile.
 - `--m=[create|update]` can be passed to the command if you want a new migration file or you just
 want to update the existing schema.
 - `--g=[model|migration]` can also be passed to the command in case you only want to generate either
