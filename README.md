@@ -17,16 +17,16 @@ Generate a full CRUD ready to deploy application from your console
 Add this line below to bash_profile and save
 - `alias generator="php /usr/local/bin/laracrud"`
 
-and then run this command:
+Then run this command:
 - `source ~/.bash_profile`
 
-And finally you can type `generator` in your terminal and see 
+Finally, you can type `generator` or laracrud in your terminal. You should see the below screen.
 
 ![alt text](https://github.com/olotintemitope/LaraCrud/blob/master/laracrud.png  "Laracrud console")
 
 ### How to use
 - From your terminal, navigate to your current Laravel project directory and type `laracrud` or the alias you've provided in the bash profile.
-- `--m=[create|update]` can be passed to the command if you want a new migration file or you just
+- `--m=[create|update]` can be passed to the command if you want a new migration file, or you just
 want to update the existing schema.
 - `--g=[model|migration]` can also be passed to the command in case you only want to generate either
 a model or a migration. Without passing this parameter, the default mode will generate
