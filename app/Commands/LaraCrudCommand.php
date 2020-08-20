@@ -32,7 +32,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
      *
      * @var string
      */
-    protected $description = 'Create a crud operation out of your model';
+    protected $description = 'Create a crud operation out of your console';
     /** @var InputReaderService */
     private $inputReaderService;
 
