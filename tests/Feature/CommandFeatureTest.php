@@ -182,6 +182,7 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
 
     /**
      * @param string $name
+     * @return string
      */
     protected function getMigrationFileName(string $name): string
     {
