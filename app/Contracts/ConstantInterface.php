@@ -23,6 +23,13 @@ interface ConstantInterface
     public const CRUD_MIGRATION_ONLY = 'migration';
     public const CRUD_MODEL_ONLY = 'model';
     public const CRUD_MIGRATION_SCHEMA_OPTIONS = ['create', 'update'];
+    public const ENTER_A_FIELD = 'Enter field name';
+    public const SELECT_FIELD_TYPE = 'Select field type';
+    public const ENTER_THE_LENGTH = 'Enter the length';
+    public const DEFAULT_LENGTH_USED = 'Default length will be used instead';
+    public const DO_YOU_WANT_TO_EXIT = 'Are you sure you want to exit?';
+    public const MODEL_FOLDER = 'app/Models';
+    public const ENTER_ENUM_VALUES = 'Enter the ENUM values separated by a comma';
 
     public const AVAILABLE_COLUMN_TYPES = [
         'bigIncrements' => 'Auto-incrementing UNSIGNED BIGINT (primary key) equivalent column.',

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Laztopaz\Builders\ModelServiceBuilder;
 use Laztopaz\Contracts\ConstantInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -10,12 +11,6 @@ use Tests\TestCase;
 
 class CommandFeatureTest extends TestCase implements ConstantInterface
 {
-    public const ENTER_A_FIELD = 'Enter field name';
-    public const SELECT_FIELD_TYPE = 'Select field type';
-    public const ENTER_THE_LENGTH = 'Enter the length';
-    public const DEFAULT_LENGTH_USED = 'Default length will be used instead';
-    public const DO_YOU_WANT_TO_EXIT = 'Are you sure you want to exit?';
-    public const MODEL_FOLDER = 'app/Models';
     /**
      * @var MockObject
      */
@@ -23,13 +18,18 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
 
     private $modelBuilder;
     private $modelPath;
+    /**
+     * @var string
+     */
+    private $migrationPath;
 
     public function setUp(): void
     {
         parent::setUp();
         $this->mockedModelBuilder = $this->getMockBuilder(ModelServiceBuilder::class)->getMock();
         $this->modelBuilder = new ModelServiceBuilder;
-        $this->modelPath = getcwd().DIRECTORY_SEPARATOR.self::MODEL_FOLDER;
+        $this->modelPath = getcwd() . DIRECTORY_SEPARATOR . self::MODEL_FOLDER;
+        $this->migrationPath = getcwd().DIRECTORY_SEPARATOR.self::DEFAULT_MIGRATION_FOLDER;
     }
 
     public function testForStringFields(): void
@@ -42,10 +42,9 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
             ->expectsQuestion(static::ENTER_A_FIELD, 'exit')
             ->expectsConfirmation(static::DO_YOU_WANT_TO_EXIT, 'yes');
 
-        $this->assertFileExists($this->modelPath.DIRECTORY_SEPARATOR.'Test1.php');
-        // Expect 2 files to be generated one for the model and the other for the
-
-        //dd($this->modelBuilder->getMigrations());
+        self::assertFileExists($this->modelPath . DIRECTORY_SEPARATOR . 'Test1.php');
+        $migrationFileName = $this->getMigrationFileName("create_Test1_table");
+        self::assertFileExists( $this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
     }
 
     public function testForStringWithEnumField(): void
@@ -57,19 +56,115 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
             ->expectsOutput(static::DEFAULT_LENGTH_USED)
             ->expectsQuestion(static::ENTER_A_FIELD, 'hobbies')
             ->expectsQuestion(static::SELECT_FIELD_TYPE, 'enum')
-            ->expectsQuestion('Enter the ENUM values separated by a comma', 'soccer, hiking')
+            ->expectsQuestion(static::ENTER_ENUM_VALUES, 'soccer, hiking')
             ->expectsQuestion(static::ENTER_A_FIELD, 'exit')
             ->expectsConfirmation(static::DO_YOU_WANT_TO_EXIT, 'yes');
 
-        $this->assertFileExists($this->modelPath.DIRECTORY_SEPARATOR.'Test2.php');
+        self::assertFileExists($this->modelPath . DIRECTORY_SEPARATOR . 'Test2.php');
+        $migrationFileName = $this->getMigrationFileName("create_Test2_table");
+        self::assertFileExists( $this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
+    }
+
+    public function testThatUsingCustomIncrementDoesNotBreakTheApp(): void
+    {
+        $this->artisan('make:crud Test3')
+            ->expectsQuestion(static::ENTER_A_FIELD, 'firstname')
+            ->expectsQuestion(static::SELECT_FIELD_TYPE, 'string')
+            ->expectsQuestion(static::ENTER_THE_LENGTH, '')
+            ->expectsOutput(static::DEFAULT_LENGTH_USED)
+            ->expectsQuestion(static::ENTER_A_FIELD, 'id')
+            ->expectsQuestion(static::SELECT_FIELD_TYPE, 'tinyIncrements')
+            ->expectsQuestion(static::ENTER_A_FIELD, 'exit')
+            ->expectsConfirmation(static::DO_YOU_WANT_TO_EXIT, 'yes');
+
+        self::assertFileExists($this->modelPath . DIRECTORY_SEPARATOR . 'Test3.php');
+        $migrationFileName = $this->getMigrationFileName("create_Test3_table");
+        self::assertFileExists( $this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
+    }
+
+    public function testThatAddingTimestampDoesNotBreakTheApp(): void
+    {
+        $this->artisan('make:crud Test4')
+            ->expectsQuestion(static::ENTER_A_FIELD, 'firstname')
+            ->expectsQuestion(static::SELECT_FIELD_TYPE, 'string')
+            ->expectsQuestion(static::ENTER_THE_LENGTH, '')
+            ->expectsOutput(static::DEFAULT_LENGTH_USED)
+            ->expectsQuestion(static::ENTER_A_FIELD, 'timestamp')
+            ->expectsQuestion(static::SELECT_FIELD_TYPE, 'timestampsTz')
+            ->expectsQuestion(static::ENTER_A_FIELD, 'exit')
+            ->expectsConfirmation(static::DO_YOU_WANT_TO_EXIT, 'yes');
+
+        self::assertFileExists($this->modelPath . DIRECTORY_SEPARATOR . 'Test4.php');
+        $migrationFileName = $this->getMigrationFileName("create_Test4_table");
+        self::assertFileExists( $this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
+    }
+
+    public function testThatAddingUUIDDoesNotBreakTheApp(): void
+    {
+        $this->artisan('make:crud Test5')
+            ->expectsQuestion(static::ENTER_A_FIELD, 'name')
+            ->expectsQuestion(static::SELECT_FIELD_TYPE, 'string')
+            ->expectsQuestion(static::ENTER_THE_LENGTH, '')
+            ->expectsOutput(static::DEFAULT_LENGTH_USED)
+            ->expectsQuestion(static::ENTER_A_FIELD, 'uuid')
+            ->expectsQuestion(static::SELECT_FIELD_TYPE, 'uuid')
+            ->expectsQuestion(static::ENTER_A_FIELD, 'exit')
+            ->expectsConfirmation(static::DO_YOU_WANT_TO_EXIT, 'yes');
+
+        self::assertFileExists($this->modelPath . DIRECTORY_SEPARATOR . 'Test5.php');
+        $migrationFileName = $this->getMigrationFileName("create_Test5_table");
+        self::assertFileExists( $this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
+    }
+
+    public function testThatOnlyModelWasGenerated(): void
+    {
+        $this->artisan('make:crud Test6 --g=model')
+            ->expectsQuestion(static::ENTER_A_FIELD, 'name')
+            ->expectsQuestion(static::SELECT_FIELD_TYPE, 'string')
+            ->expectsQuestion(static::ENTER_THE_LENGTH, '')
+            ->expectsOutput(static::DEFAULT_LENGTH_USED)
+            ->expectsQuestion(static::ENTER_A_FIELD, 'exit')
+            ->expectsConfirmation(static::DO_YOU_WANT_TO_EXIT, 'yes');
+
+        self::assertFileExists($this->modelPath . DIRECTORY_SEPARATOR . 'Test6.php');
+        $migrationFileName = $this->getMigrationFileName("create_Test6_table");
+        self::assertFileNotExists($this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
+    }
+
+    public function testThatOnlyMigrationWasGenerated(): void
+    {
+        $this->artisan('make:crud Test7 --g=migration')
+            ->expectsQuestion(static::ENTER_A_FIELD, 'name')
+            ->expectsQuestion(static::SELECT_FIELD_TYPE, 'string')
+            ->expectsQuestion(static::ENTER_THE_LENGTH, '')
+            ->expectsOutput(static::DEFAULT_LENGTH_USED)
+            ->expectsQuestion(static::ENTER_A_FIELD, 'exit')
+            ->expectsConfirmation(static::DO_YOU_WANT_TO_EXIT, 'yes');
+
+        self::assertFileNotExists($this->modelPath . DIRECTORY_SEPARATOR . 'Test7.php');
+        $migrationFileName = $this->getMigrationFileName("create_Test7_table");
+        self::assertFileExists($this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
+    }
+
+    protected function getDatePrefix()
+    {
+        return date('Y_m_d_His');
     }
 
     public function tearDown(): void
     {
-        File::deleteDirectory(getcwd().DIRECTORY_SEPARATOR.self::MODEL_FOLDER);
-        File::deleteDirectory(getcwd().DIRECTORY_SEPARATOR.self::DEFAULT_MIGRATION_FOLDER);
+        File::deleteDirectory(getcwd() . DIRECTORY_SEPARATOR . self::MODEL_FOLDER);
+        File::deleteDirectory(getcwd() . DIRECTORY_SEPARATOR . self::DEFAULT_MIGRATION_FOLDER);
 
         parent::tearDown();
+    }
+
+    /**
+     * @param string $name
+     */
+    protected function getMigrationFileName(string $name): string
+    {
+        return strtolower($this->getDatePrefix() . '_' . $name . static::FILE_EXTENSION);
     }
 
 }
