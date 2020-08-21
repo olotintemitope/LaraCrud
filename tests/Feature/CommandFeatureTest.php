@@ -22,6 +22,10 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
      * @var string
      */
     private $migrationPath;
+    /**
+     * @var string
+     */
+    private $entityPath;
 
     public function setUp(): void
     {
@@ -30,6 +34,7 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
         $this->modelBuilder = new ModelServiceBuilder;
         $this->modelPath = getcwd() . DIRECTORY_SEPARATOR . self::MODEL_FOLDER;
         $this->migrationPath = getcwd().DIRECTORY_SEPARATOR.self::DEFAULT_MIGRATION_FOLDER;
+        $this->entityPath = getcwd() . DIRECTORY_SEPARATOR . 'app/Entities';
     }
 
     public function testForStringFields(): void
@@ -146,6 +151,21 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
         self::assertFileExists($this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
     }
 
+    public function testThatCustomFolderWasGeneratedForModel(): void
+    {
+        $this->artisan('make:crud Test8 --g=model --f=Entities')
+            ->expectsQuestion(static::ENTER_A_FIELD, 'name')
+            ->expectsQuestion(static::SELECT_FIELD_TYPE, 'string')
+            ->expectsQuestion(static::ENTER_THE_LENGTH, '')
+            ->expectsOutput(static::DEFAULT_LENGTH_USED)
+            ->expectsQuestion(static::ENTER_A_FIELD, 'exit')
+            ->expectsConfirmation(static::DO_YOU_WANT_TO_EXIT, 'yes');
+
+        self::assertFileExists($this->entityPath . DIRECTORY_SEPARATOR . 'Test8.php');
+        $migrationFileName = $this->getMigrationFileName("create_Test8_table");
+        self::assertFileNotExists($this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
+    }
+
     protected function getDatePrefix()
     {
         return date('Y_m_d_His');
@@ -153,8 +173,9 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
 
     public function tearDown(): void
     {
-        File::deleteDirectory(getcwd() . DIRECTORY_SEPARATOR . self::MODEL_FOLDER);
-        File::deleteDirectory(getcwd() . DIRECTORY_SEPARATOR . self::DEFAULT_MIGRATION_FOLDER);
+        File::deleteDirectory($this->modelPath);
+        File::deleteDirectory($this->entityPath);
+        File::deleteDirectory($this->migrationPath);
 
         parent::tearDown();
     }
