@@ -46,6 +46,9 @@
     "scripts": {
         "post-create-project-cmd": [
             "@php application app:rename"
+        ],
+        "post-install-cmd": [
+            "chown www-data:www-data /home/runner/work/LaraCrud/LaraCrud/"
         ]
     },
     "minimum-stability": "dev",
