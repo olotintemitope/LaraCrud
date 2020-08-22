@@ -173,9 +173,9 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
 
     public function tearDown(): void
     {
-        File::deleteDirectory($this->modelPath);
-        File::deleteDirectory($this->entityPath);
-        File::deleteDirectory($this->migrationPath);
+//        File::deleteDirectory($this->modelPath);
+//        File::deleteDirectory($this->entityPath);
+//        File::deleteDirectory($this->migrationPath);
 
         parent::tearDown();
     }
