@@ -11,12 +11,6 @@ use Tests\TestCase;
 
 class CommandFeatureTest extends TestCase implements ConstantInterface
 {
-    /**
-     * @var MockObject
-     */
-    private $mockedModelBuilder;
-
-    private $modelBuilder;
     private $modelPath;
     /**
      * @var string
@@ -30,8 +24,6 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
     public function setUp(): void
     {
         parent::setUp();
-        $this->mockedModelBuilder = $this->getMockBuilder(ModelServiceBuilder::class)->getMock();
-        $this->modelBuilder = new ModelServiceBuilder;
         $this->modelPath = getcwd() . DIRECTORY_SEPARATOR . self::MODEL_FOLDER;
         $this->migrationPath = getcwd().DIRECTORY_SEPARATOR.self::DEFAULT_MIGRATION_FOLDER;
         $this->entityPath = getcwd() . DIRECTORY_SEPARATOR . 'app/Entities';
