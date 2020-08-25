@@ -21,11 +21,11 @@ class LaraCrudCommand extends Command implements ConstantInterface
      *
      * @var string
      */
-    protected $signature = 'make:crud
-        {name : The name of the model (required)}
+    protected $signature = 'make:crud {name : The name of the model (required)}
         {--f= : The path to the model folder (optional)}
         {--m= : The model mode which can create|update (optional)}
-        {--g= : Optional parameter for generating either model or migration. But the default mode is create  (optional)}';
+        {--g= : Optional parameter for generating either model or migration. But the default mode is create (optional)}
+        {--mf= : Migration file name (optional)}';
 
     /**
      * The description of the command.
@@ -52,7 +52,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
     public function handle(ModelFileWriterService $modelFileWriter, MigrationFileWriterService $migrationFileWriter)
     {
         try {
-            [$modelName, $defaultModelDirectory, $modelPath, $migrations, $writerOption, $modelOption] = $this->inputReader();
+            [$modelName, $defaultModelDirectory, $modelPath, $migrations, $writerOption, $modelOption, $migrationFilename] = $this->inputReader();
             $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
             if (!empty($modelName)) {
                 $modelBuilder = $this->getModelBuilder($modelName, $migrations, $modelNamespace);
@@ -70,7 +70,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
 
                     $fileOutputDirector = new OutPutDirector($migrationBuilder);
                     $fileWriter = new FileWriterDirector($migrationFileWriter);
-                    $fileWriter->setFileName(strtolower("{$migrationBuilder->getSchemaMode()}_{$modelName}_table"));
+                    $fileWriter->setFileName($migrationFilename ?? $modelName);
                     [$migrationFulPath, $filePath] = $migrationFileWriter->getDirectory($fileWriter);
                     //Write to migration folder
                     $fileWriter::write($migrationFulPath, $filePath, $fileOutputDirector->getFileContent());
@@ -125,7 +125,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
             'use Illuminate\Database\Migrations\Migration',
         ];
 
-        $softDeletes = array_filter(array_values($model->getMigrations()), function($migration) {
+        $softDeletes = array_filter(array_values($model->getMigrations()), function ($migration) {
             return Str::contains(strtolower($migration['field_type']), 'softdeletes');
         });
         if (count($softDeletes) > 0) {
