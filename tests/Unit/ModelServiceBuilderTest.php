@@ -34,11 +34,9 @@ class ModelServiceBuilderTest extends TestCase implements ConstantInterface
         $this->mockedModelBuilder->setMigrations($migrations);
 
         $this->mockedModelBuilder->expects($this->once())
-            ->method('getTraits')
-            ->willReturn('use SoftDeletes');
-        $result = $this->mockedModelBuilder->getTraits();
-
-        dd($result);
+            ->method('getMigrations')
+            ->willReturn($migrations);
+        $result = $this->mockedModelBuilder->getMigrations();
 
         $this->assertEquals($migrations, $result);
     }

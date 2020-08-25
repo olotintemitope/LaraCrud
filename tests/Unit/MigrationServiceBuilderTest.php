@@ -11,6 +11,7 @@ use Tests\TestCase;
 
 class MigrationServiceBuilderTest extends TestCase
 {
+    public const USE_SOFT_DELETES = 'use SoftDeletes';
     /**
      * @var MigrationServiceBuilder
      */
@@ -41,22 +42,28 @@ class MigrationServiceBuilderTest extends TestCase
     public function testThatMigrationHasSoftDelete(): void
     {
         $migrations = $this->getMigrationWithSoftDeletes();
-
         $this->mockedModelBuilder->expects($this->once())
             ->method('setMigrations')
             ->with($migrations)
             ->willReturn($this->modelBuilder);
         $this->mockedModelBuilder->setMigrations($migrations);
 
-        try {
-            $this->mockedMigrationBuilder
-                ->shouldNotReceive('getTraits')
-                ->once()
-                ->andThrow(new \Exception);
-            $this->mockedMigrationBuilder->getTraits();
+        $this->mockedMigrationBuilder
+            ->shouldReceive('setTraits')
+            ->once()
+            ->withSomeOfArgs([self::USE_SOFT_DELETES])
+            ->andReturn($this->migrationBuilder);
 
-        } catch (\Exception $e) {
-        }
+        $this->mockedMigrationBuilder
+            ->setTraits([self::USE_SOFT_DELETES]);
+
+        $this->mockedMigrationBuilder
+            ->shouldReceive('getTraits')
+            ->once()
+            ->andReturn(self::USE_SOFT_DELETES);
+
+        $result = $this->mockedMigrationBuilder->getTraits();
+        $this->assertEquals(self::USE_SOFT_DELETES, $result);
     }
 
     /**
