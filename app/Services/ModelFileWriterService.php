@@ -29,16 +29,16 @@ final class ModelFileWriterService extends FileWriterAbstractFactory
      */
     public function getFilename(): string
     {
-        return "";
+        return $this->fileName;
     }
 
     /**
      * @override
-     * set the filename you want the file name to be
-     * different from the Model.php type
+     * set the model filename
      * @param string $name
      */
     public function setFileName(string $name): void
     {
+        $this->fileName = ucwords($name);
     }
 }

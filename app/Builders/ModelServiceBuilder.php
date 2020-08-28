@@ -43,6 +43,9 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
      */
     private $fileWriterAbstractFactory;
 
+    public function __construct()
+    {}
+
     /**
      * @return string
      */
@@ -122,6 +125,11 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
         return strtolower($inflector->pluralize($this->getModelName()));
     }
 
+    /**
+     * Set the migration fillables
+     * @param string $fillable
+     * @return string
+     */
     protected function getFillableDefinition($fillable = '$fillable'): string
     {
         return
@@ -149,6 +157,7 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
     }
 
     /**
+     * Get the migration fields
      * @return mixed
      */
     protected function getMigrationFields()
@@ -157,6 +166,7 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
     }
 
     /**
+     * Get migrations
      * @return mixed
      */
     public function getMigrations()
@@ -174,6 +184,11 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
         return $this;
     }
 
+    /**
+     * Set the model casts attributes
+     * @param string $casts
+     * @return string
+     */
     protected function getCastsDefinition($casts = '$casts'): string
     {
         if (empty($this->getCastsField())) {
@@ -221,6 +236,7 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
     }
 
     /**
+     * Build the model
      * @return string
      */
     public function build(): string
@@ -241,6 +257,5 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
             $this->getNewLine() .
             $this->getClosingTag();
     }
-
 
 }

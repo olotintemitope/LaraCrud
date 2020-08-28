@@ -9,6 +9,12 @@ use RuntimeException;
 abstract class FileWriterAbstractFactory implements ConstantInterface
 {
     /**
+     * @var string
+     */
+    protected string $fileName = "";
+
+    protected BuilderServiceInterface $builderService;
+    /**
      * @param $directory
      * @param $filePath
      * @param $content

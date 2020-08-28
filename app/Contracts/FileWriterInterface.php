@@ -5,5 +5,5 @@ namespace Laztopaz\Contracts;
 
 interface FileWriterInterface
 {
-    public function getFileWriter(): FileWriterAbstractFactory;
+    public function getWriter(): FileWriterAbstractFactory;
 }

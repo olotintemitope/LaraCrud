@@ -32,9 +32,10 @@ want to update the existing schema.
 a model or a migration. Without passing this parameter, the default mode will generate
 both model and migration files.
 
-- `--f[directory]` You can optionally pass it, if your model folder is not in app/Models. Otherwise, it will create or append 
+- `--f[folder path]` You can optionally pass it, if your model folder is not in app/Models. Otherwise, it will create or append 
 the new file to the app/Models folder
 
+- `--mf[string]` You can optionally pass it to give your migration a meaningful name
 ### Supported Field Types
 - This project supports all [Laravel migration column types](https://laravel.com/docs/5.5/migrations#creating-columns)
 - The default column type is string. Therefore, you can hit the return key if you do not want to

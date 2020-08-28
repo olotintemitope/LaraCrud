@@ -30,12 +30,15 @@ class ModelServiceBuilderTest extends TestCase implements ConstantInterface
         $this->mockedModelBuilder->expects($this->once())
             ->method('setMigrations')
             ->with($migrations)
-            ->willReturn($this->mockedModelBuilder);
-
+            ->willReturn($this->modelBuilder);
         $this->mockedModelBuilder->setMigrations($migrations);
-        $this->modelBuilder->setMigrations($migrations);
 
-        $this->assertEquals($this->modelBuilder->getMigrations(), $migrations);
+        $this->mockedModelBuilder->expects($this->once())
+            ->method('getMigrations')
+            ->willReturn($migrations);
+        $result = $this->mockedModelBuilder->getMigrations();
+
+        $this->assertEquals($migrations, $result);
     }
 
     public function testThatModelHasFieldCasts(): void

@@ -34,6 +34,7 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      * @var string
      */
     private $mode;
+    private string $className;
 
     public function __construct(ModelServiceBuilder $model)
     {
@@ -63,11 +64,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      */
     public function getClassDefinition(): string
     {
-        $migrationClassName = ucwords($this->modelService->getModelName());
-        $migrationTableName = "Create{$migrationClassName}Table";
-
-        return $this->writeLine("class {$migrationTableName} extends Migration", 0) .
-            $this->writeLine("{", 0);
+        return $this->writeLine("class {$this->getClassName()} extends Migration", 0) .
+            $this->writeLine("{", 0, false);
     }
 
     /**
@@ -166,8 +164,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      */
     protected function getDefaultFields(string $schemaTearUpFields, string $table, string $migrationFields): string
     {
-        if ('update' === $this->getSchemaMode()) {
-            return $migrationFields;
+        if ('table' === $this->getSchemaMode()) {
+            return $schemaTearUpFields;
         }
 
         if (!Str::contains(strtolower($schemaTearUpFields), 'increments')) {
@@ -229,7 +227,7 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      * Set the schema mode. Could be to create
      * a new schema or update an existing one.
      *
-     * @param string $mode
+     * @param string|null $mode
      * @return $this
      */
     public function setSchemaMode(?string $mode = null): MigrationServiceBuilder
@@ -241,10 +239,52 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
         return $this;
     }
 
+    /**
+     * Get the schema mode
+     * @return string
+     */
     public function getSchemaMode(): string
     {
         return $this->mode;
     }
+
+    /**
+     * This sets the class name
+     * @param string $filename
+     * @return $this
+     */
+    public function setClassName(string $filename): self
+    {
+        $this->className = $this->getCapitalizedClassName($filename);
+        return $this;
+    }
+
+    /**
+     * Get the class name
+     * @return string
+     */
+    public function getClassName(): string
+    {
+        return $this->className;
+    }
+
+    /**
+     * Get the class name to match with the file name
+     * @param string $filename
+     * @return string
+     */
+    private function getCapitalizedClassName(string $filename): string
+    {
+        preg_match('/([a-zA-Z])\w+/i', $filename, $match);
+        $fileName = isset($match[0]) ? $match[0] : null;
+
+        $splitFilename = array_map(function($eachWord) {
+            return ucwords($eachWord);
+        }, explode('_', $fileName));
+
+        return implode('', $splitFilename);
+    }
+
     /**
      * build the complete migration file content
      *
