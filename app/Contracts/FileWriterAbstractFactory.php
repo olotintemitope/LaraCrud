@@ -82,6 +82,4 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
      * @return string
      */
     abstract public function getFileName(): string;
-
-    abstract public function getModel(): BuilderServiceInterface;
 }

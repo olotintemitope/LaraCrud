@@ -2,16 +2,10 @@
 
 namespace Laztopaz\Services;
 
-use Laztopaz\Builders\ModelServiceBuilder;
 use Laztopaz\Contracts\FileWriterAbstractFactory;
 
 final class ModelFileWriterService extends FileWriterAbstractFactory
 {
-    public function __construct(ModelServiceBuilder $modelServiceBuilder)
-    {
-        $this->builderService = $modelServiceBuilder;
-    }
-
     /**
      * @override
      * Get the information about the model directory
@@ -40,17 +34,11 @@ final class ModelFileWriterService extends FileWriterAbstractFactory
 
     /**
      * @override
-     * set the filename you want the file name to be
-     * different from the Model.php type
+     * set the model filename
      * @param string $name
      */
     public function setFileName(string $name): void
     {
-        $this->fileName = $name;
-    }
-
-    public function getModel(): ModelServiceBuilder
-    {
-        return $this->builderService;
+        $this->fileName = ucwords($name);
     }
 }

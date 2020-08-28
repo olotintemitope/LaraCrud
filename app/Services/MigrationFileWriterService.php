@@ -2,17 +2,11 @@
 
 namespace Laztopaz\Services;
 
-use Laztopaz\Builders\MigrationServiceBuilder;
 use Laztopaz\Contracts\FileWriterAbstractFactory;
 use Laztopaz\Directors\FileWriterDirector;
 
 final class MigrationFileWriterService extends FileWriterAbstractFactory
 {
-    public function __construct(MigrationServiceBuilder $migrationServiceBuilder)
-    {
-        $this->builderService = $migrationServiceBuilder;
-    }
-
     /**
      * Get migration folder full path
      *
@@ -52,12 +46,13 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
      * Set the filename
      *
      * @param string $name
+     * @param string $schemaMode
      * @return void
      */
-    public function setFileName(string $name): void
+    public function setFileName(string $name, $schemaMode = 'create'): void
     {
         $this->fileName = strtolower(
-            $this->getDatePrefix() . '_' . $this->getModel()->getSchemaMode() . '_' . str_replace(' ', '_', $name) . '_table' . static::FILE_EXTENSION
+            $this->getDatePrefix() . '_' . $schemaMode . '_' . str_replace(' ', '_', $name) . '_table' . static::FILE_EXTENSION
         );
     }
 
@@ -79,13 +74,8 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
      */
     public function getDirectory(FileWriterDirector $fileWriterDirector): array
     {
-        $migrationFulPath = $fileWriterDirector->getFileWriter()::getDefaultDirectory();
+        $migrationFulPath = $fileWriterDirector->getWriter()::getDefaultDirectory();
         $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $fileWriterDirector->getFileName();
         return array($migrationFulPath, $filePath);
-    }
-
-    public function getModel(): MigrationServiceBuilder
-    {
-        return $this->builderService;
     }
 }

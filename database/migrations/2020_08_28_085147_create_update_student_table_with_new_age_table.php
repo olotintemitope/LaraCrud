@@ -4,9 +4,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserTable extends Migration
+class CreateUpdateStudentTableWithNewAgeTable extends Migration
 {
-
 	/**
 	 * Run the migrations.
 	 * 
@@ -14,11 +13,10 @@ class CreateUserTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('users', function (Blueprint $table) {
-			$table->increments('id');
-			$table->string('firstname');
-			$table->string('lastname');
-			$table->timestamps();
+		Schema::table('students', function (Blueprint $table) {
+			$table->string('name');
+			$table->string('address', 25);
+			$table->integer('age', 2);
 
 		});
 	}
@@ -30,7 +28,7 @@ class CreateUserTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('users');
+		Schema::dropIfExists('students');
 	}
 
 }

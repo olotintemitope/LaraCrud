@@ -1,0 +1,52 @@
+[2020-08-26 09:42:56] development.ERROR: Type of NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of NunoMaduro\\Collision\\Adapters\\Laravel\\Commands\\TestCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/nunomaduro/collision/src/Adapters/Laravel/Commands/TestCommand.php:143)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 09:43:59] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 09:44:19] development.ERROR: Type of NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of NunoMaduro\\Collision\\Adapters\\Laravel\\Commands\\TestCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/nunomaduro/collision/src/Adapters/Laravel/Commands/TestCommand.php:143)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 09:45:46] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 09:50:41] development.ERROR: Constant expression contains invalid operations {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Constant expression contains invalid operations at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:35)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 09:57:15] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 09:57:44] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 10:00:13] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 10:00:46] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 10:11:02] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 10:13:29] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 10:22:22] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-26 12:04:45] development.ERROR: Type of Laztopaz\Commands\LaraCrudCommand::$description must be string (as in class Illuminate\Console\Command) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Type of Laztopaz\\Commands\\LaraCrudCommand::$description must be string (as in class Illuminate\\Console\\Command) at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:17)
+[stacktrace]
+#0 {main}
+"} 

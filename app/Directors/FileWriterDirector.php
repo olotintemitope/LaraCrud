@@ -5,12 +5,12 @@ namespace Laztopaz\Directors;
 use Laztopaz\Contracts\FileWriterAbstractFactory;
 use Laztopaz\Contracts\FileWriterInterface;
 
-class FileWriterDirector extends FileWriterAbstractFactory implements FileWriterInterface
+class FileWriterDirector implements FileWriterInterface
 {
     /**
      * @var FileWriterAbstractFactory
      */
-    private $fileWriter;
+    private FileWriterAbstractFactory $fileWriter;
 
     public function __construct(FileWriterAbstractFactory $fileWriterAbstractFactory)
     {
@@ -22,7 +22,7 @@ class FileWriterDirector extends FileWriterAbstractFactory implements FileWriter
      *
      * @return FileWriterAbstractFactory
      */
-    public function getFileWriter(): FileWriterAbstractFactory
+    public function getWriter(): FileWriterAbstractFactory
     {
         return $this->fileWriter;
     }
