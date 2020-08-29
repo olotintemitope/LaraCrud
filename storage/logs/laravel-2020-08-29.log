@@ -80,3 +80,27 @@
 #21 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/laracrud(37): LaravelZero\\Framework\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
 #22 {main}
 "} 
+[2020-08-29 20:21:23] development.ERROR: A function with return type must return a value {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): A function with return type must return a value at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Services/InputReaderService.php:193)
+[stacktrace]
+#0 {main}
+"} 
+[2020-08-29 20:37:51] development.ERROR: Call to undefined method Laztopaz\Services\ModelFileWriterService::getWriter() {"exception":"[object] (Error(code: 0): Call to undefined method Laztopaz\\Services\\ModelFileWriterService::getWriter() at /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/app/Commands/LaraCrudCommand.php:67)
+[stacktrace]
+#0 [internal function]: Laztopaz\\Commands\\LaraCrudCommand->handle()
+#1 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/illuminate/container/BoundMethod.php(37): call_user_func_array(Array, Array)
+#2 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/illuminate/container/Util.php(37): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#3 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/illuminate/container/BoundMethod.php(95): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#4 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/illuminate/container/BoundMethod.php(39): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(LaravelZero\\Framework\\Application), Array, Object(Closure))
+#5 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/illuminate/container/Container.php(596): Illuminate\\Container\\BoundMethod::call(Object(LaravelZero\\Framework\\Application), Array, Array, NULL)
+#6 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/illuminate/console/Command.php(134): Illuminate\\Container\\Container->call(Array)
+#7 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/symfony/console/Command/Command.php(258): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#8 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/illuminate/console/Command.php(121): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#9 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/symfony/console/Application.php(911): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/symfony/console/Application.php(264): Symfony\\Component\\Console\\Application->doRunCommand(Object(Laztopaz\\Commands\\LaraCrudCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#11 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/symfony/console/Application.php(140): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#12 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/illuminate/console/Application.php(93): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#13 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/laravel-zero/foundation/src/Illuminate/Foundation/Console/Kernel.php(129): Illuminate\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#14 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/vendor/laravel-zero/framework/src/Kernel.php(91): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#15 /Users/temitopeolotin/PhpstormProjects/laracrud/laracrud/laracrud(37): LaravelZero\\Framework\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#16 {main}
+"} 

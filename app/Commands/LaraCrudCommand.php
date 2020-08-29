@@ -59,10 +59,10 @@ class LaraCrudCommand extends Command implements ConstantInterface
             [$migrationOutputDirector, $migrationWriter, $migrationFulPath, $filePath] = $this->buildMigration($migrationBuilder, $migrationFilename, $modelName);
 
             if (static::CRUD_MODEL_ONLY === $writerOption || is_null($writerOption)) {
-                if (null === $dumpContent) {
+                if ($dumpContent) {
                     $this->info($modelOutputDirector->getFileContent());
                 }
-                if (null !== $dumpContent) {
+                if (false === $dumpContent) {
                     // Write to molder folder
                     $modelFileWriter->getWriter()::write($defaultModelDirectory, $modelPath, $modelOutputDirector->getFileContent());
                     $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
@@ -70,10 +70,10 @@ class LaraCrudCommand extends Command implements ConstantInterface
             }
             if (static::CRUD_MIGRATION_ONLY === $writerOption || is_null($writerOption)) {
                 $migrationBuilder->setClassName($migrationWriter->getFileName());
-                if (null === $dumpContent) {
+                if ($dumpContent) {
                     $this->info($migrationOutputDirector->getFileContent());
                 }
-                if (null !== $dumpContent) {
+                if (false === $dumpContent) {
                     //Write to migration folder
                     $migrationWriter->getWriter()::write($migrationFulPath, $filePath, $migrationOutputDirector->getFileContent());
                     $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
@@ -160,7 +160,7 @@ class LaraCrudCommand extends Command implements ConstantInterface
         $migrationBuilder = $this->getMigrationBuilder($modelBuilder);
         $migrationBuilder->setSchemaMode($modelOption);
 
-        return [$modelOutputDirector, $modelFileWriter, $migrationBuilder];
+        return [$modelOutputDirector, $modelWriterDirector, $migrationBuilder];
     }
 
     /**

@@ -199,12 +199,12 @@ class InputReaderService implements ConstantInterface
         }
 
         if (!is_null($writerOption) && !in_array($writerOption, static::CRUD_GENERATOR_OPTIONS, true)) {
-            $this->laraCrudCommand->warn("model|migration options expected for optional --g parameter");
+            $this->laraCrudCommand->warn("model|migration options expected for optional --g");
             exit();
         }
 
         if (!is_null($modelOption) && !in_array($modelOption, self::CRUD_MIGRATION_SCHEMA_OPTIONS, true)) {
-            $this->laraCrudCommand->warn("create|update options expected for optional --m parameter");
+            $this->laraCrudCommand->warn("create|update options expected for optional --m");
             exit();
         }
 
@@ -212,6 +212,11 @@ class InputReaderService implements ConstantInterface
             $migrationFilename = $this->getModelNameValue($migrationFilename);
         }
 
-        return [$writerOption, $modelOption, $modelName, $modelPath, $defaultModelDirectory, $migrationFilename, $dumpContent];
+        if (!is_null($dumpContent) && "true" !== $dumpContent) {
+            $this->laraCrudCommand->warn("expects you to pass true to the --d option");
+            exit();
+        }
+
+        return [$writerOption, $modelOption, $modelName, $modelPath, $defaultModelDirectory, $migrationFilename, (bool) $dumpContent];
     }
 }
