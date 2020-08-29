@@ -30,7 +30,7 @@ class InputReaderService implements ConstantInterface
     {
         $migrations = [];
 
-        [$writerOption, $modelOption, $modelName, $modelPath, $defaultModelDirectory, $migrationFilename] = $this->validationOptionalParameters();
+        [$writerOption, $modelOption, $modelName, $modelPath, $defaultModelDirectory, $migrationFilename, $dumpContent] = $this->validationOptionalParameters();
 
         do {
             $dbFieldName = strtolower($this->getModelFieldValue($this->askForFieldName()));
@@ -50,7 +50,7 @@ class InputReaderService implements ConstantInterface
             exit();
         }
 
-        return [$modelName, $defaultModelDirectory, $modelPath, $migrations, $writerOption, $modelOption, $migrationFilename];
+        return [$modelName, $defaultModelDirectory, $modelPath, $migrations, $writerOption, $modelOption, $migrationFilename, $dumpContent];
     }
 
     /**
@@ -183,6 +183,7 @@ class InputReaderService implements ConstantInterface
         $modelOption = $this->laraCrudCommand->option('m');
         $modelDirectory = $this->laraCrudCommand->option('f');
         $migrationFilename = $this->laraCrudCommand->option('mf');
+        $dumpContent = $this->laraCrudCommand->option('d');
 
         $modelName = $this->getModelNameValue($this->laraCrudCommand->argument('name'));
         [$defaultModelDirectory, $modelPath] = $this->modelWriter::getDirectoryInfo($modelName, $modelDirectory);
@@ -211,6 +212,6 @@ class InputReaderService implements ConstantInterface
             $migrationFilename = $this->getModelNameValue($migrationFilename);
         }
 
-        return [$writerOption, $modelOption, $modelName, $modelPath, $defaultModelDirectory, $migrationFilename];
+        return [$writerOption, $modelOption, $modelName, $modelPath, $defaultModelDirectory, $migrationFilename, $dumpContent];
     }
 }

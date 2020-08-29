@@ -25,7 +25,8 @@ class LaraCrudCommand extends Command implements ConstantInterface
         {--f= : The path to the model folder (optional)}
         {--m= : The model mode which can create|update (optional)}
         {--g= : Optional parameter for generating either model or migration. But the default mode is create (optional)}
-        {--mf= : Migration file name (optional)}';
+        {--mf= : Migration file name (optional)}
+        {--d= : Dump the model and migration file content (optional)}';
 
     /**
      * The description of the command.
@@ -53,22 +54,30 @@ class LaraCrudCommand extends Command implements ConstantInterface
     public function handle(ModelFileWriterService $modelFileWriter, MigrationFileWriterService $migrationFileWriter)
     {
         try {
-            [$modelName, $defaultModelDirectory, $modelPath, $migrations, $writerOption, $modelOption, $migrationFilename] = $this->inputReader();
+            [$modelName, $defaultModelDirectory, $modelPath, $migrations, $writerOption, $modelOption, $migrationFilename, $dumpContent] = $this->inputReader();
             $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
 
             [$modelOutputDirector, $modelWriter, $migrationBuilder] = $this->buildModel($modelName, $migrations, $modelNamespace, $modelFileWriter, $modelOption);
-
             [$migrationOutputDirector, $migrationWriter, $migrationFulPath, $filePath] = $this->buildMigration($migrationBuilder, $migrationFileWriter, $migrationFilename, $modelName);
 
             if (static::CRUD_MODEL_ONLY === $writerOption || is_null($writerOption)) {
+                if (null === $dumpContent) {
+                    $this->info($modelOutputDirector->getFileContent());
+                    exit();
+                }
                 // Write to molder folder
                 $modelWriter->getWriter()->setFileName($modelName);
                 $modelWriter->getWriter()::write($defaultModelDirectory, $modelPath, $modelOutputDirector->getFileContent());
                 $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
             }
             if (static::CRUD_MIGRATION_ONLY === $writerOption || is_null($writerOption)) {
-                //Write to migration folder
                 $migrationBuilder->setClassName($migrationFileWriter->getFileName());
+
+                if (null === $dumpContent) {
+                    $this->info($migrationOutputDirector->getFileContent());
+                    exit();
+                }
+                //Write to migration folder
                 $migrationWriter->getWriter()::write($migrationFulPath, $filePath, $migrationOutputDirector->getFileContent());
                 $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
             }
