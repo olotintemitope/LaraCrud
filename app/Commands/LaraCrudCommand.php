@@ -47,39 +47,37 @@ class LaraCrudCommand extends Command implements ConstantInterface
     /**
      * Execute the console command.
      *
-     * @param ModelFileWriterService $modelFileWriter
-     * @param MigrationFileWriterService $migrationFileWriter
      * @return mixed
      */
-    public function handle(ModelFileWriterService $modelFileWriter, MigrationFileWriterService $migrationFileWriter)
+    public function handle()
     {
         try {
             [$modelName, $defaultModelDirectory, $modelPath, $migrations, $writerOption, $modelOption, $migrationFilename, $dumpContent] = $this->inputReader();
             $modelNamespace = str_replace('/', '\\', $defaultModelDirectory);
 
-            [$modelOutputDirector, $modelWriter, $migrationBuilder] = $this->buildModel($modelName, $migrations, $modelNamespace, $modelFileWriter, $modelOption);
-            [$migrationOutputDirector, $migrationWriter, $migrationFulPath, $filePath] = $this->buildMigration($migrationBuilder, $migrationFileWriter, $migrationFilename, $modelName);
+            [$modelOutputDirector, $modelFileWriter, $migrationBuilder] = $this->buildModel($modelName, $migrations, $modelNamespace, $modelOption);
+            [$migrationOutputDirector, $migrationWriter, $migrationFulPath, $filePath] = $this->buildMigration($migrationBuilder, $migrationFilename, $modelName);
 
             if (static::CRUD_MODEL_ONLY === $writerOption || is_null($writerOption)) {
                 if (null === $dumpContent) {
                     $this->info($modelOutputDirector->getFileContent());
-                    exit();
                 }
-                // Write to molder folder
-                $modelWriter->getWriter()->setFileName($modelName);
-                $modelWriter->getWriter()::write($defaultModelDirectory, $modelPath, $modelOutputDirector->getFileContent());
-                $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
+                if (null !== $dumpContent) {
+                    // Write to molder folder
+                    $modelFileWriter->getWriter()::write($defaultModelDirectory, $modelPath, $modelOutputDirector->getFileContent());
+                    $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
+                }
             }
             if (static::CRUD_MIGRATION_ONLY === $writerOption || is_null($writerOption)) {
-                $migrationBuilder->setClassName($migrationFileWriter->getFileName());
-
+                $migrationBuilder->setClassName($migrationWriter->getFileName());
                 if (null === $dumpContent) {
                     $this->info($migrationOutputDirector->getFileContent());
-                    exit();
                 }
-                //Write to migration folder
-                $migrationWriter->getWriter()::write($migrationFulPath, $filePath, $migrationOutputDirector->getFileContent());
-                $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
+                if (null !== $dumpContent) {
+                    //Write to migration folder
+                    $migrationWriter->getWriter()::write($migrationFulPath, $filePath, $migrationOutputDirector->getFileContent());
+                    $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
+                }
             }
         } catch (Exception $exception) {
             $this->error($exception->getMessage());
@@ -148,37 +146,38 @@ class LaraCrudCommand extends Command implements ConstantInterface
      * @param $modelName
      * @param $migrations
      * @param string $modelNamespace
-     * @param ModelFileWriterService $modelFileWriter
      * @param $modelOption
      * @return array
      */
-    protected function buildModel($modelName, $migrations, string $modelNamespace, ModelFileWriterService $modelFileWriter, $modelOption): array
+    protected function buildModel($modelName, $migrations, string $modelNamespace, $modelOption): array
     {
         $modelBuilder = $this->getModelBuilder($modelName, $migrations, $modelNamespace);
         $modelOutputDirector = new OutPutDirector($modelBuilder);
+        $modelFileWriter = new ModelFileWriterService;
         $modelWriterDirector = new FileWriterDirector($modelFileWriter);
 
+        $modelWriterDirector->getWriter()->setFileName($modelName);
         $migrationBuilder = $this->getMigrationBuilder($modelBuilder);
         $migrationBuilder->setSchemaMode($modelOption);
 
-        return array($modelOutputDirector, $modelWriterDirector, $migrationBuilder);
+        return [$modelOutputDirector, $modelFileWriter, $migrationBuilder];
     }
 
     /**
      * @param $migrationBuilder
-     * @param MigrationFileWriterService $migrationFileWriter
      * @param $migrationFilename
      * @param $modelName
      * @return array
      */
-    protected function buildMigration($migrationBuilder, MigrationFileWriterService $migrationFileWriter, $migrationFilename, $modelName): array
+    protected function buildMigration($migrationBuilder, $migrationFilename, $modelName): array
     {
         $migrationOutputDirector = new OutPutDirector($migrationBuilder);
+        $migrationFileWriter = new MigrationFileWriterService;
         $migrationWriter = new FileWriterDirector($migrationFileWriter);
 
         $migrationWriter->setFileName($migrationFilename ?? $modelName);
         [$migrationFulPath, $filePath] = $migrationFileWriter->getDirectory($migrationWriter);
 
-        return array($migrationOutputDirector, $migrationWriter, $migrationFulPath, $filePath);
+        return [$migrationOutputDirector, $migrationWriter, $migrationFulPath, $filePath];
     }
 }

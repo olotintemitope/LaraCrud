@@ -4,6 +4,7 @@ namespace Laztopaz\Contracts;
 
 
 use Illuminate\Support\Facades\File;
+use Laztopaz\Directors\FileWriterDirector;
 use RuntimeException;
 
 abstract class FileWriterAbstractFactory implements ConstantInterface
@@ -82,4 +83,10 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
      * @return string
      */
     abstract public function getFileName(): string;
+
+    /**
+     * @param FileWriterDirector $fileWriterDirector
+     * @return array
+     */
+    abstract public function getDirectory(FileWriterDirector $fileWriterDirector): array;
 }

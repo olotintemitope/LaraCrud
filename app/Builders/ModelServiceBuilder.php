@@ -43,9 +43,6 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
      */
     private $fileWriterAbstractFactory;
 
-    public function __construct()
-    {}
-
     /**
      * @return string
      */

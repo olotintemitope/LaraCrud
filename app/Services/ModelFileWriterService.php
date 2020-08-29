@@ -3,6 +3,7 @@
 namespace Laztopaz\Services;
 
 use Laztopaz\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Directors\FileWriterDirector;
 
 final class ModelFileWriterService extends FileWriterAbstractFactory
 {
@@ -40,5 +41,11 @@ final class ModelFileWriterService extends FileWriterAbstractFactory
     public function setFileName(string $name): void
     {
         $this->fileName = ucwords($name);
+    }
+
+    public function getDirectory(FileWriterDirector $fileWriterDirector): array
+    {
+        // TODO: Implement getDirectory() method.
+        return [];
     }
 }
