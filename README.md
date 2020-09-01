@@ -8,6 +8,15 @@ Generate a full CRUD ready to deploy application from your console
   - It helps you generate the $fillables, and the $casts arrays to your model
 - Generate a migration file for you.
 
+The main objective of the project is to help generate a working CRUD app based on your model definition.
+
+#### Future updates would automatically;
+- Generate a seeder class and  factory for you. And you can decide not to generate it based on setting an optional parameter
+- Generate routes
+- Generate validation class
+- Controllers
+- views
+
 ### Installation
 - Go to the release page and download the laracrud binary
 - Move it to the `sudo mv path/to/laracrud /usr/local/bin/` to run it as a root all the time
