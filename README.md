@@ -35,7 +35,7 @@ both model and migration files.
 - `--f=[folder path]` You can optionally pass it, if your model folder is not in app/Models. Otherwise, it will create or append 
 the new file to the app/Models folder
 
-- `--mf=[string]` You can optionally pass it to give your migration a meaningful name
+- `--mf=[string]` You can optionally pass it to give your migration file a meaningful name
 
 - `--d` You can dump the file content without first writing them to file
 ### Supported Field Types
