@@ -63,7 +63,6 @@ class LaraCrudCommand extends Command implements ConstantInterface
                     $this->info($modelOutputDirector->getFileContent());
                 }
                 if (false === $dumpContent) {
-                    // Write to molder folder
                     $modelFileWriter->getWriter()::write($defaultModelDirectory, $modelPath, $modelOutputDirector->getFileContent());
                     $this->info("{$modelName} was created for you and copied to the {$defaultModelDirectory} folder");
                 }
@@ -74,7 +73,6 @@ class LaraCrudCommand extends Command implements ConstantInterface
                     $this->info($migrationOutputDirector->getFileContent());
                 }
                 if (false === $dumpContent) {
-                    //Write to migration folder
                     $migrationWriter->getWriter()::write($migrationFulPath, $filePath, $migrationOutputDirector->getFileContent());
                     $this->info("{$modelName} migrations was generated for you and copied to the {$migrationFulPath} folder");
                 }

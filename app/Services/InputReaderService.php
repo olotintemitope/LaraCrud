@@ -144,11 +144,7 @@ class InputReaderService implements ConstantInterface
     {
         if (static::ENUM === $dbFieldType) {
             $enumValues = $this->getEnumValue(
-                str_replace(
-                    ' ',
-                    '',
-                    trim($this->laraCrudCommand->ask('Enter the ENUM values separated by a comma'))
-                )
+                $this->getTrimmedEnumValues()
             );
             if (empty($enumValues)) {
                 $this->laraCrudCommand->error('field name is missing');
@@ -218,5 +214,17 @@ class InputReaderService implements ConstantInterface
         }
 
         return [$writerOption, $modelOption, $modelName, $modelPath, $defaultModelDirectory, $migrationFilename, (bool) $dumpContent];
+    }
+
+    /**
+     * @return string|string[]
+     */
+    protected function getTrimmedEnumValues()
+    {
+        return str_replace(
+            ' ',
+            '',
+            trim($this->laraCrudCommand->ask('Enter the ENUM values separated by a comma'))
+        );
     }
 }
