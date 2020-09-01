@@ -29,7 +29,7 @@ Add this line below to bash_profile and save
 Then run this command:
 - `source ~/.bash_profile`
 
-Finally, you can type `generator` or laracrud in your terminal. You should see the below screen.
+Finally, you can type `generator make:crud ModelName` or laracrud make:crud ModelName in your terminal. You should see the below screen.
 
 ![alt text](https://github.com/olotintemitope/LaraCrud/blob/master/laracrud.png  "Laracrud console")
 
