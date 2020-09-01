@@ -10,7 +10,7 @@ Generate a full CRUD ready to deploy application from your console
 
 The main objective of the project is to help generate a working CRUD app based on your model definition.
 
-#### Future updates would automatically;
+### Future updates would automatically;
 - Generate a seeder class and  factory for you. And you can decide not to generate it based on setting an optional parameter
 - Generate routes
 - Generate validation class
