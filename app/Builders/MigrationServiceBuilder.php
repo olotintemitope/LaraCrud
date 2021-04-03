@@ -6,6 +6,7 @@ use Laztopaz\Contracts\AbstractBuilderServiceCommon;
 use Laztopaz\Contracts\BuilderServiceInterface;
 use Laztopaz\Contracts\ConstantInterface;
 use Laztopaz\Contracts\FileWriterAbstractFactory;
+use Laztopaz\Enum\ModelModeEnum;
 use Laztopaz\Traits\OutPutWriterTrait;
 use Illuminate\Support\Str;
 
@@ -16,24 +17,24 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     /**
      * @var ModelServiceBuilder
      */
-    private $modelService;
+    private ModelServiceBuilder $modelService;
     /**
      * @var string
      */
-    private $migrationDependencies;
+    private string $migrationDependencies;
 
     /**
      * @var FileWriterAbstractFactory
      */
-    private $fileWriterAbstractFactory;
+    private FileWriterAbstractFactory $fileWriterAbstractFactory;
     /**
      * @var string
      */
-    private $traits;
+    private string $traits;
     /**
      * @var string
      */
-    private $mode;
+    private string $mode;
     private string $className;
 
     public function __construct(ModelServiceBuilder $model)
@@ -232,10 +233,16 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      */
     public function setSchemaMode(?string $mode = null): MigrationServiceBuilder
     {
-        $this->mode = $mode ?? 'create';
-        if (strtolower($mode) === 'update') {
-            $this->mode = 'table';
+        if (null === $mode) {
+            $this->mode = '';
         }
+
+        if (null !== $mode) {
+            $this->mode = strtolower($mode) === ModelModeEnum::CREATE
+                ? 'create'
+                : ModelModeEnum::UPDATE;
+        }
+
         return $this;
     }
 
