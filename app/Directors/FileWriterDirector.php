@@ -41,9 +41,10 @@ class FileWriterDirector implements FileWriterInterface
      * Set the filename
      *
      * @param string $name
+     * @param string|null $schemaMode
      */
-    public function setFileName(string $name): void
+    public function setFileName(string $name, ?string $schemaMode): void
     {
-        $this->fileWriter->setFileName($name);
+        $this->fileWriter->setFileName($name, $schemaMode);
     }
 }

@@ -34,7 +34,7 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     /**
      * @var string
      */
-    private string $mode;
+    private $mode;
     private string $className;
 
     public function __construct(ModelServiceBuilder $model)
@@ -231,16 +231,15 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      * @param string|null $mode
      * @return $this
      */
-    public function setSchemaMode(?string $mode = null): MigrationServiceBuilder
+    public function setSchemaMode(?string $mode): MigrationServiceBuilder
     {
-        if (null === $mode) {
-            $this->mode = '';
-        }
+        $modeInLowerCase = strtolower($mode);
 
-        if (null !== $mode) {
-            $this->mode = strtolower($mode) === ModelModeEnum::CREATE
-                ? 'create'
-                : ModelModeEnum::UPDATE;
+        if (empty($modeInLowerCase) || $modeInLowerCase === ModelModeEnum::CREATE) {
+            $this->mode = ModelModeEnum::CREATE;
+        }
+        if ($modeInLowerCase === ModelModeEnum::UPDATE) {
+            $this->mode = ModelModeEnum::TABLE;
         }
 
         return $this;
@@ -250,7 +249,7 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
      * Get the schema mode
      * @return string
      */
-    public function getSchemaMode(): string
+    public function getSchemaMode(): ?string
     {
         return $this->mode;
     }

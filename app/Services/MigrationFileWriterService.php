@@ -49,10 +49,10 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
      * @param string $schemaMode
      * @return void
      */
-    public function setFileName(string $name, $schemaMode = 'create'): void
+    public function setFileName(string $name, ?string $schemaMode): void
     {
         $this->fileName = strtolower(
-            $this->getDatePrefix() . '_' . $schemaMode . '_' . str_replace(' ', '_', $name) . '_table' . static::FILE_EXTENSION
+            $this->getDatePrefix() . '_' . (empty($schemaMode) ? '' : $schemaMode . '_') . str_replace(' ', '_', $name) . '_table' . static::FILE_EXTENSION
         );
     }
 
@@ -75,7 +75,9 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
     public function getDirectory(FileWriterDirector $fileWriterDirector): array
     {
         $migrationFulPath = $fileWriterDirector->getWriter()::getDefaultDirectory();
-        $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $fileWriterDirector->getFileName();
-        return array($migrationFulPath, $filePath);
+
+        $filePath = $migrationFulPath . DIRECTORY_SEPARATOR . $fileWriterDirector->getWriter()->getFileName();
+
+        return [$migrationFulPath, $filePath];
     }
 }

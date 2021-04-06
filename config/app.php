@@ -55,6 +55,7 @@ return [
 
     'providers' => [
         Laztopaz\Providers\AppServiceProvider::class,
+        Intonate\TinkerZero\TinkerZeroServiceProvider::class,
     ],
 
 ];

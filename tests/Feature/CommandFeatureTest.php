@@ -41,6 +41,7 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
 
         self::assertFileExists($this->modelPath . DIRECTORY_SEPARATOR . 'Test1.php');
         $migrationFileName = $this->getMigrationFileName("create_Test1_table");
+
         self::assertFileExists( $this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
     }
 
@@ -125,7 +126,7 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
 
         self::assertFileExists($this->modelPath . DIRECTORY_SEPARATOR . 'Test6.php');
         $migrationFileName = $this->getMigrationFileName("create_Test6_table");
-        self::assertFileNotExists($this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
+        self::assertFileDoesNotExist($this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
     }
 
     public function testThatOnlyMigrationWasGenerated(): void
@@ -155,7 +156,7 @@ class CommandFeatureTest extends TestCase implements ConstantInterface
 
         self::assertFileExists($this->entityPath . DIRECTORY_SEPARATOR . 'Test8.php');
         $migrationFileName = $this->getMigrationFileName("create_Test8_table");
-        self::assertFileNotExists($this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
+        self::assertFileDoesNotExist($this->migrationPath . DIRECTORY_SEPARATOR . $migrationFileName);
     }
 
     protected function getDatePrefix()

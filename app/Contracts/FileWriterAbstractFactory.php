@@ -74,8 +74,9 @@ abstract class FileWriterAbstractFactory implements ConstantInterface
      * Should be implemented to set the filename
      *
      * @param string $name
+     * @param string $schemaMode
      */
-    abstract public function setFileName(string $name): void;
+    abstract public function setFileName(string $name, ?string $schemaMode): void;
 
     /**
      * Should be implemented to get the filename

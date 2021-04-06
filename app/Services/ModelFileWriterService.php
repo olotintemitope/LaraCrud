@@ -37,15 +37,15 @@ final class ModelFileWriterService extends FileWriterAbstractFactory
      * @override
      * set the model filename
      * @param string $name
+     * @param string $schemaMode
      */
-    public function setFileName(string $name): void
+    public function setFileName(string $name, ?string $schemaMode): void
     {
         $this->fileName = ucwords($name);
     }
 
     public function getDirectory(FileWriterDirector $fileWriterDirector): array
     {
-        // TODO: Implement getDirectory() method.
-        return [];
+        return $fileWriterDirector->getWriter()->getDirectory($fileWriterDirector);
     }
 }
