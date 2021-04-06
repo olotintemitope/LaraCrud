@@ -2,8 +2,20 @@
 
 namespace Laztopaz\Contracts;
 
+use ICanBoogie\Inflector;
+
 abstract class AbstractBuilderServiceCommon
 {
+    /**
+     * @var Inflector
+     */
+    protected Inflector $inflector;
+
+    public function __construct()
+    {
+        $this->inflector = Inflector::get('en');
+    }
+
     /**
      * @return string
      */

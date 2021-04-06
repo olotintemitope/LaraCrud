@@ -2,7 +2,6 @@
 
 namespace Laztopaz\Builders;
 
-use ICanBoogie\Inflector;
 use Illuminate\Support\Str;
 use Laztopaz\Contracts\AbstractBuilderServiceCommon;
 use Laztopaz\Contracts\BuilderServiceInterface;
@@ -118,8 +117,7 @@ class ModelServiceBuilder extends AbstractBuilderServiceCommon implements Consta
      */
     public function getTableName(): string
     {
-        $inflector = Inflector::get('en');
-        return strtolower($inflector->pluralize($this->getModelName()));
+        return strtolower($this->inflector->pluralize($this->getModelName()));
     }
 
     /**

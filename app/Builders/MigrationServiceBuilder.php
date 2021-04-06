@@ -39,6 +39,8 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
 
     public function __construct(ModelServiceBuilder $model)
     {
+        parent::__construct();
+
         $this->modelService = $model;
     }
 
@@ -262,6 +264,7 @@ class MigrationServiceBuilder extends AbstractBuilderServiceCommon implements Co
     public function setClassName(string $filename): self
     {
         $this->className = $this->getCapitalizedClassName($filename);
+
         return $this;
     }
 

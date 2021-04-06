@@ -182,10 +182,11 @@ class LaraCrudCommand extends Command implements ConstantInterface
 
         $fileName = $migrationFilename ?? $modelName;
         $migrationBuilder->setSchemaMode($modelOption);
+
         $migrationWriterDirector->getWriter()
             ->setFileName(
                 $fileName,
-                null
+                $migrationBuilder->getSchemaMode()
             );
 
         [$migrationFulPath, $filePath] = $migrationFileWriter->getDirectory($migrationWriterDirector);

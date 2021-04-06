@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CheckIfTeacherIsGreatTable extends Migration
+class UpdateTeachersTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -14,7 +14,8 @@ class CheckIfTeacherIsGreatTable extends Migration
 	public function up()
 	{
 		Schema::table('teachers', function (Blueprint $table) {
-			$table->boolean('is_great');
+			$table->string('first_name');
+			$table->string('gender', 6);
 
 		});
 	}

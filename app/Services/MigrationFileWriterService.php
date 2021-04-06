@@ -2,8 +2,10 @@
 
 namespace Laztopaz\Services;
 
+use ICanBoogie\Inflector;
 use Laztopaz\Contracts\FileWriterAbstractFactory;
 use Laztopaz\Directors\FileWriterDirector;
+use Laztopaz\Enum\ModelModeEnum;
 
 final class MigrationFileWriterService extends FileWriterAbstractFactory
 {
@@ -51,6 +53,11 @@ final class MigrationFileWriterService extends FileWriterAbstractFactory
      */
     public function setFileName(string $name, ?string $schemaMode): void
     {
+        $inflector = Inflector::get('en');
+        $name =  $inflector->pluralize($name);
+
+        $schemaMode = $schemaMode === ModelModeEnum::TABLE ? ModelModeEnum::UPDATE : $schemaMode;
+
         $this->fileName = strtolower(
             $this->getDatePrefix() . '_' . (empty($schemaMode) ? '' : $schemaMode . '_') . str_replace(' ', '_', $name) . '_table' . static::FILE_EXTENSION
         );
